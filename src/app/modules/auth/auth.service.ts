@@ -156,7 +156,6 @@ const refreshToken = async (token: string) => {
 const forgetPassword = async (email: string) => {
   const user = await User.isUserExists(email);
 
-  // Checking if the user exists or not
   if (!user) {
     throw new AppError(httpStatus.NOT_FOUND, "User not found!");
   }
@@ -177,7 +176,33 @@ const forgetPassword = async (email: string) => {
 
   const resetLink = `${config.reset_password_ui_url}/reset-password?email=${user?.email}&token=${resetToken}`;
 
-  await sendEmail(user?.email, resetLink);
+  const subject = "Reset Your Password - Hanjifinance";
+
+  const htmlBody = `
+  <div style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; padding:30px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+      <h2 style="color:#c0392b; text-align:center;">Hanjifinance</h2>
+      <p style="font-size:16px; color:#333;">Hello <strong>${user.name}</strong>,</p>
+      <p style="font-size:15px; color:#555;">
+        We received a request to reset your password for your Hanjifinance account.  
+        Please click the button below to reset your password. This link will expire in <strong>10 minutes</strong>.
+      </p>
+      <div style="text-align:center; margin:30px 0;">
+        <a href="${resetLink}" target="_blank" style="background:#c0392b; color:#fff; text-decoration:none; padding:12px 24px; border-radius:6px; font-size:16px; font-weight:bold;">
+          Reset Password
+        </a>
+      </div>
+      <p style="font-size:14px; color:#777;">
+        If you did not request this, you can safely ignore this email.  
+        Your password will remain unchanged.
+      </p>
+      <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
+      <p style="font-size:16px; font-weight:bold; color:#c0392b;">The Hanjifinance Team</p>
+    </div>
+  </div>
+  `;
+
+  await sendEmail(user.email, subject, htmlBody);
 };
 
 const resetPassword = async (

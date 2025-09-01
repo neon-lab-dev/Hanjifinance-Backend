@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-export const sendEmail = async (to: string, html: string) => {
+export const sendEmail = async (to: string, subject:string, html: string) => {
   try {
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -16,7 +16,7 @@ export const sendEmail = async (to: string, html: string) => {
     await transporter.sendMail({
       from: "rahulsd380@gmail.com",
       to,
-      subject: "Reset your password within 10 minutes",
+      subject,
       text: "Reset your password within 10 minutes",
       html,
     });
