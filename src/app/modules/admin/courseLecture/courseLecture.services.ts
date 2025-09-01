@@ -4,6 +4,7 @@ import Course from "./courseLecture.model";
 import { sendVideoToCloudinary } from "../../../utils/sendVideoToCloudinary ";
 import { TCourseLecture } from "./courseLecture.interface";
 import AppError from "../../../errors/AppError";
+import { sendImageToCloudinary } from "../../../utils/sendImageToCloudinary";
 
 // Add course (admin only)
 const addCourseLecture = async (

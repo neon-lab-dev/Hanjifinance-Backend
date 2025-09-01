@@ -8,9 +8,9 @@ const router = express.Router();
 
 // For admin only
 router.post(
-  "/add-course",
-  multerUpload.single("file"),
+  "/admin/add",
   auth(UserRole.admin, UserRole.moderator),
+  multerUpload.single("file"),
   CourseControllers.addCourse
 );
 
@@ -19,8 +19,8 @@ router.get("/:courseId", CourseControllers.getSingleCourseById);
 
 router.put(
   "/:courseId",
-  multerUpload.single("file"),
   auth(UserRole.admin, UserRole.moderator),
+  multerUpload.single("file"),
   CourseControllers.updateCourse
 );
 

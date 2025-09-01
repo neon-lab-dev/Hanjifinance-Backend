@@ -30,7 +30,15 @@ const CourseSchema = new Schema<TCourse>(
     },
     accessValidity: {
       type: Date,
-      required: true,
+      validate: {
+        validator: function (this: TCourse, value: Date | null) {
+          if (this.accessType === "limited" && !value) {
+            return false;
+          }
+          return true;
+        },
+        message: "Access Validity is required",
+      },
     },
     category: {
       type: String,

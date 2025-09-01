@@ -1,9 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
-import AppError from "../../errors/AppError";
 import Course from "./course.model";
-import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 import { TCourse } from "./course.interface";
+import AppError from "../../../errors/AppError";
+import { sendImageToCloudinary } from "../../../utils/sendImageToCloudinary";
 
 // Add course (admin only)
 const addCourse = async (
@@ -13,7 +13,7 @@ const addCourse = async (
   let imageUrl = "";
 
   if (file) {
-    const imageName = `${payload.name}-${Date.now()}`;
+    const imageName = `${payload.title}-${Date.now()}`;
     const path = file.path;
 
     const { secure_url } = await sendImageToCloudinary(imageName, path);
@@ -72,7 +72,7 @@ const updateCourse = async (
   let imageUrl: string | undefined;
 
   if (file) {
-    const imageName = `${payload?.name || existing.name}-${Date.now()}`;
+    const imageName = `${payload?.title || existing.title}-${Date.now()}`;
     const path = file.path;
 
     const { secure_url } = await sendImageToCloudinary(imageName, path);
