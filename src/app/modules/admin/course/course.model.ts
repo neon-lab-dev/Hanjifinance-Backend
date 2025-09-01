@@ -7,8 +7,29 @@ const CourseSchema = new Schema<TCourse>(
       type: String,
       required: false,
     },
-    name: {
+    title: {
       type: String,
+      required: true,
+    },
+    subtitle: {
+      type: String,
+      required: true,
+    },
+    tagline: {
+      type: String,
+      required: true,
+    },
+    benefits: {
+      type: [String],
+      required: true,
+    },
+    accessType: {
+      type: String,
+      required: true,
+      enum: ["lifetime", "limited"],
+    },
+    accessValidity: {
+      type: Date,
       required: true,
     },
     category: {
@@ -19,8 +40,8 @@ const CourseSchema = new Schema<TCourse>(
       type: String,
       required: true,
     },
-    url: {
-      type: String,
+    price: {
+      type: Number,
       required: true,
     },
   },

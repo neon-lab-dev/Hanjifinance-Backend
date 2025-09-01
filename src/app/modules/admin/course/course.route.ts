@@ -1,8 +1,8 @@
 import express from "express";
-import auth from "../../middlewares/auth";
-import { UserRole } from "../auth/auth.constants";
 import { CourseControllers } from "./course.controller";
-import { multerUpload } from "../../config/multer.config";
+import { multerUpload } from "../../../config/multer.config";
+import auth from "../../../middlewares/auth";
+import { UserRole } from "../../auth/auth.constants";
 
 const router = express.Router();
 

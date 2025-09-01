@@ -1,10 +1,10 @@
 import httpStatus from "http-status";
-import catchAsync from "../../utils/catchAsync";
-import sendResponse from "../../utils/sendResponse";
-import { CourseServices } from "./course.services";
+import { CourseServices } from "./courseLecture.services";
+import catchAsync from "../../../utils/catchAsync";
+import sendResponse from "../../../utils/sendResponse";
 
-// Add course (For admin)
-const addCourse = catchAsync(async (req, res) => {
+// Add course lecture
+const addCourseLecture = catchAsync(async (req, res) => {
   const file = req.file;
   const result = await CourseServices.addCourse(req.body, file);
 
@@ -70,7 +70,7 @@ const deleteCourse = catchAsync(async (req, res) => {
 });
 
 export const CourseControllers = {
-  addCourse,
+  addCourseLecture,
   getAllCourses,
   getSingleCourseById,
   updateCourse,
