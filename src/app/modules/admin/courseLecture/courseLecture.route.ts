@@ -8,10 +8,10 @@ const router = express.Router();
 
 // For admin only
 router.post(
-  "/add-course",
-  multerUpload.single("file"),
+  "/add",
   auth(UserRole.admin, UserRole.moderator),
-  CourseControllers.addCourse
+  multerUpload.single("file"),
+  CourseControllers.addCourseLecture
 );
 
 router.get("/", CourseControllers.getAllCourses);
@@ -30,4 +30,4 @@ router.delete(
   CourseControllers.deleteCourse
 );
 
-export const CourseRoutes = router;
+export const CourseLectureRoutes = router;

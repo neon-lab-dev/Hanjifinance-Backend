@@ -1,7 +1,7 @@
 import { Schema, model } from "mongoose";
 import { TCourseLecture } from "./courseLecture.interface";
 
-const CourseSchema = new Schema<TCourseLecture>(
+const CourseLectureSchema = new Schema<TCourseLecture>(
   {
     courseId: {
       type: Schema.Types.ObjectId,
@@ -20,12 +20,20 @@ const CourseSchema = new Schema<TCourseLecture>(
       type: String,
       required: true,
     },
+    videoUrl: {
+      type: String,
+      required: false,
+    },
+    videoPublicId: {
+      type: String,
+      required: false,
+    },
   },
   {
     timestamps: true,
   }
 );
 
-const CourseLecture = model<TCourseLecture>("CourseLecture", CourseSchema);
+const CourseLecture = model<TCourseLecture>("CourseLecture", CourseLectureSchema);
 
 export default CourseLecture;

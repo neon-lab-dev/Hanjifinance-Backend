@@ -4,6 +4,12 @@ import Course from "./course.model";
 import { TCourse } from "./course.interface";
 import AppError from "../../../errors/AppError";
 import { sendImageToCloudinary } from "../../../utils/sendImageToCloudinary";
+import { v2 as cloudinary } from "cloudinary";
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // Add course (admin only)
 const addCourse = async (
@@ -94,12 +100,35 @@ const updateCourse = async (
 
 // Delete course by ID
 const deleteCourse = async (id: string) => {
-  const result = await Course.findByIdAndDelete(id);
-  if (!result) {
+  const course = await Course.findById(id);
+  if (!course) {
     throw new AppError(httpStatus.NOT_FOUND, "Course not found");
   }
+
+  // Delete course image from cloudinary if exists
+  if (course.imageUrl) {
+    try {
+      // Extract public_id from imageUrl
+      const parts = course.imageUrl.split("/");
+      const filename = parts[parts.length - 1]; 
+      
+      // Remove extension and decode URL
+      const publicId = decodeURIComponent(filename.split(".")[0]);
+      console.log("Deleting Cloudinary image with publicId:", publicId);
+
+      await cloudinary.uploader.destroy(publicId);
+      console.log("Cloudinary image deleted successfully");
+    } catch (err) {
+      console.error("Error deleting Cloudinary image:", err);
+    }
+  }
+
+  // Delete course from DB
+  const result = await Course.findByIdAndDelete(id);
+
   return result;
 };
+
 
 export const CourseServices = {
   addCourse,

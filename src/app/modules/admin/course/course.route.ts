@@ -25,7 +25,7 @@ router.put(
 );
 
 router.delete(
-  "/:courseId",
+  "/delete/:courseId",
   auth(UserRole.admin, UserRole.moderator),
   CourseControllers.deleteCourse
 );

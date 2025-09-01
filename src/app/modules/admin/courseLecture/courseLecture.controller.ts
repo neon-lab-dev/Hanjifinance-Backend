@@ -6,7 +6,7 @@ import sendResponse from "../../../utils/sendResponse";
 // Add course lecture
 const addCourseLecture = catchAsync(async (req, res) => {
   const file = req.file;
-  const result = await CourseServices.addCourse(req.body, file);
+  const result = await CourseServices.addCourseLecture(req.body, file);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

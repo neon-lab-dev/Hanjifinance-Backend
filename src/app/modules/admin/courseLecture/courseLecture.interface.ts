@@ -5,6 +5,8 @@ export type TCourseLecture = {
   title: string;
   description: string;
   duration: string;
+  videoUrl?: string;
+  videoPublicId?: string;
   createdAt?: Date;
   updatedAt?: Date;
 };

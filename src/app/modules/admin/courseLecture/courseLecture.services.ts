@@ -5,31 +5,39 @@ import { sendVideoToCloudinary } from "../../../utils/sendVideoToCloudinary ";
 import { TCourseLecture } from "./courseLecture.interface";
 import AppError from "../../../errors/AppError";
 import { sendImageToCloudinary } from "../../../utils/sendImageToCloudinary";
+import CourseLecture from "./courseLecture.model";
 
-// Add course (admin only)
+// Service to add a lecture with optional video
 const addCourseLecture = async (
   payload: TCourseLecture,
-  file: Express.Multer.File | undefined
+  file?: Express.Multer.File
 ) => {
   let videoUrl = "";
+  let videoPublicId = "";
 
   if (file) {
-    const videoName = `${payload.title}-${Date.now()}`;
-    const path = file.path;
-
-    const { secure_url } = await sendVideoToCloudinary(videoName, path);
+    const { secure_url, public_id } = await sendVideoToCloudinary(
+      file.originalname,
+      file.path
+    );
     videoUrl = secure_url;
+    videoPublicId = public_id;
   }
 
-  const payloadData = {
+  const payloadData: Partial<TCourseLecture> = {
     ...payload,
     videoUrl,
+    videoPublicId,
   };
 
-  const result = await Course.create(payloadData);
+  // Save lecture to DB
+  const result = await CourseLecture.create(payloadData);
   return result;
 };
 
+export default {
+  addCourseLecture,
+};
 
 // Get all courses
 const getAllCourses = async (keyword: any, category: any) => {

@@ -1,31 +1,35 @@
-import { v2 as cloudinary } from "cloudinary";
+import { v2 as cloudinary, UploadApiResponse } from "cloudinary";
 import fs from "fs";
 
-cloudinary.config({
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-  api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: process.env.CLOUDINARY_API_SECRET,
-});
+interface CloudinaryResponse {
+  secure_url: string;
+  public_id: string;
+}
 
-export const sendVideoToCloudinary = async (
-  videoName: string,
-  filePath: string
-) => {
-  try {
-    const result = await cloudinary.uploader.upload(filePath, {
-      public_id: videoName,
-      resource_type: "video",
-      folder: "courses/videos",
-    });
+export const sendVideoToCloudinary = (
+  originalName: string,
+  localPath: string
+): Promise<CloudinaryResponse> => {
+  return new Promise((resolve, reject) => {
+    const publicId = originalName.split(".")[0] + "-" + Date.now();
 
-    fs.unlinkSync(filePath);
+    cloudinary.uploader.upload(
+      localPath,
+      { resource_type: "video", public_id: publicId },
+      (error, result: UploadApiResponse | undefined) => {
+        // Delete local file
+        fs.unlink(localPath, (err) => {
+          if (err) console.error("Failed to delete local file:", err);
+        });
 
-    return {
-      secure_url: result.secure_url,
-      duration: result.duration,
-      format: result.format,
-    };
-  } catch (error) {
-    throw new Error("Video upload failed: " + error);
-  }
+        if (error) return reject(error);
+
+        if (result && result.secure_url && result.public_id) {
+          resolve({ secure_url: result.secure_url, public_id: result.public_id });
+        } else {
+          reject(new Error("Failed to upload video to Cloudinary"));
+        }
+      }
+    );
+  });
 };
