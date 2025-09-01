@@ -38,7 +38,6 @@ const getMyOrders = catchAsync(async (req, res) => {
 });
 
 
-
 const changeUserRoleToAdmin = catchAsync(async (req, res) => {
   const { userId } = req.params;
   const result = await UserServices.changeUserRoleToAdmin(userId);
@@ -102,34 +101,20 @@ const getSingleUserById = catchAsync(async (req, res) => {
   });
 });
 
-const followUser = catchAsync(async (req, res) => {
-  
-  const currentUserId = req.user.userId;
-  const { userId } = req.params;
 
-  const result = await UserServices.followUser(currentUserId, userId);
+// Update profile
+const updateProfile = catchAsync(async (req, res) => {
+  const file = req.file;
+  const userId = req.user.userId;
+  const result = await UserServices.updateProfile(userId, req.body, file);
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User followed successfully',
+    message: "Profile updated successfully",
     data: result,
   });
 });
-
-const unfollowUser = catchAsync(async (req, res) => {
-  const currentUserId = req.user.userId;
-  const { userId } = req.params;
-
-  const result = await UserServices.unfollowUser(currentUserId, userId);
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: 'User unfollowed successfully',
-    data: result,
-  });
-});
-
-
 export const UserControllers = {
   getAllUser,
   getMe,
@@ -138,7 +123,6 @@ export const UserControllers = {
   changeUserRoleToUser,
   suspendUser,
   getSingleUserById,
-  followUser,
-  unfollowUser,
   getMyOrders,
+  updateProfile,
 };

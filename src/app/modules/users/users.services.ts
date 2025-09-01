@@ -2,6 +2,8 @@
 import httpStatus from 'http-status';
 import AppError from '../../errors/AppError';
 import { User } from '../auth/auth.model';
+import { TUser } from '../auth/auth.interface';
+import { sendImageToCloudinary } from '../../utils/sendImageToCloudinary';
 
 const getAllUser = async () => {
   const result = await User.find();
@@ -25,28 +27,28 @@ const getMyOrders = async (userId: string) => {
 };
 
 
-// const updateProfile = async (id: string, payload: Partial<TUser>, profilePic: any) => {
-//   let profilePicUrl: string | undefined;
+const updateProfile = async (id: string, payload: Partial<TUser>, profilePic: any) => {
+  let profilePicUrl: string | undefined;
 
-//   if (profilePic) {
-//     const imageName = `${id}-profile-${Date.now()}`;
-//     const path = profilePic.path;
+  if (profilePic) {
+    const imageName = `${id}-profile-${Date.now()}`;
+    const path = profilePic.path;
 
-//     const { secure_url } = await sendImageToCloudinary(imageName, path);
-//     profilePicUrl = secure_url;
-//   }
+    const { secure_url } = await sendImageToCloudinary(imageName, path);
+    profilePicUrl = secure_url;
+  }
 
-//   if (profilePicUrl) {
-//     payload.profilePicture = profilePicUrl;
-//   }
+  if (profilePicUrl) {
+    payload.avatar = profilePicUrl;
+  }
 
-//   const result = await User.findByIdAndUpdate(id, payload, {
-//     new: true,
-//     runValidators: true,
-//   });
+  const result = await User.findByIdAndUpdate(id, payload, {
+    new: true,
+    runValidators: true,
+  });
 
-//   return result;
-// };
+  return result;
+};
 
 
 
@@ -93,40 +95,6 @@ const getSingleUserById = async (userId:string) => {
   return result;
 };
 
-const followUser = async (currentUserId: string, userId: string) => {
-  const user = await User.findByIdAndUpdate(
-    currentUserId,
-    { $addToSet: { following: userId } },
-    { new: true }
-  );
-
-  const targetUser = await User.findByIdAndUpdate(
-    userId,
-    { $addToSet: { followers: currentUserId } },
-    { new: true }
-  );
-
-  return { user, targetUser };
-};
-
-
-const unfollowUser = async (currentUserId: string, userId: string) => {
-  const user = await User.findByIdAndUpdate(
-    currentUserId,
-    { $pull: { following: { userId: userId } } },
-    { new: true }
-  );
-
-  const targetUser = await User.findByIdAndUpdate(
-    userId,
-    { $pull: { followers: { userId: currentUserId } } },
-    { new: true }
-  );
-
-  return { user, targetUser };
-};
-
-
 export const UserServices = {
   getAllUser,
   getMe,
@@ -135,7 +103,6 @@ export const UserServices = {
   changeUserRoleToUser,
   suspendUser,
   getSingleUserById,
-  followUser,
-  unfollowUser,
   getMyOrders,
+  updateProfile,
 };
