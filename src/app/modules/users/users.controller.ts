@@ -115,6 +115,7 @@ const updateProfile = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
 export const UserControllers = {
   getAllUser,
   getMe,
