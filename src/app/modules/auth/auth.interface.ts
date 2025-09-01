@@ -12,22 +12,14 @@ export type TUser= {
   name: string;
   email: string;
   phoneNumber: string;
-  area? : string;
-  city : string;
-  state : string;
-  country : string;
+  address? : string;
   password: string;
-  role: "user" | "admin" | "moderator" | "super-admin";
-  assignedPages? : string[];
-  totalQuizTaken?: number;
-  isVerified: boolean;
-  expoPushToken: string,
-  resetPasswordToken: string | null;
-  resetPasswordExpires: Date | null;
+  role: "user" | "admin" | "moderator";
+  isDeleted? : boolean;
+  isSuspended? : boolean;
   createdAt: Date;
   updatedAt: Date;
-  isDeleted : boolean;
-  isSuspended : boolean;
+  passwordChangedAt?: Date
 }
 
 export interface UserModel extends Model<TUser> {
@@ -39,15 +31,3 @@ export interface UserModel extends Model<TUser> {
 }
 
 export type TUserRole = keyof typeof UserRole;
-
-
-
-// name,
-// email,
-// phoneNumber,
-// dob,
-// password,
-// country,
-// state,
-// city,
-// village/area (optional),

@@ -27,24 +27,9 @@ const userSchema = new Schema<TUser, UserModel>(
       required: true,
       trim: true,
     },
-    area: {
+    address: {
       type: String,
       required: false,
-      trim: true,
-    },
-    city: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    state: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    country: {
-      type: String,
-      required: true,
       trim: true,
     },
     password: {
@@ -57,38 +42,20 @@ const userSchema = new Schema<TUser, UserModel>(
       enum: ["user", "admin", "moderator", "super-admin"],
       default: "user",
     },
-    assignedPages: {
-      type: [String],
-      default: [],
-    },
-    totalQuizTaken: {
-      type: Number,
-      required: false,
-      default: 0,
-    },
-    isVerified: {
-      type: Boolean,
-      default: false,
-    },
-    expoPushToken: {
-      type: String,
-      default: null,
-    },
+
     isDeleted: {
       type: Boolean,
+      required: false,
       default: false,
     },
     isSuspended: {
       type: Boolean,
+      required: false,
       default: false,
     },
-    resetPasswordToken: {
-      type: String,
-      default: null,
-    },
-    resetPasswordExpires: {
+    passwordChangedAt: {
       type: Date,
-      default: null,
+      required: false,
     },
   },
   {

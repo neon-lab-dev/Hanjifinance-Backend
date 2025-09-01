@@ -4,18 +4,6 @@ import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/catchAsync";
 import config from "../../config";
 
-// Save Push Token
-const savePushToken = catchAsync(async (req, res) => {
-  const result = await AuthServices.saveUserPushToken(req.body);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Push token saved successfully",
-    data: result,
-  });
-});
-
 
 // User Signup
 const signup = catchAsync(async (req, res) => {
@@ -68,13 +56,14 @@ const forgetPassword = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Reset instruction sent to your email.Please check.",
+    message: "Please check your email.",
     data: result,
   });
 });
 
 const resetPassword = catchAsync(async (req, res) => {
-  const result = await AuthServices.resetPassword(req.body);
+  const token = req.headers.authorization;
+  const result = await AuthServices.resetPassword(req.body, token as string);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -83,6 +72,7 @@ const resetPassword = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
 
 // Change User Role (For admin)
 const changeUserRole = catchAsync(async (req, res) => {
@@ -96,24 +86,11 @@ const changeUserRole = catchAsync(async (req, res) => {
   });
 });
 
-const assignPagesToUser = catchAsync(async (req, res) => {
-  const result = await AuthServices.assignPagesToUser(req.body);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Pages assigned successfully.",
-    data: result,
-  });
-});
-
 export const AuthControllers = {
-  savePushToken,
   signup,
   loginUser,
   refreshToken,
   forgetPassword,
   resetPassword,
   changeUserRole,
-  assignPagesToUser,
 };

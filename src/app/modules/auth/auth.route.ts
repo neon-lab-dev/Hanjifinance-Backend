@@ -32,21 +32,10 @@ router.post(
   AuthControllers.resetPassword
 );
 
-router.post(
-  "/save-push-notification-token",
-  AuthControllers.savePushToken
-);
-
 router.put(
   "/change-role",
   auth(UserRole.admin),
   AuthControllers.changeUserRole
-);
-
-router.put(
-  "/assign-pages",
-  auth(UserRole.admin),
-  AuthControllers.assignPagesToUser
 );
 
 export const AuthRoute = router;
