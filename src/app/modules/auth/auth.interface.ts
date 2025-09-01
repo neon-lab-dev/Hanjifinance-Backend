@@ -6,21 +6,22 @@ export type TLoginAuth = {
 import { Model } from "mongoose";
 import { UserRole } from "./auth.constants";
 
-export type TUser= {
-  _id:string;
+export type TUser = {
+  userId: string;
+  _id: string;
   avatar?: string;
   name: string;
   email: string;
   phoneNumber: string;
-  address? : string;
+  address?: string;
   password: string;
   role: "user" | "admin" | "moderator";
-  isDeleted? : boolean;
-  isSuspended? : boolean;
+  isDeleted?: boolean;
+  isSuspended?: boolean;
   createdAt: Date;
   updatedAt: Date;
-  passwordChangedAt?: Date
-}
+  passwordChangedAt?: Date;
+};
 
 export interface UserModel extends Model<TUser> {
   isUserExists(email: string): Promise<TUser>;

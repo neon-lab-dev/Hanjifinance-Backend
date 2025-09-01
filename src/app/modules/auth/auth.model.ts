@@ -2,9 +2,22 @@ import { Schema, model } from "mongoose";
 import bcrypt from "bcrypt";
 import config from "../../config";
 import { TUser, UserModel } from "./auth.interface";
+import crypto from "crypto";
+
+function generateUserId() {
+  const prefix = "HFU";
+  const date = new Date().toISOString().slice(0, 10).replace(/-/g, ""); // YYYYMMDD
+  const random = crypto.randomBytes(3).toString("hex").toUpperCase(); // 6-char random
+  return `${prefix}-${date}-${random}`;
+}
 
 const userSchema = new Schema<TUser, UserModel>(
   {
+    userId: {
+      type: String,
+      unique: true,
+      default: generateUserId,
+    },
     avatar: {
       type: String,
       required: false,

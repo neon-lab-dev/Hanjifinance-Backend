@@ -10,7 +10,7 @@ const router = express.Router();
 router.post(
   "/add-course",
   multerUpload.single("file"),
-  auth(UserRole.admin, UserRole.moderator, UserRole["super-admin"]),
+  auth(UserRole.admin, UserRole.moderator),
   CourseControllers.addCourse
 );
 
@@ -20,13 +20,13 @@ router.get("/:courseId", CourseControllers.getSingleCourseById);
 router.put(
   "/:courseId",
   multerUpload.single("file"),
-  auth(UserRole.admin, UserRole.moderator, UserRole["super-admin"]),
+  auth(UserRole.admin, UserRole.moderator),
   CourseControllers.updateCourse
 );
 
 router.delete(
   "/:courseId",
-  auth(UserRole.admin, UserRole.moderator, UserRole["super-admin"]),
+  auth(UserRole.admin, UserRole.moderator),
   CourseControllers.deleteCourse
 );
 
