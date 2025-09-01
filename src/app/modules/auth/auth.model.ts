@@ -108,5 +108,10 @@ userSchema.statics.isPasswordMatched = async function (
   return await bcrypt.compare(plainTextPassword, hashedPassword);
 };
 
+userSchema.index(
+  { otpExpireAt: 1 },
+  { expireAfterSeconds: 0, partialFilterExpression: { isOtpVerified: false } }
+);
+
 // Export the model
 export const User = model<TUser, UserModel>("User", userSchema);

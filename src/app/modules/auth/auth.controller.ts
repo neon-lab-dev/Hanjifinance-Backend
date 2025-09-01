@@ -4,7 +4,6 @@ import sendResponse from "../../utils/sendResponse";
 import catchAsync from "../../utils/catchAsync";
 import config from "../../config";
 
-
 // User Signup
 const signup = catchAsync(async (req, res) => {
   const file = req.file;
@@ -31,7 +30,6 @@ const verifyOtp = catchAsync(async (req, res) => {
     data: result,
   });
 });
-
 
 // User Login
 const loginUser = catchAsync(async (req, res) => {
@@ -100,7 +98,6 @@ const changePassword = catchAsync(async (req, res) => {
   });
 });
 
-
 // Change User Role (For admin)
 const changeUserRole = catchAsync(async (req, res) => {
   const result = await AuthServices.changeUserRole(req.body);
@@ -121,5 +118,5 @@ export const AuthControllers = {
   resetPassword,
   changePassword,
   changeUserRole,
-  verifyOtp
+  verifyOtp,
 };
