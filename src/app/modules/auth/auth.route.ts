@@ -9,6 +9,7 @@ import { multerUpload } from "../../config/multer.config";
 const router = express.Router();
 
 router.post("/signup", multerUpload.single("file"), AuthControllers.signup);
+router.post("/verify-otp", AuthControllers.verifyOtp);
 
 router.post(
   "/login",

@@ -18,6 +18,9 @@ export type TUser = {
   role: "user" | "admin" | "moderator";
   isDeleted?: boolean;
   isSuspended?: boolean;
+  isOtpVerified?: boolean;
+  otp?: string | null;
+  otpExpireAt?: Date | null;
   createdAt: Date;
   updatedAt: Date;
   passwordChangedAt?: Date;

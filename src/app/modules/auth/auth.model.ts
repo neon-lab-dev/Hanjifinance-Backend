@@ -66,6 +66,9 @@ const userSchema = new Schema<TUser, UserModel>(
       required: false,
       default: false,
     },
+    isOtpVerified: { type: Boolean, default: false },
+    otp: { type: String },
+    otpExpireAt: { type: Date },
     passwordChangedAt: {
       type: Date,
       required: false,

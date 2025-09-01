@@ -18,6 +18,21 @@ const signup = catchAsync(async (req, res) => {
   });
 });
 
+// User Verify OTP
+const verifyOtp = catchAsync(async (req, res) => {
+  const { email, otp } = req.body;
+
+  const result = await AuthServices.verifyOtp(email, otp);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "OTP verified successfully.",
+    data: result,
+  });
+});
+
+
 // User Login
 const loginUser = catchAsync(async (req, res) => {
   const result = await AuthServices.loginUser(req.body);
@@ -106,4 +121,5 @@ export const AuthControllers = {
   resetPassword,
   changePassword,
   changeUserRole,
+  verifyOtp
 };

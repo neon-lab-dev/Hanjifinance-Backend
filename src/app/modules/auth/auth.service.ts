@@ -14,32 +14,98 @@ const signup = async (
   payload: Partial<TUser>,
   file: Express.Multer.File | undefined
 ) => {
-  // Checking if user already exists
+  // Check if user exists
   const isUserExists = await User.findOne({ email: payload.email });
   if (isUserExists) {
     throw new AppError(httpStatus.CONFLICT, "User already exists.");
   }
 
+  // Upload avatar
   let imageUrl = "";
-
   if (file) {
     const imageName = `${payload.name}-${Date.now()}`;
     const path = file.path;
-
     const { secure_url } = await sendImageToCloudinary(imageName, path);
     imageUrl = secure_url;
   }
 
+  // Generate 6-digit OTP
+  const otp = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Save user with OTP fields
   const payloadData = {
     ...payload,
     avatar: imageUrl,
     isDeleted: false,
     isSuspended: false,
+    isOtpVerified: false,
+    otp,
+    otpExpireAt: new Date(Date.now() + 2 * 60 * 1000), // expires in 2 minutes
   };
 
   const result = await User.create(payloadData);
+
+  // Send OTP Email
+  const subject = "Verify Your OTP - Hanjifinance";
+  const htmlBody = `
+    <div style="font-family: Arial, sans-serif; background:#f9f9f9; padding:20px;">
+      <div style="max-width:600px; margin:auto; background:#fff; border-radius:8px; padding:30px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+        <h2 style="color:#20B486; text-align:center;">Hanjifinance</h2>
+        <p style="font-size:16px; color:#333;">Hello <strong>${payload.name}</strong>,</p>
+        <p style="font-size:15px; color:#555;">
+          Thank you for signing up with <b>Hanjifinance</b>. To complete your registration, please use the OTP below.  
+          This OTP is valid for <strong>2 minutes</strong>.
+        </p>
+        <div style="text-align:center; margin:30px 0;">
+          <p style="font-size:28px; letter-spacing:4px; font-weight:bold; color:#20B486;">${otp}</p>
+        </div>
+        <p style="font-size:14px; color:#777;">
+          If you didn’t request this, you can safely ignore this email.
+        </p>
+        <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
+        <p style="font-size:16px; font-weight:bold; color:#20B486;">The Hanjifinance Team</p>
+      </div>
+    </div>
+  `;
+
+  await sendEmail(result.email, subject, htmlBody);
+
   return result;
 };
+
+const verifyOtp = async (email: string, otp: string) => {
+  const user = await User.findOne({ email });
+
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found.");
+  }
+
+  if (user.isOtpVerified) {
+    throw new AppError(httpStatus.BAD_REQUEST, "User already verified.");
+  }
+
+  if (!user.otp || user.otp !== otp) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid OTP.");
+  }
+
+  if (user.otpExpireAt && user.otpExpireAt < new Date()) {
+    throw new AppError(httpStatus.BAD_REQUEST, "OTP expired.");
+  }
+
+  // Mark verified
+  user.isOtpVerified = true;
+  user.otp = null;
+  user.otpExpireAt = null;
+  await user.save();
+
+  return {
+    userId: user._id,
+    email: user.email,
+    name: user.name,
+    isOtpVerified: user.isOtpVerified,
+  };
+};
+
 
 // Login
 const loginUser = async (payload: TLoginAuth) => {
@@ -303,4 +369,5 @@ export const AuthServices = {
   resetPassword,
   changePassword,
   changeUserRole,
+  verifyOtp,
 };
