@@ -73,6 +73,18 @@ const resetPassword = catchAsync(async (req, res) => {
   });
 });
 
+const changePassword = catchAsync(async (req, res) => {
+  const userId = req.user.userId;
+  await AuthServices.changePassword(userId, req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Password changed successfully!",
+    data: null,
+  });
+});
+
 
 // Change User Role (For admin)
 const changeUserRole = catchAsync(async (req, res) => {
@@ -92,5 +104,6 @@ export const AuthControllers = {
   refreshToken,
   forgetPassword,
   resetPassword,
+  changePassword,
   changeUserRole,
 };

@@ -218,6 +218,39 @@ const resetPassword = async (
   );
 };
 
+const changePassword = async (
+  userId: string,
+  payload: { currentPassword: string; newPassword: string }
+) => {
+  const user = await User.findById(userId).select("+password");
+
+  // Checking if the user exists
+  if (!user) {
+    throw new AppError(httpStatus.NOT_FOUND, "User not found!");
+  }
+
+  // Check if the current password is correct
+  const isPasswordMatched = await bcrypt.compare(
+    payload.currentPassword,
+    user.password
+  );
+  if (!isPasswordMatched) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Current password is incorrect!"
+    );
+  }
+
+  // Hash the new password
+  const newHashedPassword = await bcrypt.hash(
+    payload.newPassword,
+    Number(config.bcrypt_salt_round)
+  );
+  await User.findByIdAndUpdate(userId, {
+    password: newHashedPassword,
+  });
+};
+
 // Change user role (For admin)
 const changeUserRole = async (payload: { userId: string; role: any }) => {
   const user = await User.findById(payload?.userId);
@@ -243,5 +276,6 @@ export const AuthServices = {
   refreshToken,
   forgetPassword,
   resetPassword,
+  changePassword,
   changeUserRole,
 };

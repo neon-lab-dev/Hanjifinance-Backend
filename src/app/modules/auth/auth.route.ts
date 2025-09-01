@@ -21,15 +21,18 @@ router.post(
   AuthControllers.refreshToken
 );
 
-router.post(
-  "/forgot-password",
-  AuthControllers.forgetPassword
-);
+router.post("/forgot-password", AuthControllers.forgetPassword);
 
 router.post(
   "/reset-password",
   validateRequest(AuthValidations.resetPasswordValidationSchema),
   AuthControllers.resetPassword
+);
+
+router.post(
+  "/change-password",
+  auth(UserRole.admin, UserRole.user),
+  AuthControllers.changePassword
 );
 
 router.put(
