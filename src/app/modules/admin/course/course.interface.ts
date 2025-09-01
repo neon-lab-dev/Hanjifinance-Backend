@@ -9,7 +9,8 @@ export type TCourse = {
   accessValidity: Date;
   category: string;
   duration: string;
-  price: number;
+  basePrice: number;
+  discountedPrice: number;
   createdAt?: Date;
   updatedAt?: Date;
 };

@@ -48,7 +48,11 @@ const CourseSchema = new Schema<TCourse>(
       type: String,
       required: true,
     },
-    price: {
+    basePrice: {
+      type: Number,
+      required: true,
+    },
+    discountedPrice: {
       type: Number,
       required: true,
     },
