@@ -1,8 +1,8 @@
 import express from "express";
-import { multerUpload } from "../../../config/multer.config";
 import auth from "../../../middlewares/auth";
 import { UserRole } from "../../auth/auth.constants";
 import { CourseLectureControllers } from "./courseLecture.controller";
+import { multerVideoUpload } from "../../../config/multer.config";
 
 const router = express.Router();
 
@@ -10,7 +10,7 @@ const router = express.Router();
 router.post(
   "/add",
   auth(UserRole.admin, UserRole.moderator),
-  multerUpload.single("file"),
+  multerVideoUpload.single("file"),
   CourseLectureControllers.addCourseLecture
 );
 
@@ -21,14 +21,14 @@ router.get("/all/:courseId", CourseLectureControllers.getLecturesByCourseId);
 router.put(
   "/update/:lectureId",
   auth(UserRole.admin, UserRole.moderator),
-  multerUpload.single("file"),
+  multerVideoUpload.single("file"),
   CourseLectureControllers.updateLecture
 );
 
 router.delete(
   "/delete/:lectureId",
   auth(UserRole.admin, UserRole.moderator),
-  CourseLectureControllers.deleteCourse
+  CourseLectureControllers.deleteLecture
 );
 
 export const CourseLectureRoutes = router;

@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.CourseControllers = void 0;
+exports.CourseLectureControllers = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const courseLecture_services_1 = require("./courseLecture.services");
 const catchAsync_1 = __importDefault(require("../../../utils/catchAsync"));
@@ -20,7 +20,7 @@ const sendResponse_1 = __importDefault(require("../../../utils/sendResponse"));
 // Add course lecture
 const addCourseLecture = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const file = req.file;
-    const result = yield courseLecture_services_1.CourseServices.addCourse(req.body, file);
+    const result = yield courseLecture_services_1.CourseServices.addCourseLecture(req.body, file);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -28,10 +28,9 @@ const addCourseLecture = (0, catchAsync_1.default)((req, res) => __awaiter(void 
         data: result,
     });
 }));
-// Get all courses
-const getAllCourses = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { keyword, category } = req.query;
-    const result = yield courseLecture_services_1.CourseServices.getAllCourses(keyword, category);
+// Get all lectures
+const getAllCourseLectures = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield courseLecture_services_1.CourseServices.getAllCourseLectures();
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -39,10 +38,10 @@ const getAllCourses = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
-// Get single course by ID
-const getSingleCourseById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { courseId } = req.params;
-    const result = yield courseLecture_services_1.CourseServices.getSingleCourseById(courseId);
+// Get single lecture by ID
+const getSingleLectureById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { lectureId } = req.params;
+    const result = yield courseLecture_services_1.CourseServices.getSingleLectureById(lectureId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -50,33 +49,48 @@ const getSingleCourseById = (0, catchAsync_1.default)((req, res) => __awaiter(vo
         data: result,
     });
 }));
-// Update course
-const updateCourse = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const file = req.file;
+// Get all lectures by Course ID
+const getLecturesByCourseId = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { courseId } = req.params;
-    const result = yield courseLecture_services_1.CourseServices.updateCourse(courseId, req.body, file);
+    const result = yield courseLecture_services_1.CourseServices.getLecturesByCourseId(courseId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Course updated successfully",
+        message: "Lectures fetched successfully",
+        data: {
+            lectures: result,
+            totalLectures: result.length,
+        },
+    });
+}));
+// Update lecture
+const updateLecture = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const file = req.file;
+    const { lectureId } = req.params;
+    const result = yield courseLecture_services_1.CourseServices.updateLecture(lectureId, req.body, file);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Lecture updated successfully",
         data: result,
     });
 }));
 // Delete course
-const deleteCourse = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { courseId } = req.params;
-    const result = yield courseLecture_services_1.CourseServices.deleteCourse(courseId);
+const deleteLecture = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { lectureId } = req.params;
+    const result = yield courseLecture_services_1.CourseServices.deleteLecture(lectureId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Course deleted successfully",
+        message: "Lecture deleted successfully",
         data: result,
     });
 }));
-exports.CourseControllers = {
+exports.CourseLectureControllers = {
     addCourseLecture,
-    getAllCourses,
-    getSingleCourseById,
-    updateCourse,
-    deleteCourse,
+    getAllCourseLectures,
+    getSingleLectureById,
+    getLecturesByCourseId,
+    updateLecture,
+    deleteLecture,
 };

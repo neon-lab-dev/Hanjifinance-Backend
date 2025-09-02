@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
-import Course from "./courseLecture.model";
 import { sendVideoToCloudinary } from "../../../utils/sendVideoToCloudinary ";
 import { TCourseLecture } from "./courseLecture.interface";
 import AppError from "../../../errors/AppError";
@@ -32,10 +31,6 @@ const addCourseLecture = async (
   // Save lecture to DB
   const result = await CourseLecture.create(payloadData);
   return result;
-};
-
-export default {
-  addCourseLecture,
 };
 
 // Get all courses
@@ -102,8 +97,8 @@ const updateLecture = async (
 
 
 // Delete course by ID
-const deleteCourse = async (id: string) => {
-  const result = await Course.findByIdAndDelete(id);
+const deleteLecture = async (id: string) => {
+  const result = await CourseLecture.findByIdAndDelete(id);
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Course not found");
   }
@@ -116,5 +111,5 @@ export const CourseServices = {
   getSingleLectureById,
   getLecturesByCourseId,
   updateLecture,
-  deleteCourse,
+  deleteLecture,
 };

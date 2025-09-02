@@ -74,14 +74,14 @@ const updateLecture = catchAsync(async (req, res) => {
 
 
 // Delete course
-const deleteCourse = catchAsync(async (req, res) => {
+const deleteLecture = catchAsync(async (req, res) => {
   const { lectureId } = req.params;
-  const result = await CourseServices.deleteCourse(lectureId);
+  const result = await CourseServices.deleteLecture(lectureId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Course deleted successfully",
+    message: "Lecture deleted successfully",
     data: result,
   });
 });
@@ -92,5 +92,5 @@ export const CourseLectureControllers = {
   getSingleLectureById,
   getLecturesByCourseId,
   updateLecture,
-  deleteCourse,
+  deleteLecture,
 };

@@ -15,14 +15,20 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.CourseServices = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const http_status_1 = __importDefault(require("http-status"));
-const AppError_1 = __importDefault(require("../../errors/AppError"));
 const course_model_1 = __importDefault(require("./course.model"));
-const sendImageToCloudinary_1 = require("../../utils/sendImageToCloudinary");
+const AppError_1 = __importDefault(require("../../../errors/AppError"));
+const sendImageToCloudinary_1 = require("../../../utils/sendImageToCloudinary");
+const cloudinary_1 = require("cloudinary");
+cloudinary_1.v2.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 // Add course (admin only)
 const addCourse = (payload, file) => __awaiter(void 0, void 0, void 0, function* () {
     let imageUrl = "";
     if (file) {
-        const imageName = `${payload.name}-${Date.now()}`;
+        const imageName = `${payload.title}-${Date.now()}`;
         const path = file.path;
         const { secure_url } = yield (0, sendImageToCloudinary_1.sendImageToCloudinary)(imageName, path);
         imageUrl = secure_url;
@@ -62,7 +68,7 @@ const updateCourse = (id, payload, file) => __awaiter(void 0, void 0, void 0, fu
     }
     let imageUrl;
     if (file) {
-        const imageName = `${(payload === null || payload === void 0 ? void 0 : payload.name) || existing.name}-${Date.now()}`;
+        const imageName = `${(payload === null || payload === void 0 ? void 0 : payload.title) || existing.title}-${Date.now()}`;
         const path = file.path;
         const { secure_url } = yield (0, sendImageToCloudinary_1.sendImageToCloudinary)(imageName, path);
         imageUrl = secure_url;
@@ -76,10 +82,28 @@ const updateCourse = (id, payload, file) => __awaiter(void 0, void 0, void 0, fu
 });
 // Delete course by ID
 const deleteCourse = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield course_model_1.default.findByIdAndDelete(id);
-    if (!result) {
+    const course = yield course_model_1.default.findById(id);
+    if (!course) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Course not found");
     }
+    // Delete course image from cloudinary if exists
+    if (course.imageUrl) {
+        try {
+            // Extract public_id from imageUrl
+            const parts = course.imageUrl.split("/");
+            const filename = parts[parts.length - 1];
+            // Remove extension and decode URL
+            const publicId = decodeURIComponent(filename.split(".")[0]);
+            console.log("Deleting Cloudinary image with publicId:", publicId);
+            yield cloudinary_1.v2.uploader.destroy(publicId);
+            console.log("Cloudinary image deleted successfully");
+        }
+        catch (err) {
+            console.error("Error deleting Cloudinary image:", err);
+        }
+    }
+    // Delete course from DB
+    const result = yield course_model_1.default.findByIdAndDelete(id);
     return result;
 });
 exports.CourseServices = {
