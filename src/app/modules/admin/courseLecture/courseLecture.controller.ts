@@ -17,9 +17,8 @@ const addCourseLecture = catchAsync(async (req, res) => {
 });
 
 // Get all courses
-const getAllCourses = catchAsync(async (req, res) => {
-  const { keyword, category } = req.query;
-  const result = await CourseServices.getAllCourses(keyword, category);
+const getAllCourseLectures = catchAsync(async (req, res) => {
+  const result = await CourseServices.getAllCourseLectures();
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -30,9 +29,9 @@ const getAllCourses = catchAsync(async (req, res) => {
 });
 
 // Get single course by ID
-const getSingleCourseById = catchAsync(async (req, res) => {
-  const { courseId } = req.params;
-  const result = await CourseServices.getSingleCourseById(courseId);
+const getSingleLectureById = catchAsync(async (req, res) => {
+  const { lectureId } = req.params;
+  const result = await CourseServices.getSingleLectureById(lectureId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -42,11 +41,27 @@ const getSingleCourseById = catchAsync(async (req, res) => {
   });
 });
 
+// Get all lectures by Course ID
+const getLecturesByCourseId = catchAsync(async (req, res) => {
+  const { courseId } = req.params;
+  const result = await CourseServices.getLecturesByCourseId(courseId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Lectures fetched successfully",
+    data: {
+      lectures: result,
+      totalLectures: result.length,
+    },
+  });
+});
+
 // Update course
 const updateCourse = catchAsync(async (req, res) => {
   const file = req.file;
-  const { courseId } = req.params;
-  const result = await CourseServices.updateCourse(courseId, req.body, file);
+  const { lectureId } = req.params;
+  const result = await CourseServices.updateCourse(lectureId, req.body, file);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -58,8 +73,8 @@ const updateCourse = catchAsync(async (req, res) => {
 
 // Delete course
 const deleteCourse = catchAsync(async (req, res) => {
-  const { courseId } = req.params;
-  const result = await CourseServices.deleteCourse(courseId);
+  const { lectureId } = req.params;
+  const result = await CourseServices.deleteCourse(lectureId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -69,10 +84,11 @@ const deleteCourse = catchAsync(async (req, res) => {
   });
 });
 
-export const CourseControllers = {
+export const CourseLectureControllers = {
   addCourseLecture,
-  getAllCourses,
-  getSingleCourseById,
+  getAllCourseLectures,
+  getSingleLectureById,
+  getLecturesByCourseId,
   updateCourse,
   deleteCourse,
 };

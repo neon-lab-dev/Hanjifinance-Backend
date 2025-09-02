@@ -40,32 +40,28 @@ export default {
 };
 
 // Get all courses
-const getAllCourses = async (keyword: any, category: any) => {
-  const query: any = {};
-
-  if (keyword) {
-    query.$or = [
-      { name: { $regex: keyword, $options: "i" } },
-      { description: { $regex: keyword, $options: "i" } },
-    ];
-  }
-
-  if (category && category !== "all") {
-    query.category = { $regex: category, $options: "i" };
-  }
-
-  const result = await Course.find(query);
+const getAllCourseLectures = async () => {
+  const result = await CourseLecture.find();
   return result;
 };
 
 // Get single course by ID
-const getSingleCourseById = async (id: string) => {
-  const result = await Course.findById(id);
+const getSingleLectureById = async (id: string) => {
+  const result = await CourseLecture.findById(id);
   if (!result) {
-    throw new AppError(httpStatus.NOT_FOUND, "Course not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Lecture not found");
   }
   return result;
 };
+
+const getLecturesByCourseId = async (courseId: string) => {
+  const result = await CourseLecture.find({ courseId });
+  if (!result || result.length === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, "No lectures found for this course");
+  }
+  return result;
+};
+
 
 // Update course
 const updateCourse = async (
@@ -113,8 +109,9 @@ const deleteCourse = async (id: string) => {
 
 export const CourseServices = {
   addCourseLecture,
-  getAllCourses,
-  getSingleCourseById,
+  getAllCourseLectures,
+  getSingleLectureById,
+  getLecturesByCourseId,
   updateCourse,
   deleteCourse,
 };

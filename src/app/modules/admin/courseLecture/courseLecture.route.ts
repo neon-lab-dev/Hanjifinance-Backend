@@ -1,8 +1,8 @@
 import express from "express";
-import { CourseControllers } from "./courseLecture.controller";
 import { multerUpload } from "../../../config/multer.config";
 import auth from "../../../middlewares/auth";
 import { UserRole } from "../../auth/auth.constants";
+import { CourseLectureControllers } from "./courseLecture.controller";
 
 const router = express.Router();
 
@@ -11,23 +11,24 @@ router.post(
   "/add",
   auth(UserRole.admin, UserRole.moderator),
   multerUpload.single("file"),
-  CourseControllers.addCourseLecture
+  CourseLectureControllers.addCourseLecture
 );
 
-router.get("/", CourseControllers.getAllCourses);
-router.get("/:courseId", CourseControllers.getSingleCourseById);
+router.get("/", CourseLectureControllers.getAllCourseLectures);
+router.get("/:lectureId", CourseLectureControllers.getSingleLectureById);
+router.get("/all/:courseId", CourseLectureControllers.getLecturesByCourseId);
 
 router.put(
-  "/:courseId",
+  "/:lectureId",
   multerUpload.single("file"),
   auth(UserRole.admin, UserRole.moderator),
-  CourseControllers.updateCourse
+  CourseLectureControllers.updateCourse
 );
 
 router.delete(
-  "/:courseId",
+  "/:lectureId",
   auth(UserRole.admin, UserRole.moderator),
-  CourseControllers.deleteCourse
+  CourseLectureControllers.deleteCourse
 );
 
 export const CourseLectureRoutes = router;
