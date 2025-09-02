@@ -46,10 +46,13 @@ const getAllProducts = async (
   keyword?: string,
   category?: string,
   minPrice?: number,
-  maxPrice?: number
+  maxPrice?: number,
+  page = 1,
+  limit = 10
 ) => {
   const query: any = {};
 
+  // Search filter
   if (keyword) {
     query.$or = [
       { name: { $regex: keyword, $options: "i" } },
@@ -57,19 +60,37 @@ const getAllProducts = async (
     ];
   }
 
+  // Category filter
   if (category && category !== "all") {
     query.category = { $regex: category, $options: "i" };
   }
 
+  // Price range filter
   if (minPrice !== undefined || maxPrice !== undefined) {
     query["sizes.discountedPrice"] = {};
     if (minPrice !== undefined) query["sizes.discountedPrice"].$gte = minPrice;
     if (maxPrice !== undefined) query["sizes.discountedPrice"].$lte = maxPrice;
   }
 
-  const result = await Product.find(query);
-  return result;
+  // Pagination
+  const skip = (page - 1) * limit;
+
+  const [products, total] = await Promise.all([
+    Product.find(query).skip(skip).limit(limit),
+    Product.countDocuments(query),
+  ]);
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    },
+    data: products,
+  };
 };
+
 
 // Get single product by ID
 const getSingleProductById = async (id: string) => {

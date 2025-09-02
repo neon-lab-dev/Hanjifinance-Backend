@@ -25,20 +25,32 @@ const addProduct = catchAsync(async (req, res) => {
 
 // Get all products
 const getAllProducts = catchAsync(async (req, res) => {
-  const { keyword, category, minPrice, maxPrice } = req.query;
+  const {
+    keyword,
+    category,
+    minPrice,
+    maxPrice,
+    page = "1",
+    limit = "10",
+  } = req.query;
 
   const result = await ProductServices.getAllProducts(
     keyword as string,
     category as string,
     minPrice ? Number(minPrice) : undefined,
-    maxPrice ? Number(maxPrice) : undefined
+    maxPrice ? Number(maxPrice) : undefined,
+    Number(page),
+    Number(limit)
   );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "All products fetched successfully",
-    data: result,
+    data: {
+      products: result.data,
+      pagination: result.meta,
+    },
   });
 });
 
