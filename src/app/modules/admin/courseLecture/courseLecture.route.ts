@@ -19,14 +19,14 @@ router.get("/:lectureId", CourseLectureControllers.getSingleLectureById);
 router.get("/all/:courseId", CourseLectureControllers.getLecturesByCourseId);
 
 router.put(
-  "/:lectureId",
-  multerUpload.single("file"),
+  "/update/:lectureId",
   auth(UserRole.admin, UserRole.moderator),
-  CourseLectureControllers.updateCourse
+  multerUpload.single("file"),
+  CourseLectureControllers.updateLecture
 );
 
 router.delete(
-  "/:lectureId",
+  "/delete/:lectureId",
   auth(UserRole.admin, UserRole.moderator),
   CourseLectureControllers.deleteCourse
 );

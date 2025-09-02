@@ -4,7 +4,6 @@ import Course from "./courseLecture.model";
 import { sendVideoToCloudinary } from "../../../utils/sendVideoToCloudinary ";
 import { TCourseLecture } from "./courseLecture.interface";
 import AppError from "../../../errors/AppError";
-import { sendImageToCloudinary } from "../../../utils/sendImageToCloudinary";
 import CourseLecture from "./courseLecture.model";
 
 // Service to add a lecture with optional video
@@ -64,39 +63,43 @@ const getLecturesByCourseId = async (courseId: string) => {
 
 
 // Update course
-const updateCourse = async (
+const updateLecture = async (
   id: string,
   payload: Partial<TCourseLecture>,
-  file: any
+  file?: Express.Multer.File
 ) => {
-  const existing = await Course.findById(id);
+  const existing = await CourseLecture.findById(id);
 
   if (!existing) {
-    throw new AppError(httpStatus.NOT_FOUND, "Course not found");
+    throw new AppError(httpStatus.NOT_FOUND, "Lecture not found");
   }
 
-  let imageUrl: string | undefined;
+  let videoUrl: string | undefined;
+  let videoPublicId: string | undefined;
 
   if (file) {
-    const imageName = `${payload?.title || existing.title}-${Date.now()}`;
-    const path = file.path;
-
-    const { secure_url } = await sendImageToCloudinary(imageName, path);
-    imageUrl = secure_url;
+    const { secure_url, public_id } = await sendVideoToCloudinary(
+      file.originalname,
+      file.path
+    );
+    videoUrl = secure_url;
+    videoPublicId = public_id;
   }
 
   const updatePayload: Partial<TCourseLecture> = {
     ...payload,
-    ...(imageUrl && { imageUrl }),
+    ...(videoUrl && { videoUrl }),
+    ...(videoPublicId && { videoPublicId }),
   };
 
-  const result = await Course.findByIdAndUpdate(id, updatePayload, {
+  const result = await CourseLecture.findByIdAndUpdate(id, updatePayload, {
     new: true,
     runValidators: true,
   });
 
   return result;
 };
+
 
 // Delete course by ID
 const deleteCourse = async (id: string) => {
@@ -112,6 +115,6 @@ export const CourseServices = {
   getAllCourseLectures,
   getSingleLectureById,
   getLecturesByCourseId,
-  updateCourse,
+  updateLecture,
   deleteCourse,
 };

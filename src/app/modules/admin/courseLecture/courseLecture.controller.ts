@@ -16,7 +16,7 @@ const addCourseLecture = catchAsync(async (req, res) => {
   });
 });
 
-// Get all courses
+// Get all lectures
 const getAllCourseLectures = catchAsync(async (req, res) => {
   const result = await CourseServices.getAllCourseLectures();
 
@@ -28,7 +28,7 @@ const getAllCourseLectures = catchAsync(async (req, res) => {
   });
 });
 
-// Get single course by ID
+// Get single lecture by ID
 const getSingleLectureById = catchAsync(async (req, res) => {
   const { lectureId } = req.params;
   const result = await CourseServices.getSingleLectureById(lectureId);
@@ -57,19 +57,21 @@ const getLecturesByCourseId = catchAsync(async (req, res) => {
   });
 });
 
-// Update course
-const updateCourse = catchAsync(async (req, res) => {
+// Update lecture
+const updateLecture = catchAsync(async (req, res) => {
   const file = req.file;
   const { lectureId } = req.params;
-  const result = await CourseServices.updateCourse(lectureId, req.body, file);
+
+  const result = await CourseServices.updateLecture(lectureId, req.body, file);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Course updated successfully",
+    message: "Lecture updated successfully",
     data: result,
   });
 });
+
 
 // Delete course
 const deleteCourse = catchAsync(async (req, res) => {
@@ -89,6 +91,6 @@ export const CourseLectureControllers = {
   getAllCourseLectures,
   getSingleLectureById,
   getLecturesByCourseId,
-  updateCourse,
+  updateLecture,
   deleteCourse,
 };
