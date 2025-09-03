@@ -70,7 +70,6 @@ const getSingleOrderById = catchAsync(async (req, res) => {
 // Get all orders for a particular user
 const getOrdersByUserId = catchAsync(async (req, res) => {
   const { userCustomId } = req.params;
-  console.log(userCustomId);
   const result = await OrderService.getOrdersByUserId(userCustomId);
 
   sendResponse(res, {
@@ -81,10 +80,24 @@ const getOrdersByUserId = catchAsync(async (req, res) => {
   });
 });
 
+// Get logged-in user's orders (user)
+const getMyOrders = catchAsync(async (req, res) => {
+  const userId = req.user._id;
+  const result = await OrderService.getMyOrders(userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "My orders fetched successfully",
+    data: result,
+  });
+});
+
 export const OrderControllers = {
   createOrder,
   verifyPayment,
   getAllOrders,
   getSingleOrderById,
   getOrdersByUserId,
+  getMyOrders,
 };

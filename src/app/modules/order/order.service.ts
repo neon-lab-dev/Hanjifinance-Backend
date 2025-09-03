@@ -120,10 +120,20 @@ const getOrdersByUserId = async (userCustomId: string) => {
   return result;
 };
 
+
+// Get my orders (user)
+const getMyOrders = async (userId: string) => {
+  console.log(userId);
+  const result = await Order.find({ userId }).populate("orderedItems.productId");
+  return result;
+};
+
+
 export const OrderService = {
   createOrder,
   verifyPayment,
   getAllOrders,
   getSingleOrderById,
   getOrdersByUserId,
+  getMyOrders,
 };

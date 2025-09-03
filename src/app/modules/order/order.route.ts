@@ -9,6 +9,7 @@ router.post("/create", auth(UserRole.admin, UserRole.moderator, UserRole.user), 
 router.post("/verify", auth(UserRole.admin, UserRole.moderator, UserRole.user), OrderControllers.verifyPayment);
 // For admin/moderator only
 router.get("/", auth(UserRole.admin, UserRole.moderator), OrderControllers.getAllOrders);
+router.get("/my-orders", auth(UserRole.admin, UserRole.moderator, UserRole.user), OrderControllers.getMyOrders);
 router.get("/:orderId", auth(UserRole.admin, UserRole.moderator), OrderControllers.getSingleOrderById);
 router.get("/user/:userCustomId", auth(UserRole.admin, UserRole.moderator), OrderControllers.getOrdersByUserId);
 
