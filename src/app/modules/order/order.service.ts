@@ -101,8 +101,18 @@ const getAllOrders = async (
   };
 };
 
+// Get single order by ID
+const getSingleOrderById = async (orderId: string) => {
+  const result = await Order.findOne({orderId});
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, "Order not found");
+  }
+  return result;
+};
+
 export const OrderService = {
   createOrder,
   verifyPayment,
   getAllOrders,
+  getSingleOrderById,
 };

@@ -16,7 +16,6 @@ const createOrder = catchAsync(async (req, res) => {
 });
 
 // Get all orders (Admin/Moderator)
-// Get all products
 const getAllOrders = catchAsync(async (req, res) => {
   const {
     keyword,
@@ -40,6 +39,19 @@ const getAllOrders = catchAsync(async (req, res) => {
       products: result.data,
       pagination: result.meta,
     },
+  });
+});
+
+// Get single order by ID
+const getSingleOrderById = catchAsync(async (req, res) => {
+  const { orderId } = req.params;
+  const result = await OrderService.getSingleOrderById(orderId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Order fetched successfully",
+    data: result,
   });
 });
 
@@ -67,4 +79,5 @@ export const OrderControllers = {
   createOrder,
   verifyPayment,
   getAllOrders,
+  getSingleOrderById,
 };
