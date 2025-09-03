@@ -9,6 +9,7 @@ export interface TOrderItem {
 export interface TOrder {
   orderId: string;
   userId: ObjectId;
+  userCustomId: string;
   orderedItems: TOrderItem[];
   totalAmount: number;
   status: "pending" | "paid" | "failed";

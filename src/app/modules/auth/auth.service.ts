@@ -142,7 +142,8 @@ const loginUser = async (payload: TLoginAuth) => {
   // Create token and send to client/user
 
   const jwtPayload = {
-    userId: user._id.toString(),
+    _id: user._id.toString(),
+    userId: user.userId,
     name: user.name,
     email: user.email,
     role: user.role,
@@ -166,6 +167,7 @@ const loginUser = async (payload: TLoginAuth) => {
     refreshToken,
     user: {
       _id: user._id,
+      userId: user.userId,
       name: user.name,
       email: user.email,
       role: user.role,
@@ -207,7 +209,8 @@ const refreshToken = async (token: string) => {
   // Have to check if the user is suspended or not
 
   const jwtPayload = {
-    userId: user._id.toString(),
+     _id: user._id.toString(),
+    userId: user.userId,
     name: user.name,
     email: user.email,
     role: user.role,

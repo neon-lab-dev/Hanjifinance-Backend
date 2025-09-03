@@ -30,6 +30,7 @@ export const createOrder = async (payload: TOrder) => {
   const payloadData = {
     orderId,
     userId: payload.userId,
+    userCustomId: payload.userCustomId,
     items: payload.orderedItems,
     totalAmount: payload.totalAmount,
     status: "pending",
@@ -103,9 +104,18 @@ const getAllOrders = async (
 
 // Get single order by ID
 const getSingleOrderById = async (orderId: string) => {
-  const result = await Order.findOne({orderId});
+  const result = await Order.findOne({ orderId });
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Order not found");
+  }
+  return result;
+};
+
+// Get all orders for a particular user
+const getOrdersByUserId = async (userCustomId: string) => {
+  const result = await Order.find({ userCustomId });
+  if (!result || result.length === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, "No orders found for this user");
   }
   return result;
 };
@@ -115,4 +125,5 @@ export const OrderService = {
   verifyPayment,
   getAllOrders,
   getSingleOrderById,
+  getOrdersByUserId,
 };

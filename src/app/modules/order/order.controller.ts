@@ -15,14 +15,26 @@ const createOrder = catchAsync(async (req, res) => {
   });
 });
 
+// Verify payment (Razorpay callback)
+const verifyPayment = catchAsync(async (req, res) => {
+  const { razorpayOrderId } = req.body;
+
+  const result = await OrderService.verifyPayment(razorpayOrderId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Payment verified successfully",
+    data: {
+      order: result,
+      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}?orderId=${result?.orderId}`,
+    },
+  });
+});
+
 // Get all orders (Admin/Moderator)
 const getAllOrders = catchAsync(async (req, res) => {
-  const {
-    keyword,
-    status,
-    page = "1",
-    limit = "10",
-  } = req.query;
+  const { keyword, status, page = "1", limit = "10" } = req.query;
 
   const result = await OrderService.getAllOrders(
     keyword as string,
@@ -55,23 +67,17 @@ const getSingleOrderById = catchAsync(async (req, res) => {
   });
 });
 
-
-// Verify payment (Razorpay callback)
-const verifyPayment = catchAsync(async (req, res) => {
-  const { razorpayOrderId } = req.body;
-
-  const result = await OrderService.verifyPayment(
-    razorpayOrderId,
-  );
+// Get all orders for a particular user
+const getOrdersByUserId = catchAsync(async (req, res) => {
+  const { userCustomId } = req.params;
+  console.log(userCustomId);
+  const result = await OrderService.getOrdersByUserId(userCustomId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Payment verified successfully",
-    data: {
-      order: result,
-      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}?orderId=${result?.orderId}`,
-    },
+    message: "Orders fetched successfully",
+    data: result,
   });
 });
 
@@ -80,4 +86,5 @@ export const OrderControllers = {
   verifyPayment,
   getAllOrders,
   getSingleOrderById,
+  getOrdersByUserId,
 };
