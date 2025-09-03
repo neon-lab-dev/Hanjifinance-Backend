@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 import { TOrder } from "./order.interface";
@@ -62,7 +63,46 @@ export const verifyPayment = async (razorpayOrderId: string) => {
   return order;
 };
 
+// Get all orders
+const getAllOrders = async (
+  keyword?: string,
+  status?: string,
+  page = 1,
+  limit = 10
+) => {
+  const query: any = {};
+
+  // Search filter
+  if (keyword) {
+    query.$or = [{ orderId: { $regex: keyword, $options: "i" } }];
+  }
+
+  // Status filter
+  if (status && status !== "all") {
+    query.status = { $regex: status, $options: "i" };
+  }
+
+  // Pagination
+  const skip = (page - 1) * limit;
+
+  const [orders, total] = await Promise.all([
+    Order.find(query).skip(skip).limit(limit),
+    Order.countDocuments(query),
+  ]);
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    },
+    data: orders,
+  };
+};
+
 export const OrderService = {
   createOrder,
   verifyPayment,
+  getAllOrders,
 };

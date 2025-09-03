@@ -15,6 +15,35 @@ const createOrder = catchAsync(async (req, res) => {
   });
 });
 
+// Get all orders (Admin/Moderator)
+// Get all products
+const getAllOrders = catchAsync(async (req, res) => {
+  const {
+    keyword,
+    status,
+    page = "1",
+    limit = "10",
+  } = req.query;
+
+  const result = await OrderService.getAllOrders(
+    keyword as string,
+    status as string,
+    Number(page),
+    Number(limit)
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All Orders fetched successfully",
+    data: {
+      products: result.data,
+      pagination: result.meta,
+    },
+  });
+});
+
+
 // Verify payment (Razorpay callback)
 const verifyPayment = catchAsync(async (req, res) => {
   const { razorpayOrderId } = req.body;
@@ -37,4 +66,5 @@ const verifyPayment = catchAsync(async (req, res) => {
 export const OrderControllers = {
   createOrder,
   verifyPayment,
+  getAllOrders,
 };
