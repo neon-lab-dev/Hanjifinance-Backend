@@ -40,17 +40,20 @@ const addProduct = (payload, files) => __awaiter(void 0, void 0, void 0, functio
     return result;
 });
 // Get all products
-const getAllProducts = (keyword, category, minPrice, maxPrice) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllProducts = (keyword_1, category_1, minPrice_1, maxPrice_1, ...args_1) => __awaiter(void 0, [keyword_1, category_1, minPrice_1, maxPrice_1, ...args_1], void 0, function* (keyword, category, minPrice, maxPrice, page = 1, limit = 10) {
     const query = {};
+    // Search filter
     if (keyword) {
         query.$or = [
             { name: { $regex: keyword, $options: "i" } },
             { description: { $regex: keyword, $options: "i" } },
         ];
     }
+    // Category filter
     if (category && category !== "all") {
         query.category = { $regex: category, $options: "i" };
     }
+    // Price range filter
     if (minPrice !== undefined || maxPrice !== undefined) {
         query["sizes.discountedPrice"] = {};
         if (minPrice !== undefined)
@@ -58,8 +61,21 @@ const getAllProducts = (keyword, category, minPrice, maxPrice) => __awaiter(void
         if (maxPrice !== undefined)
             query["sizes.discountedPrice"].$lte = maxPrice;
     }
-    const result = yield product_model_1.default.find(query);
-    return result;
+    // Pagination
+    const skip = (page - 1) * limit;
+    const [products, total] = yield Promise.all([
+        product_model_1.default.find(query).skip(skip).limit(limit),
+        product_model_1.default.countDocuments(query),
+    ]);
+    return {
+        meta: {
+            total,
+            page,
+            limit,
+            pages: Math.ceil(total / limit),
+        },
+        data: products,
+    };
 });
 // Get single product by ID
 const getSingleProductById = (id) => __awaiter(void 0, void 0, void 0, function* () {

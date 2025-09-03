@@ -34,13 +34,16 @@ const addProduct = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, voi
 }));
 // Get all products
 const getAllProducts = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { keyword, category, minPrice, maxPrice } = req.query;
-    const result = yield product_services_1.ProductServices.getAllProducts(keyword, category, minPrice ? Number(minPrice) : undefined, maxPrice ? Number(maxPrice) : undefined);
+    const { keyword, category, minPrice, maxPrice, page = "1", limit = "10", } = req.query;
+    const result = yield product_services_1.ProductServices.getAllProducts(keyword, category, minPrice ? Number(minPrice) : undefined, maxPrice ? Number(maxPrice) : undefined, Number(page), Number(limit));
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
         message: "All products fetched successfully",
-        data: result,
+        data: {
+            products: result.data,
+            pagination: result.meta,
+        },
     });
 }));
 // Get single product by ID

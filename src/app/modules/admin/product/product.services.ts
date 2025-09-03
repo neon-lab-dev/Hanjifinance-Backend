@@ -40,7 +40,6 @@ const addProduct = async (
   return result;
 };
 
-
 // Get all products
 const getAllProducts = async (
   keyword?: string,

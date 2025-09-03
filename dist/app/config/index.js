@@ -18,4 +18,7 @@ exports.default = {
     cloudinary_api_key: process.env.CLOUDINARY_API_KEY,
     cloudinary_api_secret: process.env.CLOUDINARY_API_SECRET,
     reset_password_ui_url: process.env.RESET_PASSWORD_UI_URL,
+    razorpay_api_key: process.env.RAZORPAY_API_KEY,
+    razorpay_api_secret: process.env.RAZORPAY_API_SECRET,
+    payment_redirect_url: process.env.PAYMENT_REDIRECT_URL
 };
