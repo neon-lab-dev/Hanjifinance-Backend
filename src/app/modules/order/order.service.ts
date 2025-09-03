@@ -123,8 +123,13 @@ const getOrdersByUserId = async (userCustomId: string) => {
 
 // Get my orders (user)
 const getMyOrders = async (userId: string) => {
-  console.log(userId);
   const result = await Order.find({ userId }).populate("orderedItems.productId");
+  return result;
+};
+
+// Get my orders (user)
+const updateDeliveryStatus = async (payload: { orderId: string, status : string }) => {
+  const result = await Order.findOneAndUpdate({ orderId : payload.orderId }, { status: payload.status }, { new: true });
   return result;
 };
 
@@ -136,4 +141,5 @@ export const OrderService = {
   getSingleOrderById,
   getOrdersByUserId,
   getMyOrders,
+  updateDeliveryStatus,
 };

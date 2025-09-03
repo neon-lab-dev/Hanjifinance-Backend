@@ -13,5 +13,6 @@ export interface TOrder {
   orderedItems: TOrderItem[];
   totalAmount: number;
   status: "pending" | "paid" | "failed";
+  deliveryStatus : "pending" | "delivered" | "cancelled"; 
   razorpayOrderId?: string;
 }

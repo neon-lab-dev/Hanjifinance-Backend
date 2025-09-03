@@ -93,6 +93,18 @@ const getMyOrders = catchAsync(async (req, res) => {
   });
 });
 
+// Update delivery status (Admin/Moderator)
+const updateDeliveryStatus = catchAsync(async (req, res) => {
+  const result = await OrderService.updateDeliveryStatus(req.body);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Status changed successfully",
+    data: result,
+  });
+});
+
 export const OrderControllers = {
   createOrder,
   verifyPayment,
@@ -100,4 +112,5 @@ export const OrderControllers = {
   getSingleOrderById,
   getOrdersByUserId,
   getMyOrders,
+  updateDeliveryStatus,
 };
