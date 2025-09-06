@@ -1,8 +1,9 @@
-import httpStatus from "http-status";
-import AppError from "../../errors/AppError";
+// import httpStatus from "http-status";
+// import AppError from "../../errors/AppError";
 import { razorpay } from "../../utils/razorpay";
+import crypto from "crypto";
 
-const createPaymentOrder = async (amount: number) => {
+const initiatePayment = async (amount: number) => {
   if (!amount || amount <= 0) {
     throw new Error("Invalid payment amount");
   }
@@ -16,17 +17,59 @@ const createPaymentOrder = async (amount: number) => {
 };
 
 // Verify payment
-const verifyPayment = async (razorpayOrderId: string) => {
-  if (!razorpayOrderId) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Invalid Razorpay order id");
+const verifyPayment = async (
+  razorpayOrderId: string,
+  razorpayPaymentId: string,
+  razorpaySignature: string
+) => {
+  if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+    return {
+      success: false,
+      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/failed`,
+    };
+  }
+
+  const generatedSignature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_API_SECRET!)
+    .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+    .digest("hex");
+
+  if (generatedSignature !== razorpaySignature) {
+    return {
+      success: false,
+      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/failed`,
+    };
+  }
+
+
+ const subscription = await BoardRoomBanterSubscription.findOneAndUpdate(
+  { razorpayOrderId },
+  {
+    razorpayPaymentId,
+    razorpaySignature,
+    status: "active",
+    startDate: new Date(),
+    endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+  },
+  { new: true }
+);
+
+
+  if (!subscription) {
+    return {
+      success: false,
+      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/failed`,
+    };
   }
 
   return {
-    redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}?razorpayOrderId=${razorpayOrderId}`,
+    success: true,
+    redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/success?orderIdId=${razorpayOrderId}`,
+    subscription,
   };
 };
 
 export const PaymentService = {
-  createPaymentOrder,
+  initiatePayment,
   verifyPayment,
 };

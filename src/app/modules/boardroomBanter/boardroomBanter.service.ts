@@ -1,22 +1,83 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { BoardRoomBanterSubscription } from "./boardroomBanter.model";
+import { razorpay } from "../../utils/razorpay";
+import crypto from "crypto";
+import config from "../../config";
 
-const createSubscription = async (userId: string, razorpayPaymentId: string) => {
-  const startDate = new Date();
-  const endDate = new Date();
-  endDate.setMonth(endDate.getMonth() + 1); // 1-month subscription
+const createSubscription = async (userId: string) => {
+
+  const planId = config.boardroom_banter_plan_id || ""
+
+  const razorpaySubscription = await razorpay.subscriptions.create({
+    plan_id: planId,
+    customer_notify: 1,
+    total_count: 1,
+    quantity: 1,
+    start_at: Math.floor(Date.now() / 1000),
+  });
 
   const subscription = await BoardRoomBanterSubscription.create({
     userId,
-    startDate,
-    endDate,
-    status: "active",
-    razorpayPaymentId,
+    razorpaySubscriptionId: razorpaySubscription.id,
   });
 
   return subscription;
 };
+
+
+const verifySubscription = async (
+  razorpaySubscriptionId: string,
+  razorpayPaymentId: string,
+  razorpaySignature: string
+) => {
+  if (!razorpaySubscriptionId || !razorpayPaymentId || !razorpaySignature) {
+    return {
+      success: false,
+      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/failed`,
+    };
+  }
+
+  const generatedSignature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_API_SECRET!)
+    .update(`${razorpaySubscriptionId}|${razorpayPaymentId}`)
+    .digest("hex");
+
+  if (generatedSignature !== razorpaySignature) {
+    return {
+      success: false,
+      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/failed`,
+    };
+  }
+
+
+ const subscription = await BoardRoomBanterSubscription.findOneAndUpdate(
+  { razorpaySubscriptionId },
+  {
+    razorpayPaymentId,
+    razorpaySignature,
+    status: "active",
+    startDate: new Date(),
+    endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+  },
+  { new: true }
+);
+
+
+  if (!subscription) {
+    return {
+      success: false,
+      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/failed`,
+    };
+  }
+
+  return {
+    success: true,
+    redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/success?subscriptionId=${razorpaySubscriptionId}`,
+    subscription,
+  };
+};
+
 
 const pauseSubscription = async (userId: string) => {
   const subscription = await BoardRoomBanterSubscription.findOne({ userId, status: "active" });
@@ -58,6 +119,7 @@ const getMySubscription = async (userId: string) => {
 
 export const BoardRoomBanterSubscriptionService = {
   createSubscription,
+  verifySubscription,
   pauseSubscription,
   resumeSubscription,
   getMySubscription,

@@ -7,5 +7,7 @@ export interface TBoardRoomBanterSubscription extends Document {
   status: "active" | "paused" | "expired";
   pauseDate?: Date;
   resumeDate?: Date;
+  razorpaySubscriptionId: string;
   razorpayPaymentId?: string;
+  razorpaySignature?: string;
 }

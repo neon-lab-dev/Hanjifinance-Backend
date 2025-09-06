@@ -6,7 +6,7 @@ import { PaymentService } from "./payment.service";
 const initiatePayment = catchAsync(async (req, res) => {
   const { amount } = req.body;
 
-  const razorpayOrder = await PaymentService.createPaymentOrder(amount);
+  const razorpayOrder = await PaymentService.initiatePayment(amount);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -19,15 +19,23 @@ const initiatePayment = catchAsync(async (req, res) => {
 
 // Verify payment (Razorpay callback)
  const verifyPayment = catchAsync(async (req, res) => {
-  const { razorpayOrderId } = req.body;
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
 
-  const result = await PaymentService.verifyPayment(razorpayOrderId);
+  const result = await PaymentService.verifyPayment(
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "Payment verified successfully",
-    data: result,
+    data: {
+      redirectUrl: result.redirectUrl,
+      result,
+    },
   });
 });
 

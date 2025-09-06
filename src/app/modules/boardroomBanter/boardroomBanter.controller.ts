@@ -4,10 +4,10 @@ import httpStatus from "http-status";
 import { BoardRoomBanterSubscriptionService } from "./boardroomBanter.service";
 
 const createSubscription = catchAsync(async (req, res) => {
-  const { razorpayPaymentId } = req.body;
   const userId = req.user.userId;
 
-  const result = await BoardRoomBanterSubscriptionService.createSubscription(userId, razorpayPaymentId);
+  const result =
+    await BoardRoomBanterSubscriptionService.createSubscription(userId);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -17,9 +17,31 @@ const createSubscription = catchAsync(async (req, res) => {
   });
 });
 
+const verifySubscription = catchAsync(async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
+
+  const result = await BoardRoomBanterSubscriptionService.verifySubscription(
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Payment verified successfully",
+    data: {
+      redirectUrl: result.redirectUrl,
+      subscription: result.subscription,
+    },
+  });
+});
+
 const pauseSubscription = catchAsync(async (req, res) => {
   const userId = req.user.userId;
-  const result = await BoardRoomBanterSubscriptionService.pauseSubscription(userId);
+  const result =
+    await BoardRoomBanterSubscriptionService.pauseSubscription(userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -31,7 +53,8 @@ const pauseSubscription = catchAsync(async (req, res) => {
 
 const resumeSubscription = catchAsync(async (req, res) => {
   const userId = req.user.userId;
-  const result = await BoardRoomBanterSubscriptionService.resumeSubscription(userId);
+  const result =
+    await BoardRoomBanterSubscriptionService.resumeSubscription(userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -43,7 +66,8 @@ const resumeSubscription = catchAsync(async (req, res) => {
 
 const getMySubscription = catchAsync(async (req, res) => {
   const userId = req.user.userId;
-  const result = await BoardRoomBanterSubscriptionService.getMySubscription(userId);
+  const result =
+    await BoardRoomBanterSubscriptionService.getMySubscription(userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -55,6 +79,7 @@ const getMySubscription = catchAsync(async (req, res) => {
 
 export const BoardRoomBanterSubscriptionController = {
   createSubscription,
+  verifySubscription,
   pauseSubscription,
   resumeSubscription,
   getMySubscription,
