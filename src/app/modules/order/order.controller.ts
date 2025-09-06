@@ -15,23 +15,6 @@ const createOrder = catchAsync(async (req, res) => {
   });
 });
 
-// Verify payment (Razorpay callback)
-const verifyPayment = catchAsync(async (req, res) => {
-  const { razorpayOrderId } = req.body;
-
-  const result = await OrderService.verifyPayment(razorpayOrderId);
-
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Payment verified successfully",
-    data: {
-      order: result,
-      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}?orderId=${result?.orderId}`,
-    },
-  });
-});
-
 // Get all orders (Admin/Moderator)
 const getAllOrders = catchAsync(async (req, res) => {
   const { keyword, status, page = "1", limit = "10" } = req.query;
@@ -107,7 +90,6 @@ const updateDeliveryStatus = catchAsync(async (req, res) => {
 
 export const OrderControllers = {
   createOrder,
-  verifyPayment,
   getAllOrders,
   getSingleOrderById,
   getOrdersByUserId,

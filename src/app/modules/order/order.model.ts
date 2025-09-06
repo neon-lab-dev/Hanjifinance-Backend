@@ -20,6 +20,11 @@ const OrderSchema = new Schema<TOrder>(
       enum: ["pending", "paid", "failed"],
       default: "pending",
     },
+    deliveryStatus : {
+      type: String,
+      enum: ["pending", "delivered"],
+      default: "pending",
+    },
     razorpayOrderId: { type: String },
   },
   { timestamps: true }

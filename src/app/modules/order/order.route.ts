@@ -6,7 +6,6 @@ import { UserRole } from "../auth/auth.constants";
 const router = Router();
 
 router.post("/create", auth(UserRole.admin, UserRole.moderator, UserRole.user), OrderControllers.createOrder);
-router.post("/verify", auth(UserRole.admin, UserRole.moderator, UserRole.user), OrderControllers.verifyPayment);
 router.get("/my-orders", auth(UserRole.admin, UserRole.moderator, UserRole.user), OrderControllers.getMyOrders);
 // For admin/moderator only
 router.get("/", auth(UserRole.admin, UserRole.moderator), OrderControllers.getAllOrders);
