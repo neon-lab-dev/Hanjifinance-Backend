@@ -1,11 +1,37 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catchAsync";
 import sendResponse from "../../utils/sendResponse";
-import { OrderService } from "./productOrder.service";
+import { ProductOrderService } from "./productOrder.service";
+
+const checkout = catchAsync(async (req, res) => {
+  const { amount } = req.body;
+  const razorpayOrder = await ProductOrderService.checkout(amount);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Payment initiated successfully",
+    data: razorpayOrder,
+  });
+});
+
+// Verify payment (Razorpay callback)
+const verifyPayment = catchAsync(async (req, res) => {
+  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+    req.body;
+
+  const redirectUrl = await ProductOrderService.verifyPayment(
+    razorpay_order_id,
+    razorpay_payment_id,
+    razorpay_signature
+  );
+
+  return res.redirect(redirectUrl);
+});
 
 // Create order (customer)
 const createProductOrder = catchAsync(async (req, res) => {
-  const result = await OrderService.createProductOrder(req.body);
+  console.log(req.user);
+  const result = await ProductOrderService.createProductOrder(req.user, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -19,7 +45,7 @@ const createProductOrder = catchAsync(async (req, res) => {
 const getAllProductOrders = catchAsync(async (req, res) => {
   const { keyword, status, page = "1", limit = "10" } = req.query;
 
-  const result = await OrderService.getAllProductOrders(
+  const result = await ProductOrderService.getAllProductOrders(
     keyword as string,
     status as string,
     Number(page),
@@ -40,7 +66,7 @@ const getAllProductOrders = catchAsync(async (req, res) => {
 // Get single order by ID
 const getSingleProductOrderById = catchAsync(async (req, res) => {
   const { orderId } = req.params;
-  const result = await OrderService.getSingleProductOrderById(orderId);
+  const result = await ProductOrderService.getSingleProductOrderById(orderId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -53,7 +79,8 @@ const getSingleProductOrderById = catchAsync(async (req, res) => {
 // Get all orders for a particular user
 const getProductOrdersByUserId = catchAsync(async (req, res) => {
   const { userCustomId } = req.params;
-  const result = await OrderService.getProductOrdersByUserId(userCustomId);
+  const result =
+    await ProductOrderService.getProductOrdersByUserId(userCustomId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -66,7 +93,7 @@ const getProductOrdersByUserId = catchAsync(async (req, res) => {
 // Get logged-in user's orders (user)
 const getMyProductOrders = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  const result = await OrderService.getMyProductOrders(userId);
+  const result = await ProductOrderService.getMyProductOrders(userId);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -78,7 +105,7 @@ const getMyProductOrders = catchAsync(async (req, res) => {
 
 // Update delivery status (Admin/Moderator)
 const updateDeliveryStatus = catchAsync(async (req, res) => {
-  const result = await OrderService.updateDeliveryStatus(req.body);
+  const result = await ProductOrderService.updateDeliveryStatus(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -88,7 +115,9 @@ const updateDeliveryStatus = catchAsync(async (req, res) => {
   });
 });
 
-export const OrderControllers = {
+export const ProductOrderControllers = {
+  checkout,
+  verifyPayment,
   createProductOrder,
   getAllProductOrders,
   getSingleProductOrderById,

@@ -4,13 +4,51 @@ import httpStatus from "http-status";
 import { TProductOrder } from "./productOrder.interface";
 import Product from "../admin/product/product.model";
 import { ProductOrder } from "./productOrder.model";
+import { razorpay } from "../../utils/razorpay";
+import crypto from "crypto";
 
 const generateOrderId = () => {
   return "HFP-" + Math.floor(1000 + Math.random() * 9000);
 };
 
+const checkout = async (amount: number) => {
+  if (!amount || amount <= 0) {
+    throw new Error("Invalid payment amount");
+  }
+
+  const razorpayOrder = await razorpay.orders.create({
+    amount: amount * 100, //in paisa
+    currency: "INR",
+  });
+
+  return razorpayOrder;
+};
+
+// Verify payment
+const verifyPayment = async (
+  razorpayOrderId: string,
+  razorpayPaymentId: string,
+  razorpaySignature: string
+): Promise<string> => {
+  if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+    return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
+  }
+
+  const generatedSignature = crypto
+    .createHmac("sha256", process.env.RAZORPAY_API_SECRET!)
+    .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+    .digest("hex");
+
+  if (generatedSignature !== razorpaySignature) {
+    return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
+  }
+
+  // Success
+  return `${process.env.PAYMENT_REDIRECT_URL}/success?orderId=${razorpayOrderId}`;
+};
+
 // Create Razorpay order
-const createProductOrder = async (payload: TProductOrder) => {
+const createProductOrder = async (user: any, payload: TProductOrder) => {
   const productIds = payload.orderedItems.map((i) => i.productId);
   const products = await Product.find({ _id: { $in: productIds } });
 
@@ -21,8 +59,8 @@ const createProductOrder = async (payload: TProductOrder) => {
 
   const payloadData = {
     orderId,
-    userId: payload.userId,
-    userCustomId: payload.userCustomId,
+    userId: user?._id,
+    userCustomId: user?.userId,
     orderedItems: payload.orderedItems,
     totalAmount: payload.totalAmount,
     status: "paid",
@@ -89,21 +127,28 @@ const getProductOrdersByUserId = async (userCustomId: string) => {
   return result;
 };
 
-
 // Get my orders (user)
 const getMyProductOrders = async (userId: string) => {
-  const result = await ProductOrder.find({ userId }).populate("orderedItems.productId");
+  const result = await ProductOrder.find({ userId });
   return result;
 };
 
 // Get my orders (user)
-const updateDeliveryStatus = async (payload: { orderId: string, status : string }) => {
-  const result = await ProductOrder.findOneAndUpdate({ orderId : payload.orderId }, { status: payload.status }, { new: true });
+const updateDeliveryStatus = async (payload: {
+  orderId: string;
+  status: string;
+}) => {
+  const result = await ProductOrder.findOneAndUpdate(
+    { orderId: payload.orderId },
+    { status: payload.status },
+    { new: true }
+  );
   return result;
 };
 
-
-export const OrderService = {
+export const ProductOrderService = {
+  checkout,
+  verifyPayment,
   createProductOrder,
   getAllProductOrders,
   getSingleProductOrderById,
