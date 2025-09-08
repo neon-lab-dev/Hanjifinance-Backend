@@ -4,11 +4,9 @@ import httpStatus from "http-status";
 import { BoardRoomBanterSubscriptionService } from "./boardroomBanter.service";
 
 const createSubscription = catchAsync(async (req, res) => {
-  const userId = req.user._id;
 
   const result =
-    await BoardRoomBanterSubscriptionService.createSubscription(userId);
-    console.log(result);
+    await BoardRoomBanterSubscriptionService.createSubscription(req.user);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -40,9 +38,8 @@ const verifySubscription = catchAsync(async (req, res) => {
 });
 
 const pauseSubscription = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
   const result =
-    await BoardRoomBanterSubscriptionService.pauseSubscription(userId);
+    await BoardRoomBanterSubscriptionService.pauseSubscription(req.user);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -53,9 +50,8 @@ const pauseSubscription = catchAsync(async (req, res) => {
 });
 
 const resumeSubscription = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
   const result =
-    await BoardRoomBanterSubscriptionService.resumeSubscription(userId);
+    await BoardRoomBanterSubscriptionService.resumeSubscription(req.user);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

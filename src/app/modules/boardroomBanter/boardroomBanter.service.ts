@@ -5,11 +5,18 @@ import { BoardRoomBanterSubscription } from "./boardroomBanter.model";
 import { razorpay } from "../../utils/razorpay";
 import crypto from "crypto";
 import config from "../../config";
+import {
+  sendSubscriptionEmails,
+  sendSubscriptionStatusEmails,
+} from "../../emailTemplates/sendPauseSubscriptionEmail";
 
-const createSubscription = async (userId: string) => {
+const createSubscription = async (user: any) => {
   const planId = config.boardroom_banter_plan_id;
   if (!planId) {
-    throw new AppError(httpStatus.BAD_REQUEST, "Razorpay planId not configured");
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Razorpay planId not configured"
+    );
   }
 
   let razorpaySubscription;
@@ -29,14 +36,15 @@ const createSubscription = async (userId: string) => {
   }
 
   const subscription = await BoardRoomBanterSubscription.create({
-    userId,
+    userId: user?._id,
     razorpaySubscriptionId: razorpaySubscription.id,
     status: "pending", // pending until payment verified
   });
 
+  await sendSubscriptionEmails(user, subscription);
+
   return subscription;
 };
-
 
 const verifySubscription = async (
   razorpaySubscriptionId: string,
@@ -62,19 +70,17 @@ const verifySubscription = async (
     };
   }
 
-
- const subscription = await BoardRoomBanterSubscription.findOneAndUpdate(
-  { razorpaySubscriptionId },
-  {
-    razorpayPaymentId,
-    razorpaySignature,
-    status: "active",
-    startDate: new Date(),
-    endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-  },
-  { new: true }
-);
-
+  const subscription = await BoardRoomBanterSubscription.findOneAndUpdate(
+    { razorpaySubscriptionId },
+    {
+      razorpayPaymentId,
+      razorpaySignature,
+      status: "active",
+      startDate: new Date(),
+      endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
+    },
+    { new: true }
+  );
 
   if (!subscription) {
     return {
@@ -90,43 +96,53 @@ const verifySubscription = async (
   };
 };
 
-
-const pauseSubscription = async (userId: string) => {
-  const subscription = await BoardRoomBanterSubscription.findOne({ userId, status: "active" });
+const pauseSubscription = async (user: any) => {
+  const subscription = await BoardRoomBanterSubscription.findOne({
+    userId: user?._id,
+    status: "active",
+  });
 
   if (!subscription) {
-    throw new AppError(httpStatus.NOT_FOUND, "No active subscription found to pause");
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "No active subscription found to pause"
+    );
   }
 
   subscription.status = "paused";
   subscription.pauseDate = new Date();
   await subscription.save();
 
+  await sendSubscriptionStatusEmails(user, subscription, "paused");
+
   return subscription;
 };
 
-const resumeSubscription = async (userId: string) => {
-  const subscription = await BoardRoomBanterSubscription.findOne({ userId, status: "paused" });
+const resumeSubscription = async (user: any) => {
+  const subscription = await BoardRoomBanterSubscription.findOne({
+    userId: user?._id,
+    status: "paused",
+  });
 
   if (!subscription) {
-    throw new AppError(httpStatus.NOT_FOUND, "No paused subscription found to resume");
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "No paused subscription found to resume"
+    );
   }
 
   subscription.status = "active";
   subscription.resumeDate = new Date();
 
-  // Adjust endDate by adding the paused duration
-  if (subscription.pauseDate) {
-    const pausedDuration = subscription.resumeDate.getTime() - subscription.pauseDate.getTime();
-    subscription.endDate = new Date(subscription.endDate.getTime() + pausedDuration);
-  }
-
   await subscription.save();
+  await sendSubscriptionStatusEmails(user, subscription, "active");
   return subscription;
 };
 
 const getMySubscription = async (userId: string) => {
-  return await BoardRoomBanterSubscription.findOne({ userId }).sort({ createdAt: -1 });
+  return await BoardRoomBanterSubscription.findOne({ userId }).sort({
+    createdAt: -1,
+  });
 };
 
 export const BoardRoomBanterSubscriptionService = {

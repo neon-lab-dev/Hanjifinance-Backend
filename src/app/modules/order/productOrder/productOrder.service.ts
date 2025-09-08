@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import AppError from "../../errors/AppError";
+import AppError from "../../../errors/AppError";
 import httpStatus from "http-status";
 import { TProductOrder } from "./productOrder.interface";
-import Product from "../admin/product/product.model";
+import Product from "../../admin/product/product.model";
 import { ProductOrder } from "./productOrder.model";
-import { razorpay } from "../../utils/razorpay";
+import { razorpay } from "../../../utils/razorpay";
 import crypto from "crypto";
 
 const generateOrderId = () => {

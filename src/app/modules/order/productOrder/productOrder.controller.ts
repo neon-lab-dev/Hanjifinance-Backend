@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
-import catchAsync from "../../utils/catchAsync";
-import sendResponse from "../../utils/sendResponse";
+import catchAsync from "../../../utils/catchAsync";
+import sendResponse from "../../../utils/sendResponse";
 import { ProductOrderService } from "./productOrder.service";
 
 const checkout = catchAsync(async (req, res) => {
@@ -30,7 +30,6 @@ const verifyPayment = catchAsync(async (req, res) => {
 
 // Create order (customer)
 const createProductOrder = catchAsync(async (req, res) => {
-  console.log(req.user);
   const result = await ProductOrderService.createProductOrder(req.user, req.body);
 
   sendResponse(res, {

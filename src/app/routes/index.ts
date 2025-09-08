@@ -6,7 +6,7 @@ import { CourseLectureRoutes } from "../modules/admin/courseLecture/courseLectur
 import { ProductRoutes } from "../modules/admin/product/product.route";
 import { BoardRoomBanterSubscriptionRoutes } from "../modules/boardroomBanter/boardroomBanter.route";
 import { PaymentRoutes } from "../modules/payment/payment.route";
-import { ProductOrderRoutes } from "../modules/order/productOrder.route";
+import { ProductOrderRoutes } from "../modules/order/productOrder/productOrder.route";
 
 const router = Router();
 

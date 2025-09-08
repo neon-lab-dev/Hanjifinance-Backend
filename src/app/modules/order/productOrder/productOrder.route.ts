@@ -1,6 +1,6 @@
 import { Router } from "express";
-import auth from "../../middlewares/auth";
-import { UserRole } from "../auth/auth.constants";
+import auth from "../../../middlewares/auth";
+import { UserRole } from "../../auth/auth.constants";
 import { ProductOrderControllers } from "./productOrder.controller";
 
 const router = Router();
