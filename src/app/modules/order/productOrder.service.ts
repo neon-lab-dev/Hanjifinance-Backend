@@ -1,16 +1,16 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
-import { TOrder } from "./order.interface";
-import { Order } from "./order.model";
+import { TProductOrder } from "./productOrder.interface";
 import Product from "../admin/product/product.model";
+import { ProductOrder } from "./productOrder.model";
 
 const generateOrderId = () => {
   return "HFP-" + Math.floor(1000 + Math.random() * 9000);
 };
 
 // Create Razorpay order
-const createOrder = async (payload: TOrder) => {
+const createProductOrder = async (payload: TProductOrder) => {
   const productIds = payload.orderedItems.map((i) => i.productId);
   const products = await Product.find({ _id: { $in: productIds } });
 
@@ -28,13 +28,13 @@ const createOrder = async (payload: TOrder) => {
     status: "paid",
   };
 
-  const order = await Order.create(payloadData);
+  const order = await ProductOrder.create(payloadData);
 
   return order;
 };
 
 // Get all orders
-const getAllOrders = async (
+const getAllProductOrders = async (
   keyword?: string,
   status?: string,
   page = 1,
@@ -56,8 +56,8 @@ const getAllOrders = async (
   const skip = (page - 1) * limit;
 
   const [orders, total] = await Promise.all([
-    Order.find(query).skip(skip).limit(limit),
-    Order.countDocuments(query),
+    ProductOrder.find(query).skip(skip).limit(limit),
+    ProductOrder.countDocuments(query),
   ]);
 
   return {
@@ -72,8 +72,8 @@ const getAllOrders = async (
 };
 
 // Get single order by ID
-const getSingleOrderById = async (orderId: string) => {
-  const result = await Order.findOne({ orderId });
+const getSingleProductOrderById = async (orderId: string) => {
+  const result = await ProductOrder.findOne({ orderId });
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Order not found");
   }
@@ -81,8 +81,8 @@ const getSingleOrderById = async (orderId: string) => {
 };
 
 // Get all orders for a particular user
-const getOrdersByUserId = async (userCustomId: string) => {
-  const result = await Order.find({ userCustomId });
+const getProductOrdersByUserId = async (userCustomId: string) => {
+  const result = await ProductOrder.find({ userCustomId });
   if (!result || result.length === 0) {
     throw new AppError(httpStatus.NOT_FOUND, "No orders found for this user");
   }
@@ -91,23 +91,23 @@ const getOrdersByUserId = async (userCustomId: string) => {
 
 
 // Get my orders (user)
-const getMyOrders = async (userId: string) => {
-  const result = await Order.find({ userId }).populate("orderedItems.productId");
+const getMyProductOrders = async (userId: string) => {
+  const result = await ProductOrder.find({ userId }).populate("orderedItems.productId");
   return result;
 };
 
 // Get my orders (user)
 const updateDeliveryStatus = async (payload: { orderId: string, status : string }) => {
-  const result = await Order.findOneAndUpdate({ orderId : payload.orderId }, { status: payload.status }, { new: true });
+  const result = await ProductOrder.findOneAndUpdate({ orderId : payload.orderId }, { status: payload.status }, { new: true });
   return result;
 };
 
 
 export const OrderService = {
-  createOrder,
-  getAllOrders,
-  getSingleOrderById,
-  getOrdersByUserId,
-  getMyOrders,
+  createProductOrder,
+  getAllProductOrders,
+  getSingleProductOrderById,
+  getProductOrdersByUserId,
+  getMyProductOrders,
   updateDeliveryStatus,
 };

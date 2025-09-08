@@ -4,9 +4,9 @@ import { userRoutes } from "../modules/users/users.route";
 import { CourseRoutes } from "../modules/admin/course/course.route";
 import { CourseLectureRoutes } from "../modules/admin/courseLecture/courseLecture.route";
 import { ProductRoutes } from "../modules/admin/product/product.route";
-import { OrderRoutes } from "../modules/order/order.route";
 import { BoardRoomBanterSubscriptionRoutes } from "../modules/boardroomBanter/boardroomBanter.route";
 import { PaymentRoutes } from "../modules/payment/payment.route";
+import { ProductOrderRoutes } from "../modules/order/productOrder.route";
 
 const router = Router();
 
@@ -32,8 +32,8 @@ const moduleRoutes = [
     route: ProductRoutes,
   },
   {
-    path: "/order",
-    route: OrderRoutes,
+    path: "/product-order",
+    route: ProductOrderRoutes,
   },
   {
     path: "/payment",

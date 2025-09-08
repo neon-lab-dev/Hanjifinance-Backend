@@ -2,6 +2,7 @@
 // import AppError from "../../errors/AppError";
 import { razorpay } from "../../utils/razorpay";
 import crypto from "crypto";
+import { User } from "../auth/auth.model";
 
 const initiatePayment = async (amount: number) => {
   if (!amount || amount <= 0) {
@@ -42,7 +43,7 @@ const verifyPayment = async (
   }
 
 
- const subscription = await BoardRoomBanterSubscription.findOneAndUpdate(
+ const subscription = await User.findOneAndUpdate(
   { razorpayOrderId },
   {
     razorpayPaymentId,

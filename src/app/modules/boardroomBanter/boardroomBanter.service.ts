@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { BoardRoomBanterSubscription } from "./boardroomBanter.model";
@@ -6,20 +7,31 @@ import crypto from "crypto";
 import config from "../../config";
 
 const createSubscription = async (userId: string) => {
+  const planId = config.boardroom_banter_plan_id;
+  if (!planId) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Razorpay planId not configured");
+  }
 
-  const planId = config.boardroom_banter_plan_id || ""
-
-  const razorpaySubscription = await razorpay.subscriptions.create({
-    plan_id: planId,
-    customer_notify: 1,
-    total_count: 1,
-    quantity: 1,
-    start_at: Math.floor(Date.now() / 1000),
-  });
+  let razorpaySubscription;
+  try {
+    razorpaySubscription = await razorpay.subscriptions.create({
+      plan_id: planId,
+      customer_notify: 1,
+      total_count: 1,
+      quantity: 1,
+    });
+  } catch (error: any) {
+    console.error("Razorpay subscription creation failed:", error);
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to create subscription"
+    );
+  }
 
   const subscription = await BoardRoomBanterSubscription.create({
     userId,
     razorpaySubscriptionId: razorpaySubscription.id,
+    status: "pending", // pending until payment verified
   });
 
   return subscription;

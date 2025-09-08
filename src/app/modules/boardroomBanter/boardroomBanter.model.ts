@@ -11,15 +11,13 @@ const boardRoomBanterSubscriptionSchema =
       },
       startDate: {
         type: Date,
-        required: true,
       },
       endDate: {
         type: Date,
-        required: true,
       },
       status: {
         type: String,
-        enum: ["active", "paused", "expired"],
+        enum: ["active", "paused", "expired" , "pending"],
         default: "active",
       },
       pauseDate: {

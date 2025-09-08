@@ -4,10 +4,11 @@ import httpStatus from "http-status";
 import { BoardRoomBanterSubscriptionService } from "./boardroomBanter.service";
 
 const createSubscription = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.user._id;
 
   const result =
     await BoardRoomBanterSubscriptionService.createSubscription(userId);
+    console.log(result);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,

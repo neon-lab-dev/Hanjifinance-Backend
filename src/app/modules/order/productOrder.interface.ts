@@ -1,16 +1,16 @@
 import { ObjectId } from "mongoose";
 
-export interface TOrderItem {
+export interface TProductOrderItem {
   productId: ObjectId;
   quantity: number;
   price: number;
 }
 
-export interface TOrder {
+export interface TProductOrder {
   orderId: string;
   userId: ObjectId;
   userCustomId: string;
-  orderedItems: TOrderItem[];
+  orderedItems: TProductOrderItem[];
   totalAmount: number;
   status: "pending" | "paid" | "failed";
   deliveryStatus : "pending" | "delivered"; 
