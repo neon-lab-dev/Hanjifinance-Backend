@@ -4,9 +4,9 @@ import httpStatus from "http-status";
 import { BoardRoomBanterSubscriptionService } from "./boardroomBanter.service";
 
 const createSubscription = catchAsync(async (req, res) => {
-
-  const result =
-    await BoardRoomBanterSubscriptionService.createSubscription(req.user);
+  const result = await BoardRoomBanterSubscriptionService.createSubscription(
+    req.user
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -38,8 +38,9 @@ const verifySubscription = catchAsync(async (req, res) => {
 });
 
 const pauseSubscription = catchAsync(async (req, res) => {
-  const result =
-    await BoardRoomBanterSubscriptionService.pauseSubscription(req.user);
+  const result = await BoardRoomBanterSubscriptionService.pauseSubscription(
+    req.user
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -50,8 +51,9 @@ const pauseSubscription = catchAsync(async (req, res) => {
 });
 
 const resumeSubscription = catchAsync(async (req, res) => {
-  const result =
-    await BoardRoomBanterSubscriptionService.resumeSubscription(req.user);
+  const result = await BoardRoomBanterSubscriptionService.resumeSubscription(
+    req.user
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -74,10 +76,81 @@ const getMySubscription = catchAsync(async (req, res) => {
   });
 });
 
+const updateWhatsappGroupStatus = catchAsync(async (req, res) => {
+  const { isAddedToWhatsappGroup, userId } = req.body;
+
+  const result =
+    await BoardRoomBanterSubscriptionService.updateWhatsappGroupStatus(
+      userId,
+      isAddedToWhatsappGroup
+    );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "WhatsApp group status updated",
+    data: result,
+  });
+});
+
+const suspendUser = catchAsync(async (req, res) => {
+  const { userId } = req.params;
+  const result = await BoardRoomBanterSubscriptionService.suspendUser(userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User suspended successfully",
+    data: result,
+  });
+});
+
+const withdrawSuspension = catchAsync(async (req, res) => {
+  const { userId } = req.params;
+  const result =
+    await BoardRoomBanterSubscriptionService.withdrawSuspension(userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User suspension withdrawn",
+    data: result,
+  });
+});
+
+const removeUser = catchAsync(async (req, res) => {
+  const { userId } = req.params;
+  const result = await BoardRoomBanterSubscriptionService.removeUser(userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User removed successfully (soft delete)",
+    data: result,
+  });
+});
+
+const reAddUser = catchAsync(async (req, res) => {
+  const { userId } = req.params;
+  const result = await BoardRoomBanterSubscriptionService.reAddUser(userId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "User re-added successfully",
+    data: result,
+  });
+});
+
 export const BoardRoomBanterSubscriptionController = {
   createSubscription,
   verifySubscription,
   pauseSubscription,
   resumeSubscription,
   getMySubscription,
+  updateWhatsappGroupStatus,
+  suspendUser,
+  withdrawSuspension,
+  removeUser,
+  reAddUser,
 };

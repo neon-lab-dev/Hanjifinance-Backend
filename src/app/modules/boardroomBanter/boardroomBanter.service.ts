@@ -145,10 +145,55 @@ const getMySubscription = async (userId: string) => {
   });
 };
 
+const updateWhatsappGroupStatus = async (id: string, status: boolean) => {
+  return await BoardRoomBanterSubscription.findByIdAndUpdate(
+    id,
+    { isAddedToWhatsappGroup: status },
+    { new: true }
+  );
+};
+
+const suspendUser = async (userId: string) => {
+  return await BoardRoomBanterSubscription.findByIdAndUpdate(
+    userId,
+    { isSuspended: true },
+    { new: true }
+  );
+};
+
+const withdrawSuspension = async (userId: string) => {
+  return await BoardRoomBanterSubscription.findByIdAndUpdate(
+    userId,
+    { isSuspended: false },
+    { new: true }
+  );
+};
+
+const removeUser = async (userId: string) => {
+  return await BoardRoomBanterSubscription.findByIdAndUpdate(
+    userId,
+    { isRemoved: true },
+    { new: true }
+  );
+};
+
+const reAddUser = async (userId: string) => {
+  return await BoardRoomBanterSubscription.findByIdAndUpdate(
+    userId,
+    { isRemoved: false },
+    { new: true }
+  );
+};
+
 export const BoardRoomBanterSubscriptionService = {
   createSubscription,
   verifySubscription,
   pauseSubscription,
   resumeSubscription,
   getMySubscription,
+  updateWhatsappGroupStatus,
+  suspendUser,
+  withdrawSuspension,
+  removeUser,
+  reAddUser,
 };

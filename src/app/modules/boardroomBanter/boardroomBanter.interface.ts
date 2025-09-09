@@ -10,4 +10,7 @@ export interface TBoardRoomBanterSubscription extends Document {
   razorpaySubscriptionId: string;
   razorpayPaymentId?: string;
   razorpaySignature?: string;
+  isAddedToWhatsappGroup?: boolean;
+  isSuspended?: boolean;
+  isRemoved?: boolean;
 }

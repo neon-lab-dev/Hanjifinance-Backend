@@ -29,6 +29,9 @@ const boardRoomBanterSubscriptionSchema =
       razorpaySubscriptionId: { type: String, required: true },
       razorpayPaymentId: { type: String },
       razorpaySignature: { type: String },
+      isAddedToWhatsappGroup: { type: Boolean, default: false },
+      isSuspended: { type: Boolean, default: false },
+      isRemoved: { type: Boolean, default: false },
     },
     { timestamps: true }
   );
