@@ -5,8 +5,8 @@ import { CourseRoutes } from "../modules/admin/course/course.route";
 import { CourseLectureRoutes } from "../modules/admin/courseLecture/courseLecture.route";
 import { ProductRoutes } from "../modules/admin/product/product.route";
 import { BoardRoomBanterSubscriptionRoutes } from "../modules/boardroomBanter/boardroomBanter.route";
-import { PaymentRoutes } from "../modules/payment/payment.route";
 import { ProductOrderRoutes } from "../modules/order/productOrder/productOrder.route";
+import { ChatAndChillRoutes } from "../modules/chatAndChill/chatAndChill.route";
 
 const router = Router();
 
@@ -36,12 +36,12 @@ const moduleRoutes = [
     route: ProductOrderRoutes,
   },
   {
-    path: "/payment",
-    route: PaymentRoutes,
-  },
-  {
     path: "/boardroom-banter-subscription",
     route: BoardRoomBanterSubscriptionRoutes,
+  },
+  {
+    path: "/chat-and-chill",
+    route: ChatAndChillRoutes,
   },
 ];
 
