@@ -102,7 +102,7 @@ const getMyBookings = catchAsync(async (req, res) => {
   });
 });
 
-// ✅ Update booking status (pending, booked, scheduled)
+// Update booking status (pending, booked, scheduled)
 const updateBookingStatus = catchAsync(async (req, res) => {
   const result = await ChatAndChillService.updateBookingStatus(req.body);
 
@@ -114,13 +114,12 @@ const updateBookingStatus = catchAsync(async (req, res) => {
   });
 });
 
-// ✅ Schedule a meeting (update scheduledAt + mark as scheduled)
+// Schedule a meeting (update scheduledAt + mark as scheduled)
 const scheduleMeeting = catchAsync(async (req, res) => {
-  const { bookingId, scheduledAt, meetingLink } = req.body;
+  const { bookingId, meetingLink } = req.body;
 
   const result = await ChatAndChillService.scheduleMeeting(
     bookingId,
-    scheduledAt,
     meetingLink
   );
 

@@ -4,6 +4,8 @@ import crypto from "crypto";
 import AppError from "../../errors/AppError";
 import ChatAndChill from "./chatAndChill.model";
 import { razorpay } from "../../utils/razorpay";
+import Availability from "../admin/availability/availability.model";
+import { sendEmail } from "../../utils/sendEmail";
 
 // Checkout
 const checkout = async (amount: number) => {
@@ -47,12 +49,29 @@ const verifyPayment = async (
 
 // Book Chat & Chill
 const bookChatAndChill = async (user: any, payload: any) => {
+  const slot = await Availability.findOne({ date: payload.bookingDate });
+
+  if (slot?.isBooked) {
+    throw new AppError(httpStatus.BAD_REQUEST, "Slot not available");
+  }
+
   const booking = await ChatAndChill.create({
     title: payload.title || "Chat & Chill",
     user: user._id,
     userCustomId: user.userId,
-    status: "booked"
+    name: payload.name,
+    email: payload.email,
+    phoneNumber: payload.phoneNumber,
+    topicsToDiscuss: payload.topicsToDiscuss || "",
+    bookingDate: payload.bookingDate,
+    status: "booked",
   });
+
+  await Availability.findOneAndUpdate(
+    { date: payload.bookingDate },
+    { isBooked: true },
+    { new: true }
+  );
 
   return booking;
 };
@@ -135,16 +154,61 @@ const updateBookingStatus = async (payload: {
 };
 
 // Schedule a meeting
-const scheduleMeeting = async (bookingId: string, scheduledAt: Date, meetingLink:string) => {
+const scheduleMeeting = async (bookingId: string, meetingLink: string) => {
   const booking = await ChatAndChill.findByIdAndUpdate(
     bookingId,
-    { scheduledAt, status: "scheduled", meetingLink },
+    { status: "scheduled", meetingLink },
     { new: true }
-  );
+  ).populate<{ user: { name: string; email: string } }>("user");
 
   if (!booking) {
     throw new AppError(httpStatus.NOT_FOUND, "Booking not found");
   }
+
+  // Format meeting date
+  const meetingDate = booking.bookingDate
+    ? new Date(booking.bookingDate).toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      })
+    : "Not provided";
+
+  const meetingSlot = "07:00 PM - 07:30 PM";
+
+  const subject = "Your Meeting is Scheduled - Hanjifinance";
+
+  const htmlBody = `
+  <div style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; padding:30px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+      <h2 style="color:#c0392b; text-align:center;">Hanjifinance</h2>
+      <p style="font-size:16px; color:#333;">Hello <strong>${booking.user.name}</strong>,</p>
+      <p style="font-size:15px; color:#555;">
+        Your meeting has been successfully scheduled. Please find the details below:
+      </p>
+      <p style="font-size:15px; color:#555;">
+        <strong>Topic:</strong> ${booking.title || "Chat & Chill"} <br/>
+        <strong>Date:</strong> ${meetingDate} <br/>
+        <strong>Slot:</strong> ${meetingSlot} <br/>
+        <strong>Status:</strong> Scheduled
+      </p>
+      <div style="text-align:center; margin:30px 0;">
+        <a href="${meetingLink}" target="_blank" style="background:#c0392b; color:#fff; text-decoration:none; padding:12px 24px; border-radius:6px; font-size:16px; font-weight:bold;">
+          Join Meeting
+        </a>
+      </div>
+      <p style="font-size:14px; color:#777;">
+        Please make sure to join on time. If you face any issues, kindly contact our support.
+      </p>
+      <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
+      <p style="font-size:16px; font-weight:bold; color:#c0392b;">The Hanjifinance Team</p>
+    </div>
+  </div>
+  `;
+
+  // Send email
+  await sendEmail(booking.user.email, subject, htmlBody);
 
   return booking;
 };
