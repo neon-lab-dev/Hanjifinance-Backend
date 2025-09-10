@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import { AuthServices } from "./auth.service";
 import sendResponse from "../../utils/sendResponse";
@@ -12,7 +13,7 @@ const signup = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Registration successful.",
+    message: "We've send OTP to your email. Please verify.",
     data: result,
   });
 });
@@ -75,8 +76,8 @@ const forgetPassword = catchAsync(async (req, res) => {
 });
 
 const resetPassword = catchAsync(async (req, res) => {
-  const token = req.headers.authorization;
-  const result = await AuthServices.resetPassword(req.body, token as string);
+  const token = req.params;
+  const result = await AuthServices.resetPassword(req.body, token as any);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

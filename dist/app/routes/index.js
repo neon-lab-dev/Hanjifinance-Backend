@@ -9,6 +9,7 @@ const product_route_1 = require("../modules/admin/product/product.route");
 const boardroomBanter_route_1 = require("../modules/boardroomBanter/boardroomBanter.route");
 const productOrder_route_1 = require("../modules/order/productOrder/productOrder.route");
 const chatAndChill_route_1 = require("../modules/chatAndChill/chatAndChill.route");
+const availability_route_1 = require("../modules/admin/availability/availability.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -38,6 +39,10 @@ const moduleRoutes = [
     {
         path: "/boardroom-banter-subscription",
         route: boardroomBanter_route_1.BoardRoomBanterSubscriptionRoutes,
+    },
+    {
+        path: "/availability",
+        route: availability_route_1.AvailabilityRoutes,
     },
     {
         path: "/chat-and-chill",

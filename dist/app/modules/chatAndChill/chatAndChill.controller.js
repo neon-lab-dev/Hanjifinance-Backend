@@ -91,7 +91,7 @@ const getMyBookings = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         data: result,
     });
 }));
-// ✅ Update booking status (pending, booked, scheduled)
+// Update booking status (pending, booked, scheduled)
 const updateBookingStatus = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield chatAndChill_service_1.ChatAndChillService.updateBookingStatus(req.body);
     (0, sendResponse_1.default)(res, {
@@ -101,10 +101,10 @@ const updateBookingStatus = (0, catchAsync_1.default)((req, res) => __awaiter(vo
         data: result,
     });
 }));
-// ✅ Schedule a meeting (update scheduledAt + mark as scheduled)
+// Schedule a meeting (update scheduledAt + mark as scheduled)
 const scheduleMeeting = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { bookingId, scheduledAt, meetingLink } = req.body;
-    const result = yield chatAndChill_service_1.ChatAndChillService.scheduleMeeting(bookingId, scheduledAt, meetingLink);
+    const { bookingId, meetingLink } = req.body;
+    const result = yield chatAndChill_service_1.ChatAndChillService.scheduleMeeting(bookingId, meetingLink);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

@@ -12,13 +12,33 @@ const ChatAndChillSchema = new mongoose_1.Schema({
         trim: true,
         required: true,
     },
+    name: {
+        type: String,
+        required: true,
+    },
+    email: {
+        type: String,
+        required: true,
+    },
+    phoneNumber: {
+        type: String,
+        required: true,
+    },
+    topicsToDiscuss: {
+        type: String,
+        required: false,
+    },
+    bookingDate: {
+        type: Date,
+        required: true
+    },
     title: {
         type: String,
         required: false,
     },
     amount: {
         type: Number,
-        required: true,
+        required: false,
     },
     razorpayOrderId: {
         type: String,
@@ -34,10 +54,6 @@ const ChatAndChillSchema = new mongoose_1.Schema({
         type: String,
         enum: ["pending", "booked", "scheduled", "cancelled", "completed"],
         default: "pending",
-    },
-    scheduledAt: {
-        type: Date,
-        default: null,
     },
     meetingLink: {
         type: String,

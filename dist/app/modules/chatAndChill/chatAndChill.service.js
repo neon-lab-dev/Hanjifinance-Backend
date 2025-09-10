@@ -19,6 +19,8 @@ const crypto_1 = __importDefault(require("crypto"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const chatAndChill_model_1 = __importDefault(require("./chatAndChill.model"));
 const razorpay_1 = require("../../utils/razorpay");
+const availability_model_1 = __importDefault(require("../admin/availability/availability.model"));
+const sendEmail_1 = require("../../utils/sendEmail");
 // Checkout
 const checkout = (amount) => __awaiter(void 0, void 0, void 0, function* () {
     const options = {
@@ -46,12 +48,55 @@ const verifyPayment = (razorpayOrderId, razorpayPaymentId, razorpaySignature) =>
 });
 // Book Chat & Chill
 const bookChatAndChill = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const slot = yield availability_model_1.default.findOne({ date: payload.bookingDate });
+    if (slot === null || slot === void 0 ? void 0 : slot.isBooked) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Slot not available");
+    }
     const booking = yield chatAndChill_model_1.default.create({
         title: payload.title || "Chat & Chill",
         user: user._id,
         userCustomId: user.userId,
-        status: "booked"
+        name: payload.name,
+        email: payload.email,
+        phoneNumber: payload.phoneNumber,
+        topicsToDiscuss: payload.topicsToDiscuss || "",
+        bookingDate: payload.bookingDate,
+        status: "booked",
     });
+    yield availability_model_1.default.findOneAndUpdate({ date: payload.bookingDate }, { isBooked: true }, { new: true });
+    // Format date nicely
+    const meetingDate = new Date(payload.bookingDate).toLocaleDateString("en-US", {
+        weekday: "long",
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+    });
+    const meetingSlot = "07:00 PM - 07:30 PM";
+    // Confirmation email
+    const subject = "Your Chat & Chill Booking is Confirmed - Hanjifinance";
+    const htmlBody = `
+  <div style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; padding:30px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+      <h2 style="color:#c0392b; text-align:center;">Hanjifinance</h2>
+      <p style="font-size:16px; color:#333;">Hello <strong>${payload.name}</strong>,</p>
+      <p style="font-size:15px; color:#555;">
+        Thank you for booking a <strong>Chat & Chill</strong> session with us. Your booking is confirmed and our admin will share the meeting link with you soon.
+      </p>
+      <p style="font-size:15px; color:#555;">
+        <strong>Topic:</strong> ${payload.title || "Chat & Chill"} <br/>
+        <strong>Date:</strong> ${meetingDate} <br/>
+        <strong>Slot:</strong> ${meetingSlot} <br/>
+        <strong>Status:</strong> Booked
+      </p>
+      <p style="font-size:15px; color:#555; margin-top:20px;">
+        Note: You will receive the meeting link on your <strong>email</strong> as well as in your <strong>dashboard</strong>.
+      </p>
+      <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
+      <p style="font-size:16px; font-weight:bold; color:#c0392b;">The Hanjifinance Team</p>
+    </div>
+  </div>
+  `;
+    yield (0, sendEmail_1.sendEmail)(payload.email, subject, htmlBody);
     return booking;
 });
 // Get all bookings (with pagination, filter by keyword + status)
@@ -107,11 +152,51 @@ const updateBookingStatus = (payload) => __awaiter(void 0, void 0, void 0, funct
     return booking;
 });
 // Schedule a meeting
-const scheduleMeeting = (bookingId, scheduledAt, meetingLink) => __awaiter(void 0, void 0, void 0, function* () {
-    const booking = yield chatAndChill_model_1.default.findByIdAndUpdate(bookingId, { scheduledAt, status: "scheduled", meetingLink }, { new: true });
+const scheduleMeeting = (bookingId, meetingLink) => __awaiter(void 0, void 0, void 0, function* () {
+    const booking = yield chatAndChill_model_1.default.findByIdAndUpdate(bookingId, { status: "scheduled", meetingLink }, { new: true }).populate("user");
     if (!booking) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Booking not found");
     }
+    // Format meeting date
+    const meetingDate = booking.bookingDate
+        ? new Date(booking.bookingDate).toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        })
+        : "Not provided";
+    const meetingSlot = "07:00 PM - 07:30 PM";
+    const subject = "Your Meeting is Scheduled - Hanjifinance";
+    const htmlBody = `
+  <div style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; padding:30px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+      <h2 style="color:#c0392b; text-align:center;">Hanjifinance</h2>
+      <p style="font-size:16px; color:#333;">Hello <strong>${booking.user.name}</strong>,</p>
+      <p style="font-size:15px; color:#555;">
+        Your meeting has been successfully scheduled. Please find the details below:
+      </p>
+      <p style="font-size:15px; color:#555;">
+        <strong>Topic:</strong> ${booking.title || "Chat & Chill"} <br/>
+        <strong>Date:</strong> ${meetingDate} <br/>
+        <strong>Slot:</strong> ${meetingSlot} <br/>
+        <strong>Status:</strong> Scheduled
+      </p>
+      <div style="text-align:center; margin:30px 0;">
+        <a href="${meetingLink}" target="_blank" style="background:#c0392b; color:#fff; text-decoration:none; padding:12px 24px; border-radius:6px; font-size:16px; font-weight:bold;">
+          Join Meeting
+        </a>
+      </div>
+      <p style="font-size:14px; color:#777;">
+        Please make sure to join on time. If you face any issues, kindly contact our support.
+      </p>
+      <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
+      <p style="font-size:16px; font-weight:bold; color:#c0392b;">The Hanjifinance Team</p>
+    </div>
+  </div>
+  `;
+    // Send email
+    yield (0, sendEmail_1.sendEmail)(booking.user.email, subject, htmlBody);
     return booking;
 });
 exports.ChatAndChillService = {
