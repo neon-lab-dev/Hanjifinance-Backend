@@ -8,7 +8,6 @@ export type TCourse = {
   accessType : "lifetime" | "limited";
   accessValidity: Date;
   category: string;
-  duration: string;
   basePrice: number;
   discountedPrice: number;
   createdAt?: Date;
