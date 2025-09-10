@@ -119,7 +119,8 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     }
     // Create token and send to client/user
     const jwtPayload = {
-        userId: user._id.toString(),
+        _id: user._id.toString(),
+        userId: user.userId,
         name: user.name,
         email: user.email,
         role: user.role,
@@ -132,6 +133,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         refreshToken,
         user: {
             _id: user._id,
+            userId: user.userId,
             name: user.name,
             email: user.email,
             role: user.role,
@@ -159,7 +161,8 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
     }
     // Have to check if the user is suspended or not
     const jwtPayload = {
-        userId: user._id.toString(),
+        _id: user._id.toString(),
+        userId: user.userId,
         name: user.name,
         email: user.email,
         role: user.role,

@@ -6,7 +6,9 @@ const users_route_1 = require("../modules/users/users.route");
 const course_route_1 = require("../modules/admin/course/course.route");
 const courseLecture_route_1 = require("../modules/admin/courseLecture/courseLecture.route");
 const product_route_1 = require("../modules/admin/product/product.route");
-const order_route_1 = require("../modules/order/order.route");
+const boardroomBanter_route_1 = require("../modules/boardroomBanter/boardroomBanter.route");
+const productOrder_route_1 = require("../modules/order/productOrder/productOrder.route");
+const chatAndChill_route_1 = require("../modules/chatAndChill/chatAndChill.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -30,8 +32,16 @@ const moduleRoutes = [
         route: product_route_1.ProductRoutes,
     },
     {
-        path: "/order",
-        route: order_route_1.OrderRoutes,
+        path: "/product-order",
+        route: productOrder_route_1.ProductOrderRoutes,
+    },
+    {
+        path: "/boardroom-banter-subscription",
+        route: boardroomBanter_route_1.BoardRoomBanterSubscriptionRoutes,
+    },
+    {
+        path: "/chat-and-chill",
+        route: chatAndChill_route_1.ChatAndChillRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

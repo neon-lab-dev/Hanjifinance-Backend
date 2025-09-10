@@ -1,0 +1,21 @@
+"use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.BoardRoomBanterSubscriptionRoutes = void 0;
+const express_1 = __importDefault(require("express"));
+const auth_1 = __importDefault(require("../../middlewares/auth"));
+const auth_constants_1 = require("../auth/auth.constants");
+const boardroomBanter_controller_1 = require("./boardroomBanter.controller");
+const router = express_1.default.Router();
+router.post("/create", (0, auth_1.default)(auth_constants_1.UserRole.user, auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.createSubscription);
+router.post("/pause", (0, auth_1.default)(auth_constants_1.UserRole.user, auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.pauseSubscription);
+router.post("/resume", (0, auth_1.default)(auth_constants_1.UserRole.user, auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.resumeSubscription);
+router.get("/my-subscription", (0, auth_1.default)(auth_constants_1.UserRole.user, auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.getMySubscription);
+router.put("/update-whatsapp-status", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.updateWhatsappGroupStatus);
+router.put("/suspend/:userId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.suspendUser);
+router.put("/withdraw-suspension/:userId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.withdrawSuspension);
+router.put("/remove/:userId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.removeUser);
+router.put("/re-add/:userId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.reAddUser);
+exports.BoardRoomBanterSubscriptionRoutes = router;

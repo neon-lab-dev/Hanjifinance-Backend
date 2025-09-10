@@ -28,12 +28,12 @@ const auth = (...requiredRoles) => {
         jsonwebtoken_1.default.verify(token, config_1.default.jwt_access_secret, function (err, decoded) {
             // err
             if (err) {
-                throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You have no access to this route');
+                throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You have no access to this route.');
             }
             ;
             const role = decoded.role;
             if (requiredRoles && !requiredRoles.includes(role)) {
-                throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You have no access to this route');
+                throw new AppError_1.default(http_status_1.default.UNAUTHORIZED, 'You have no access to this route.');
             }
             // decoded undefined
             req.user = decoded;
