@@ -7,6 +7,7 @@ import { ProductRoutes } from "../modules/admin/product/product.route";
 import { BoardRoomBanterSubscriptionRoutes } from "../modules/boardroomBanter/boardroomBanter.route";
 import { ProductOrderRoutes } from "../modules/order/productOrder/productOrder.route";
 import { ChatAndChillRoutes } from "../modules/chatAndChill/chatAndChill.route";
+import { AvailabilityRoutes } from "../modules/admin/availability/availability.route";
 
 const router = Router();
 
@@ -38,6 +39,10 @@ const moduleRoutes = [
   {
     path: "/boardroom-banter-subscription",
     route: BoardRoomBanterSubscriptionRoutes,
+  },
+  {
+    path: "/availability",
+    route: AvailabilityRoutes,
   },
   {
     path: "/chat-and-chill",
