@@ -25,7 +25,7 @@ router.post(
 router.post("/forgot-password", AuthControllers.forgetPassword);
 
 router.post(
-  "/reset-password",
+  "/reset-password/:token",
   validateRequest(AuthValidations.resetPasswordValidationSchema),
   AuthControllers.resetPassword
 );
