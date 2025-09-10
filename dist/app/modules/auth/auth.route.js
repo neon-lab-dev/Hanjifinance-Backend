@@ -18,7 +18,7 @@ router.post("/verify-otp", auth_controller_1.AuthControllers.verifyOtp);
 router.post("/login", (0, validateRequest_1.default)(auth_validation_1.AuthValidations.LoginValidationSchema), auth_controller_1.AuthControllers.loginUser);
 router.post("/refresh-token", (0, validateRequest_1.default)(auth_validation_1.AuthValidations.refreshTokenValidationSchema), auth_controller_1.AuthControllers.refreshToken);
 router.post("/forgot-password", auth_controller_1.AuthControllers.forgetPassword);
-router.post("/reset-password", (0, validateRequest_1.default)(auth_validation_1.AuthValidations.resetPasswordValidationSchema), auth_controller_1.AuthControllers.resetPassword);
+router.post("/reset-password/:token", (0, validateRequest_1.default)(auth_validation_1.AuthValidations.resetPasswordValidationSchema), auth_controller_1.AuthControllers.resetPassword);
 router.post("/change-password", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.user), auth_controller_1.AuthControllers.changePassword);
 router.put("/change-role", (0, auth_1.default)(auth_constants_1.UserRole.admin), auth_controller_1.AuthControllers.changeUserRole);
 exports.AuthRoute = router;

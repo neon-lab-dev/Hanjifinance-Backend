@@ -72,12 +72,12 @@ const forgetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0,
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
-        message: "Please check your email.",
+        message: "Reset password link sent to your email.",
         data: result,
     });
 }));
 const resetPassword = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const token = req.params;
+    const { token } = req.params;
     const result = yield auth_service_1.AuthServices.resetPassword(req.body, token);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
