@@ -73,6 +73,47 @@ const bookChatAndChill = async (user: any, payload: any) => {
     { new: true }
   );
 
+  // Format date nicely
+  const meetingDate = new Date(payload.bookingDate).toLocaleDateString(
+    "en-US",
+    {
+      weekday: "long",
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  );
+
+  const meetingSlot = "07:00 PM - 07:30 PM";
+
+  // Confirmation email
+  const subject = "Your Chat & Chill Booking is Confirmed - Hanjifinance";
+
+  const htmlBody = `
+  <div style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; padding:30px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+      <h2 style="color:#c0392b; text-align:center;">Hanjifinance</h2>
+      <p style="font-size:16px; color:#333;">Hello <strong>${payload.name}</strong>,</p>
+      <p style="font-size:15px; color:#555;">
+        Thank you for booking a <strong>Chat & Chill</strong> session with us. Your booking is confirmed and our admin will share the meeting link with you soon.
+      </p>
+      <p style="font-size:15px; color:#555;">
+        <strong>Topic:</strong> ${payload.title || "Chat & Chill"} <br/>
+        <strong>Date:</strong> ${meetingDate} <br/>
+        <strong>Slot:</strong> ${meetingSlot} <br/>
+        <strong>Status:</strong> Booked
+      </p>
+      <p style="font-size:15px; color:#555; margin-top:20px;">
+        Note: You will receive the meeting link on your <strong>email</strong> as well as in your <strong>dashboard</strong>.
+      </p>
+      <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
+      <p style="font-size:16px; font-weight:bold; color:#c0392b;">The Hanjifinance Team</p>
+    </div>
+  </div>
+  `;
+
+  await sendEmail(payload.email, subject, htmlBody);
+
   return booking;
 };
 
