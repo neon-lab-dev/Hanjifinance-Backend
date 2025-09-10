@@ -8,6 +8,7 @@ import { BoardRoomBanterSubscriptionRoutes } from "../modules/boardroomBanter/bo
 import { ProductOrderRoutes } from "../modules/order/productOrder/productOrder.route";
 import { ChatAndChillRoutes } from "../modules/chatAndChill/chatAndChill.route";
 import { AvailabilityRoutes } from "../modules/admin/availability/availability.route";
+import { CourseOrderRoutes } from "../modules/order/courseOrder/courseOrder.route";
 
 const router = Router();
 
@@ -35,6 +36,10 @@ const moduleRoutes = [
   {
     path: "/product-order",
     route: ProductOrderRoutes,
+  },
+  {
+    path: "/course-order",
+    route: CourseOrderRoutes,
   },
   {
     path: "/boardroom-banter-subscription",
