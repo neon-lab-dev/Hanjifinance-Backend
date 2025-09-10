@@ -10,6 +10,7 @@ const boardroomBanter_route_1 = require("../modules/boardroomBanter/boardroomBan
 const productOrder_route_1 = require("../modules/order/productOrder/productOrder.route");
 const chatAndChill_route_1 = require("../modules/chatAndChill/chatAndChill.route");
 const availability_route_1 = require("../modules/admin/availability/availability.route");
+const courseOrder_route_1 = require("../modules/order/courseOrder/courseOrder.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -35,6 +36,10 @@ const moduleRoutes = [
     {
         path: "/product-order",
         route: productOrder_route_1.ProductOrderRoutes,
+    },
+    {
+        path: "/course-order",
+        route: courseOrder_route_1.CourseOrderRoutes,
     },
     {
         path: "/boardroom-banter-subscription",
