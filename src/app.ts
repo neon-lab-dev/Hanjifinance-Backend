@@ -14,6 +14,9 @@ app.use(cookieParser());
 // Middleware for parsing JSON bodies
 app.use(express.json());
 
+app.use(express.urlencoded({ extended: true }));
+
+
 // app.use(express.static("./uploads"));
 // Middleware for handling CORS with credentials
 app.use(cors({ origin: ['https://hanjifinance-web.vercel.app', 'http://localhost:5173',], credentials: true }));

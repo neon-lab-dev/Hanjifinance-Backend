@@ -12,7 +12,7 @@ const getAllUser = async () => {
 
 
 const getMe = async (userId: string) => {
-  const result = await User.findById(userId);
+  const result = await User.findOne({userId});
   return result;
 };
 
