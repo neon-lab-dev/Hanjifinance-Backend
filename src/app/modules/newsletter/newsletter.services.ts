@@ -11,7 +11,7 @@ const subscribeNewsletter = async (payload: TNewsletter) => {
 };
 
 // Get all Newsletters
-const getAllNewsletters = async (keyword: string) => {
+const getAllNewsletters = async (keyword?: string, page = 1, limit = 10) => {
   const query: any = {};
 
   if (keyword) {
@@ -21,8 +21,22 @@ const getAllNewsletters = async (keyword: string) => {
     ];
   }
 
-  const result = await Newsletter.find(query);
-  return result;
+  const skip = (page - 1) * limit;
+
+  const [data, total] = await Promise.all([
+    Newsletter.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+    Newsletter.countDocuments(query),
+  ]);
+
+  return {
+    data,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
 };
 
 // Get single Newsletter by ID

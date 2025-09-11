@@ -23,7 +23,7 @@ const subscribeNewsletter = (payload) => __awaiter(void 0, void 0, void 0, funct
     return result;
 });
 // Get all Newsletters
-const getAllNewsletters = (keyword) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllNewsletters = (keyword_1, ...args_1) => __awaiter(void 0, [keyword_1, ...args_1], void 0, function* (keyword, page = 1, limit = 10) {
     const query = {};
     if (keyword) {
         query.$or = [
@@ -31,8 +31,20 @@ const getAllNewsletters = (keyword) => __awaiter(void 0, void 0, void 0, functio
             { email: { $regex: keyword, $options: "i" } },
         ];
     }
-    const result = yield newsletter_model_1.default.find(query);
-    return result;
+    const skip = (page - 1) * limit;
+    const [data, total] = yield Promise.all([
+        newsletter_model_1.default.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+        newsletter_model_1.default.countDocuments(query),
+    ]);
+    return {
+        data,
+        meta: {
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        },
+    };
 });
 // Get single Newsletter by ID
 const getSingleNewsletterById = (id) => __awaiter(void 0, void 0, void 0, function* () {
