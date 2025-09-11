@@ -16,7 +16,10 @@ const subscribeNewsletter = catchAsync(async (req, res) => {
 
 // Get all Newsletters
 const getAllNewsletters = catchAsync(async (req, res) => {
-  const result = await NewsletterServices.getAllNewsletters();
+  const { keyword } = req.query;
+
+  const result = await NewsletterServices.getAllNewsletters(keyword as string);
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -24,6 +27,7 @@ const getAllNewsletters = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
 
 // Get single Newsletter
 const getSingleNewsletterById = catchAsync(async (req, res) => {

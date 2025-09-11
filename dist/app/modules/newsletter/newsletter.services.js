@@ -13,6 +13,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.NewsletterServices = void 0;
+/* eslint-disable @typescript-eslint/no-explicit-any */
 const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const newsletter_model_1 = __importDefault(require("./newsletter.model"));
@@ -22,8 +23,15 @@ const subscribeNewsletter = (payload) => __awaiter(void 0, void 0, void 0, funct
     return result;
 });
 // Get all Newsletters
-const getAllNewsletters = () => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield newsletter_model_1.default.find();
+const getAllNewsletters = (keyword) => __awaiter(void 0, void 0, void 0, function* () {
+    const query = {};
+    if (keyword) {
+        query.$or = [
+            { name: { $regex: keyword, $options: "i" } },
+            { email: { $regex: keyword, $options: "i" } },
+        ];
+    }
+    const result = yield newsletter_model_1.default.find(query);
     return result;
 });
 // Get single Newsletter by ID

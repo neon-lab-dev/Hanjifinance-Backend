@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import Newsletter from "./newsletter.model";
@@ -10,8 +11,17 @@ const subscribeNewsletter = async (payload: TNewsletter) => {
 };
 
 // Get all Newsletters
-const getAllNewsletters = async () => {
-  const result = await Newsletter.find();
+const getAllNewsletters = async (keyword: string) => {
+  const query: any = {};
+
+  if (keyword) {
+    query.$or = [
+      { name: { $regex: keyword, $options: "i" } },
+      { email: { $regex: keyword, $options: "i" } },
+    ];
+  }
+
+  const result = await Newsletter.find(query);
   return result;
 };
 
@@ -25,10 +35,7 @@ const getSingleNewsletterById = async (id: string) => {
 };
 
 // Update Newsletter
-const updateNewsletter = async (
-  id: string,
-  payload: Partial<TNewsletter>
-) => {
+const updateNewsletter = async (id: string, payload: Partial<TNewsletter>) => {
   const existing = await Newsletter.findById(id);
   if (!existing) {
     throw new AppError(httpStatus.NOT_FOUND, "Newsletter not found");

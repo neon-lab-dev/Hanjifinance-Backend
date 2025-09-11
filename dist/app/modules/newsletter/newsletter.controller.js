@@ -29,7 +29,8 @@ const subscribeNewsletter = (0, catchAsync_1.default)((req, res) => __awaiter(vo
 }));
 // Get all Newsletters
 const getAllNewsletters = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield newsletter_services_1.NewsletterServices.getAllNewsletters();
+    const { keyword } = req.query;
+    const result = yield newsletter_services_1.NewsletterServices.getAllNewsletters(keyword);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
