@@ -19,6 +19,10 @@ const AppError_1 = __importDefault(require("../../errors/AppError"));
 const newsletter_model_1 = __importDefault(require("./newsletter.model"));
 // Add Newsletter
 const subscribeNewsletter = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isAlreadySubscribed = yield newsletter_model_1.default.findOne({ email: payload.email });
+    if (isAlreadySubscribed) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "You've already subscribed.");
+    }
     const result = yield newsletter_model_1.default.create(payload);
     return result;
 });

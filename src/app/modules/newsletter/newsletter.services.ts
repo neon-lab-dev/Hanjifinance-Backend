@@ -6,6 +6,10 @@ import { TNewsletter } from "./newsletter.interface";
 
 // Add Newsletter
 const subscribeNewsletter = async (payload: TNewsletter) => {
+  const isAlreadySubscribed = await Newsletter.findOne({ email: payload.email });
+  if (isAlreadySubscribed) {
+    throw new AppError(httpStatus.BAD_REQUEST, "You've already subscribed.");
+  }
   const result = await Newsletter.create(payload);
   return result;
 };
