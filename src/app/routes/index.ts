@@ -9,6 +9,7 @@ import { ProductOrderRoutes } from "../modules/order/productOrder/productOrder.r
 import { ChatAndChillRoutes } from "../modules/chatAndChill/chatAndChill.route";
 import { AvailabilityRoutes } from "../modules/admin/availability/availability.route";
 import { CourseOrderRoutes } from "../modules/order/courseOrder/courseOrder.route";
+import { NewsletterRoutes } from "../modules/newsletter/newsletter.route";
 
 const router = Router();
 
@@ -52,6 +53,10 @@ const moduleRoutes = [
   {
     path: "/chat-and-chill",
     route: ChatAndChillRoutes,
+  },
+  {
+    path: "/newsletter",
+    route: NewsletterRoutes,
   },
 ];
 

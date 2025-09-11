@@ -11,6 +11,7 @@ const productOrder_route_1 = require("../modules/order/productOrder/productOrder
 const chatAndChill_route_1 = require("../modules/chatAndChill/chatAndChill.route");
 const availability_route_1 = require("../modules/admin/availability/availability.route");
 const courseOrder_route_1 = require("../modules/order/courseOrder/courseOrder.route");
+const newsletter_route_1 = require("../modules/newsletter/newsletter.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -52,6 +53,10 @@ const moduleRoutes = [
     {
         path: "/chat-and-chill",
         route: chatAndChill_route_1.ChatAndChillRoutes,
+    },
+    {
+        path: "/newsletter",
+        route: newsletter_route_1.NewsletterRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));
