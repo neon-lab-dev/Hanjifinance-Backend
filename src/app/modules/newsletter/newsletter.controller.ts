@@ -9,7 +9,7 @@ const subscribeNewsletter = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
-    message: "Newsletter created successfully",
+    message: "Newsletter subscribed successfully",
     data: result,
   });
 });

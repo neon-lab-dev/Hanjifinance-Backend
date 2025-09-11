@@ -23,7 +23,7 @@ const subscribeNewsletter = (0, catchAsync_1.default)((req, res) => __awaiter(vo
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.CREATED,
         success: true,
-        message: "Newsletter created successfully",
+        message: "Newsletter subscribed successfully",
         data: result,
     });
 }));
