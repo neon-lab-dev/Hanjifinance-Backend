@@ -36,7 +36,12 @@ const addCourse = async (
 };
 
 // Get all courses
-const getAllCourses = async (keyword: any, category: any) => {
+const getAllCourses = async (
+  keyword: any,
+  category: any,
+  page = 1,
+  limit = 10
+) => {
   const query: any = {};
 
   if (keyword) {
@@ -50,8 +55,23 @@ const getAllCourses = async (keyword: any, category: any) => {
     query.category = { $regex: category, $options: "i" };
   }
 
-  const result = await Course.find(query);
-  return result;
+  // Pagination
+  const skip = (page - 1) * limit;
+
+  const [courses, total] = await Promise.all([
+    Course.find(query).skip(skip).limit(limit),
+    Course.countDocuments(query),
+  ]);
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    },
+    data: courses,
+  };
 };
 
 // Get single course by ID
@@ -110,8 +130,8 @@ const deleteCourse = async (id: string) => {
     try {
       // Extract public_id from imageUrl
       const parts = course.imageUrl.split("/");
-      const filename = parts[parts.length - 1]; 
-      
+      const filename = parts[parts.length - 1];
+
       // Remove extension and decode URL
       const publicId = decodeURIComponent(filename.split(".")[0]);
       console.log("Deleting Cloudinary image with publicId:", publicId);
@@ -128,7 +148,6 @@ const deleteCourse = async (id: string) => {
 
   return result;
 };
-
 
 export const CourseServices = {
   addCourse,

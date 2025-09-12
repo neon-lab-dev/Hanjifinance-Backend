@@ -38,7 +38,7 @@ const addCourse = (payload, file) => __awaiter(void 0, void 0, void 0, function*
     return result;
 });
 // Get all courses
-const getAllCourses = (keyword, category) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllCourses = (keyword_1, category_1, ...args_1) => __awaiter(void 0, [keyword_1, category_1, ...args_1], void 0, function* (keyword, category, page = 1, limit = 10) {
     const query = {};
     if (keyword) {
         query.$or = [
@@ -49,8 +49,21 @@ const getAllCourses = (keyword, category) => __awaiter(void 0, void 0, void 0, f
     if (category && category !== "all") {
         query.category = { $regex: category, $options: "i" };
     }
-    const result = yield course_model_1.default.find(query);
-    return result;
+    // Pagination
+    const skip = (page - 1) * limit;
+    const [courses, total] = yield Promise.all([
+        course_model_1.default.find(query).skip(skip).limit(limit),
+        course_model_1.default.countDocuments(query),
+    ]);
+    return {
+        meta: {
+            total,
+            page,
+            limit,
+            pages: Math.ceil(total / limit),
+        },
+        data: courses,
+    };
 });
 // Get single course by ID
 const getSingleCourseById = (id) => __awaiter(void 0, void 0, void 0, function* () {

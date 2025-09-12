@@ -18,8 +18,12 @@ const addCourse = catchAsync(async (req, res) => {
 
 // Get all courses
 const getAllCourses = catchAsync(async (req, res) => {
-  const { keyword, category } = req.query;
-  const result = await CourseServices.getAllCourses(keyword, category);
+  const { keyword, page = "1", limit = "10" } = req.query;
+  const result = await CourseServices.getAllCourses(
+    keyword as string,
+    Number(page),
+    Number(limit)
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

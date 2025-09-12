@@ -30,8 +30,8 @@ const addCourse = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
 }));
 // Get all courses
 const getAllCourses = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { keyword, category } = req.query;
-    const result = yield course_services_1.CourseServices.getAllCourses(keyword, category);
+    const { keyword, page = "1", limit = "10" } = req.query;
+    const result = yield course_services_1.CourseServices.getAllCourses(keyword, Number(page), Number(limit));
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
