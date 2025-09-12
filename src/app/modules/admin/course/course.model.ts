@@ -30,13 +30,13 @@ const CourseSchema = new Schema<TCourse>(
     accessType: {
       type: String,
       required: true,
-      enum: ["lifetime", "limited"],
+      enum: ["Lifetime", "Limited"],
     },
     accessValidity: {
       type: Date,
       validate: {
         validator: function (this: TCourse, value: Date | null) {
-          if (this.accessType === "limited" && !value) {
+          if (this.accessType === "Limited" && !value) {
             return false;
           }
           return true;

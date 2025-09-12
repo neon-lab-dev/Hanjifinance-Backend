@@ -36,11 +36,7 @@ const addCourse = async (
 };
 
 // Get all courses
-const getAllCourses = async (
-  keyword?: string,
-  page = 1,
-  limit = 10
-) => {
+const getAllCourses = async (keyword?: string, page = 1, limit = 10) => {
   const query: any = {};
 
   if (keyword) {
@@ -67,7 +63,6 @@ const getAllCourses = async (
     data: courses,
   };
 };
-
 
 // Get single course by ID
 const getSingleCourseById = async (id: string) => {

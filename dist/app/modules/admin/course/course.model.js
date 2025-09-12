@@ -29,13 +29,13 @@ const CourseSchema = new mongoose_1.Schema({
     accessType: {
         type: String,
         required: true,
-        enum: ["lifetime", "limited"],
+        enum: ["Lifetime", "Limited"],
     },
     accessValidity: {
         type: Date,
         validate: {
             validator: function (value) {
-                if (this.accessType === "limited" && !value) {
+                if (this.accessType === "Limited" && !value) {
                     return false;
                 }
                 return true;
