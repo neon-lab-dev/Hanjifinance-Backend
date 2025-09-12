@@ -36,7 +36,10 @@ const getAllCourses = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
         statusCode: http_status_1.default.OK,
         success: true,
         message: "All courses fetched successfully",
-        data: result,
+        data: {
+            courses: result.data,
+            pagination: result.meta,
+        },
     });
 }));
 // Get single course by ID
