@@ -19,6 +19,10 @@ const CourseSchema = new Schema<TCourse>(
       type: String,
       required: true,
     },
+    duration: {
+      type: String,
+      required: true,
+    },
     benefits: {
       type: [String],
       required: true,
