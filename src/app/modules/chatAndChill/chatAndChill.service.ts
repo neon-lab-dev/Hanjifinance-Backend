@@ -128,8 +128,9 @@ const getAllBookings = async (
 
   if (keyword) {
     query.$or = [
-      { title: { $regex: keyword, $options: "i" } },
-      { description: { $regex: keyword, $options: "i" } },
+      { name: { $regex: keyword, $options: "i" } },
+      { email: { $regex: keyword, $options: "i" } },
+      { phoneNumber: { $regex: keyword, $options: "i" } },
     ];
   }
 

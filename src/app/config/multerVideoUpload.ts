@@ -5,10 +5,10 @@ import multer from "multer";
 // Video storage on Cloudinary
 const videoStorage = new CloudinaryStorage({
   cloudinary: cloudinaryUpload,
-  params: {
+  params: () => ({
     folder: "course_videos",
-    resource_type: "video", // important for video files
-  },
+    resource_type: "video",
+  }),
 });
 
 export const multerVideoUpload = multer({

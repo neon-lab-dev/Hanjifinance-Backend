@@ -10,10 +10,10 @@ const multer_1 = __importDefault(require("multer"));
 // Video storage on Cloudinary
 const videoStorage = new multer_storage_cloudinary_1.CloudinaryStorage({
     cloudinary: cloudinary_config_1.cloudinaryUpload,
-    params: {
+    params: () => ({
         folder: "course_videos",
-        resource_type: "video", // important for video files
-    },
+        resource_type: "video",
+    }),
 });
 exports.multerVideoUpload = (0, multer_1.default)({
     storage: videoStorage,

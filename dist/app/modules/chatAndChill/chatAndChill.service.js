@@ -104,8 +104,9 @@ const getAllBookings = (keyword, status, page, limit) => __awaiter(void 0, void 
     const query = {};
     if (keyword) {
         query.$or = [
-            { title: { $regex: keyword, $options: "i" } },
-            { description: { $regex: keyword, $options: "i" } },
+            { name: { $regex: keyword, $options: "i" } },
+            { email: { $regex: keyword, $options: "i" } },
+            { phoneNumber: { $regex: keyword, $options: "i" } },
         ];
     }
     if (status) {
