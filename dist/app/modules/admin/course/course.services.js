@@ -42,8 +42,8 @@ const getAllCourses = (keyword_1, ...args_1) => __awaiter(void 0, [keyword_1, ..
     const query = {};
     if (keyword) {
         query.$or = [
-            { name: { $regex: keyword.trim(), $options: "i" } },
-            { description: { $regex: keyword.trim(), $options: "i" } },
+            { title: { $regex: keyword.trim(), $options: "i" } },
+            { category: { $regex: keyword.trim(), $options: "i" } },
         ];
     }
     const skip = (page - 1) * limit;

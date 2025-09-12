@@ -45,8 +45,8 @@ const getAllCourses = async (
 
   if (keyword) {
     query.$or = [
-      { name: { $regex: keyword.trim(), $options: "i" } },
-      { description: { $regex: keyword.trim(), $options: "i" } },
+      { title: { $regex: keyword.trim(), $options: "i" } },
+      { category: { $regex: keyword.trim(), $options: "i" } },
     ];
   }
 
