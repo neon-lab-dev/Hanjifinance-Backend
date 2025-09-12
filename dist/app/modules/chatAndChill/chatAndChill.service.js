@@ -144,8 +144,8 @@ const getMyBookings = (userId) => __awaiter(void 0, void 0, void 0, function* ()
     return yield chatAndChill_model_1.default.find({ user: userId }).sort({ createdAt: -1 });
 });
 // Update booking status
-const updateBookingStatus = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const { bookingId, status } = payload;
+const updateBookingStatus = (bookingId, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const { status } = payload;
     const booking = yield chatAndChill_model_1.default.findByIdAndUpdate(bookingId, { status }, { new: true });
     if (!booking) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Booking not found");

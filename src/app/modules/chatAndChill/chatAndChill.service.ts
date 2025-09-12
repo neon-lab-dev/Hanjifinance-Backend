@@ -176,11 +176,13 @@ const getMyBookings = async (userId: string) => {
 };
 
 // Update booking status
-const updateBookingStatus = async (payload: {
-  bookingId: string;
-  status: "pending" | "booked" | "scheduled";
-}) => {
-  const { bookingId, status } = payload;
+const updateBookingStatus = async (
+  bookingId: string,
+  payload: {
+    status: "cancelled" | "booked" | "scheduled" | "completed";
+  }
+) => {
+  const { status } = payload;
 
   const booking = await ChatAndChill.findByIdAndUpdate(
     bookingId,

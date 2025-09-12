@@ -25,7 +25,7 @@ router.get("/user/:userCustomId", (0, auth_1.default)(auth_constants_1.UserRole.
 // Get logged-in user's bookings
 router.get("/my-bookings", (0, auth_1.default)(auth_constants_1.UserRole.user), chatAndChill_controller_1.ChatAndChillControllers.getMyBookings);
 // Update booking status (Admin/Moderator)
-router.put("/update-status", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.updateBookingStatus);
+router.put("/update-status/:bookingId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.updateBookingStatus);
 // Schedule a meeting (Admin/Moderator)
 router.put("/schedule-meeting", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.scheduleMeeting);
 exports.ChatAndChillRoutes = router;

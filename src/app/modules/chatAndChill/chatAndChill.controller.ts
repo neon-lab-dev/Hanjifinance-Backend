@@ -104,7 +104,8 @@ const getMyBookings = catchAsync(async (req, res) => {
 
 // Update booking status (pending, booked, scheduled)
 const updateBookingStatus = catchAsync(async (req, res) => {
-  const result = await ChatAndChillService.updateBookingStatus(req.body);
+  const { bookingId } = req.params;
+  const result = await ChatAndChillService.updateBookingStatus(bookingId, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
