@@ -39,6 +39,31 @@ const verifySubscription = (0, catchAsync_1.default)((req, res) => __awaiter(voi
         },
     });
 }));
+// Get all subscriptions (Admin/Moderator)
+const getAllSubscriptions = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { keyword, status, page = "1", limit = "10", isAddedToWhatsappGroup, isSuspended, isRemoved, } = req.query;
+    const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.getAllSubscriptions(keyword, status, isAddedToWhatsappGroup, isSuspended, isRemoved, Number(page), Number(limit));
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "All subscriptions fetched successfully",
+        data: {
+            bookings: result.data,
+            pagination: result.meta,
+        },
+    });
+}));
+// Get single subscription by ID
+const getSingleSubscriptionById = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { id } = req.params;
+    const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.getSingleSubscriptionById(id);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Subscription fetched successfully",
+        data: result,
+    });
+}));
 const pauseSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.pauseSubscription(req.user);
     (0, sendResponse_1.default)(res, {
@@ -120,6 +145,8 @@ const reAddUser = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void
 exports.BoardRoomBanterSubscriptionController = {
     createSubscription,
     verifySubscription,
+    getAllSubscriptions,
+    getSingleSubscriptionById,
     pauseSubscription,
     resumeSubscription,
     getMySubscription,

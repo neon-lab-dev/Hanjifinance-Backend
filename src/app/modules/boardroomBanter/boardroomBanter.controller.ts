@@ -37,6 +37,54 @@ const verifySubscription = catchAsync(async (req, res) => {
   });
 });
 
+// Get all subscriptions (Admin/Moderator)
+const getAllSubscriptions = catchAsync(async (req, res) => {
+  const {
+    keyword,
+    status,
+    page = "1",
+    limit = "10",
+    isAddedToWhatsappGroup,
+    isSuspended,
+    isRemoved,
+  } = req.query;
+
+  const result = await BoardRoomBanterSubscriptionService.getAllSubscriptions(
+    keyword as string,
+    status as string,
+
+    isAddedToWhatsappGroup as string,
+    isSuspended as string,
+    isRemoved as string,
+    Number(page),
+    Number(limit)
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "All subscriptions fetched successfully",
+    data: {
+      bookings: result.data,
+      pagination: result.meta,
+    },
+  });
+});
+
+// Get single subscription by ID
+const getSingleSubscriptionById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const result =
+    await BoardRoomBanterSubscriptionService.getSingleSubscriptionById(id);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Subscription fetched successfully",
+    data: result,
+  });
+});
+
 const pauseSubscription = catchAsync(async (req, res) => {
   const result = await BoardRoomBanterSubscriptionService.pauseSubscription(
     req.user
@@ -145,6 +193,8 @@ const reAddUser = catchAsync(async (req, res) => {
 export const BoardRoomBanterSubscriptionController = {
   createSubscription,
   verifySubscription,
+  getAllSubscriptions,
+  getSingleSubscriptionById,
   pauseSubscription,
   resumeSubscription,
   getMySubscription,

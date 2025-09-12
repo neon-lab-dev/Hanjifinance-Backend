@@ -21,6 +21,7 @@ const razorpay_1 = require("../../utils/razorpay");
 const crypto_1 = __importDefault(require("crypto"));
 const config_1 = __importDefault(require("../../config"));
 const sendPauseSubscriptionEmail_1 = require("../../emailTemplates/sendPauseSubscriptionEmail");
+const auth_model_1 = require("../auth/auth.model");
 const createSubscription = (user) => __awaiter(void 0, void 0, void 0, function* () {
     const planId = config_1.default.boardroom_banter_plan_id;
     if (!planId) {
@@ -39,8 +40,12 @@ const createSubscription = (user) => __awaiter(void 0, void 0, void 0, function*
         console.error("Razorpay subscription creation failed:", error);
         throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to create subscription");
     }
+    const userData = yield auth_model_1.User.findById(user === null || user === void 0 ? void 0 : user._id);
     const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.create({
         userId: user === null || user === void 0 ? void 0 : user._id,
+        name: user === null || user === void 0 ? void 0 : user.name,
+        email: user === null || user === void 0 ? void 0 : user.email,
+        phoneNumber: userData === null || userData === void 0 ? void 0 : userData.phoneNumber,
         razorpaySubscriptionId: razorpaySubscription.id,
         status: "pending", // pending until payment verified
     });
@@ -82,6 +87,54 @@ const verifySubscription = (razorpaySubscriptionId, razorpayPaymentId, razorpayS
         redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/success?subscriptionId=${razorpaySubscriptionId}`,
         subscription,
     };
+});
+// Get all bookings (with pagination, filter by keyword + status)
+const getAllSubscriptions = (keyword_1, status_1, isAddedToWhatsappGroup_1, isSuspended_1, isRemoved_1, ...args_1) => __awaiter(void 0, [keyword_1, status_1, isAddedToWhatsappGroup_1, isSuspended_1, isRemoved_1, ...args_1], void 0, function* (keyword, status, isAddedToWhatsappGroup, isSuspended, isRemoved, page = 1, limit = 10) {
+    const query = {};
+    // Keyword search
+    if (keyword) {
+        query.$or = [{ userId: { $regex: keyword, $options: "i" } }];
+    }
+    // Status filter
+    if (status) {
+        query.status = status;
+    }
+    // Boolean filters
+    if (isAddedToWhatsappGroup !== undefined) {
+        query.isAddedToWhatsappGroup = isAddedToWhatsappGroup === "true";
+    }
+    if (isSuspended !== undefined) {
+        query.isSuspended = isSuspended === "true";
+    }
+    if (isRemoved !== undefined) {
+        query.isRemoved = isRemoved === "true";
+    }
+    // Pagination
+    const skip = (page - 1) * limit;
+    const [data, total] = yield Promise.all([
+        boardroomBanter_model_1.BoardRoomBanterSubscription.find(query)
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 }),
+        boardroomBanter_model_1.BoardRoomBanterSubscription.countDocuments(query),
+    ]);
+    return {
+        data,
+        meta: {
+            total,
+            page,
+            limit,
+            totalPages: Math.ceil(total / limit),
+        },
+    };
+});
+// Get single booking
+const getSingleSubscriptionById = (id) => __awaiter(void 0, void 0, void 0, function* () {
+    const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.findById(id);
+    if (!subscription) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Subscription not found");
+    }
+    return subscription;
 });
 const pauseSubscription = (user) => __awaiter(void 0, void 0, void 0, function* () {
     const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.findOne({
@@ -134,6 +187,8 @@ const reAddUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
 exports.BoardRoomBanterSubscriptionService = {
     createSubscription,
     verifySubscription,
+    getAllSubscriptions,
+    getSingleSubscriptionById,
     pauseSubscription,
     resumeSubscription,
     getMySubscription,

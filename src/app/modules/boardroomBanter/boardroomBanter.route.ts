@@ -17,6 +17,17 @@ router.post(
   BoardRoomBanterSubscriptionController.pauseSubscription
 );
 
+router.get(
+  "/",
+  auth(UserRole.admin, UserRole.moderator),
+  BoardRoomBanterSubscriptionController.getAllSubscriptions
+);
+router.get(
+  "/:id",
+  auth(UserRole.admin, UserRole.moderator),
+  BoardRoomBanterSubscriptionController.getSingleSubscriptionById
+);
+
 router.post(
   "/resume",
   auth(UserRole.user, UserRole.admin, UserRole.moderator),

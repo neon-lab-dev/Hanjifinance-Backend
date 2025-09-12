@@ -9,6 +9,7 @@ import {
   sendSubscriptionEmails,
   sendSubscriptionStatusEmails,
 } from "../../emailTemplates/sendPauseSubscriptionEmail";
+import { User } from "../auth/auth.model";
 
 const createSubscription = async (user: any) => {
   const planId = config.boardroom_banter_plan_id;
@@ -34,9 +35,13 @@ const createSubscription = async (user: any) => {
       "Failed to create subscription"
     );
   }
+  const userData = await User.findById(user?._id);
 
   const subscription = await BoardRoomBanterSubscription.create({
     userId: user?._id,
+    name : user?.name,
+    email: user?.email,
+    phoneNumber: userData?.phoneNumber,
     razorpaySubscriptionId: razorpaySubscription.id,
     status: "pending", // pending until payment verified
   });
@@ -96,6 +101,75 @@ const verifySubscription = async (
   };
 };
 
+// Get all bookings (with pagination, filter by keyword + status)
+const getAllSubscriptions = async (
+  keyword: string,
+  status: string,
+  isAddedToWhatsappGroup?: string,
+  isSuspended?: string,
+  isRemoved?: string,
+  page = 1,
+  limit = 10
+) => {
+  const query: any = {};
+
+  // Keyword search
+  if (keyword) {
+    query.$or = [{ userId: { $regex: keyword, $options: "i" } }];
+  }
+
+  // Status filter
+  if (status) {
+    query.status = status;
+  }
+
+  // Boolean filters
+  if (isAddedToWhatsappGroup !== undefined) {
+    query.isAddedToWhatsappGroup = isAddedToWhatsappGroup === "true";
+  }
+
+  if (isSuspended !== undefined) {
+    query.isSuspended = isSuspended === "true";
+  }
+
+  if (isRemoved !== undefined) {
+    query.isRemoved = isRemoved === "true";
+  }
+
+  // Pagination
+  const skip = (page - 1) * limit;
+
+  const [data, total] = await Promise.all([
+    BoardRoomBanterSubscription.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 }),
+    BoardRoomBanterSubscription.countDocuments(query),
+  ]);
+
+  return {
+    data,
+    meta: {
+      total,
+      page,
+      limit,
+      totalPages: Math.ceil(total / limit),
+    },
+  };
+};
+
+
+
+
+
+// Get single booking
+const getSingleSubscriptionById = async (id: string) => {
+  const subscription = await BoardRoomBanterSubscription.findById(id);
+  if (!subscription) {
+    throw new AppError(httpStatus.NOT_FOUND, "Subscription not found");
+  }
+  return subscription;
+};
 const pauseSubscription = async (user: any) => {
   const subscription = await BoardRoomBanterSubscription.findOne({
     userId: user?._id,
@@ -188,6 +262,8 @@ const reAddUser = async (userId: string) => {
 export const BoardRoomBanterSubscriptionService = {
   createSubscription,
   verifySubscription,
+  getAllSubscriptions,
+  getSingleSubscriptionById,
   pauseSubscription,
   resumeSubscription,
   getMySubscription,
