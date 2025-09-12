@@ -37,8 +37,7 @@ const addCourse = async (
 
 // Get all courses
 const getAllCourses = async (
-  keyword: any,
-  category: any,
+  keyword?: string,
   page = 1,
   limit = 10
 ) => {
@@ -46,20 +45,15 @@ const getAllCourses = async (
 
   if (keyword) {
     query.$or = [
-      { name: { $regex: keyword, $options: "i" } },
-      { description: { $regex: keyword, $options: "i" } },
+      { name: { $regex: keyword.trim(), $options: "i" } },
+      { description: { $regex: keyword.trim(), $options: "i" } },
     ];
   }
 
-  if (category && category !== "all") {
-    query.category = { $regex: category, $options: "i" };
-  }
-
-  // Pagination
   const skip = (page - 1) * limit;
 
   const [courses, total] = await Promise.all([
-    Course.find(query).skip(skip).limit(limit),
+    Course.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
     Course.countDocuments(query),
   ]);
 
@@ -73,6 +67,7 @@ const getAllCourses = async (
     data: courses,
   };
 };
+
 
 // Get single course by ID
 const getSingleCourseById = async (id: string) => {
