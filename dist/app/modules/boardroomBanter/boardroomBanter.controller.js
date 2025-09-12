@@ -48,7 +48,7 @@ const getAllSubscriptions = (0, catchAsync_1.default)((req, res) => __awaiter(vo
         success: true,
         message: "All subscriptions fetched successfully",
         data: {
-            bookings: result.data,
+            subscriptions: result.data,
             pagination: result.meta,
         },
     });

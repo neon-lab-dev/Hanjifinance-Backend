@@ -65,7 +65,7 @@ const getAllSubscriptions = catchAsync(async (req, res) => {
     success: true,
     message: "All subscriptions fetched successfully",
     data: {
-      bookings: result.data,
+      subscriptions: result.data,
       pagination: result.meta,
     },
   });
