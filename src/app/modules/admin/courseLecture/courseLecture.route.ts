@@ -2,7 +2,7 @@ import express from "express";
 import auth from "../../../middlewares/auth";
 import { UserRole } from "../../auth/auth.constants";
 import { CourseLectureControllers } from "./courseLecture.controller";
-import { multerVideoUpload } from "../../../config/multer.config";
+import { multerVideoUpload } from "../../../config/multerVideoUpload";
 
 const router = express.Router();
 

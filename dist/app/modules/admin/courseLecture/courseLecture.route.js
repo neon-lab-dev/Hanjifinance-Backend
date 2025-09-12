@@ -8,13 +8,13 @@ const express_1 = __importDefault(require("express"));
 const auth_1 = __importDefault(require("../../../middlewares/auth"));
 const auth_constants_1 = require("../../auth/auth.constants");
 const courseLecture_controller_1 = require("./courseLecture.controller");
-const multer_config_1 = require("../../../config/multer.config");
+const multerVideoUpload_1 = require("../../../config/multerVideoUpload");
 const router = express_1.default.Router();
 // For admin only
-router.post("/add", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), multer_config_1.multerVideoUpload.single("file"), courseLecture_controller_1.CourseLectureControllers.addCourseLecture);
+router.post("/add", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), multerVideoUpload_1.multerVideoUpload.single("file"), courseLecture_controller_1.CourseLectureControllers.addCourseLecture);
 router.get("/", courseLecture_controller_1.CourseLectureControllers.getAllCourseLectures);
 router.get("/:lectureId", courseLecture_controller_1.CourseLectureControllers.getSingleLectureById);
 router.get("/all/:courseId", courseLecture_controller_1.CourseLectureControllers.getLecturesByCourseId);
-router.put("/update/:lectureId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), multer_config_1.multerVideoUpload.single("file"), courseLecture_controller_1.CourseLectureControllers.updateLecture);
+router.put("/update/:lectureId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), multerVideoUpload_1.multerVideoUpload.single("file"), courseLecture_controller_1.CourseLectureControllers.updateLecture);
 router.delete("/delete/:lectureId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), courseLecture_controller_1.CourseLectureControllers.deleteLecture);
 exports.CourseLectureRoutes = router;
