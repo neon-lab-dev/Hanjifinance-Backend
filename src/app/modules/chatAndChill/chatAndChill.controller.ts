@@ -91,6 +91,7 @@ const getBookingsByUserId = catchAsync(async (req, res) => {
 
 // Get logged-in user's bookings (user)
 const getMyBookings = catchAsync(async (req, res) => {
+  console.log("object");
   const userId = req.user._id;
   const result = await ChatAndChillService.getMyBookings(userId);
 

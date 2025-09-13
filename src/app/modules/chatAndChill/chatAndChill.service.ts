@@ -172,6 +172,7 @@ const getBookingsByUserId = async (userCustomId: string) => {
 
 // Get logged-in user's bookings
 const getMyBookings = async (userId: string) => {
+  console.log(userId);
   return await ChatAndChill.find({ user: userId }).sort({ createdAt: -1 });
 };
 

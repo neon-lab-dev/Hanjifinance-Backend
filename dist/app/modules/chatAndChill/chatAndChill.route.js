@@ -18,14 +18,14 @@ router.post("/verify-payment", chatAndChill_controller_1.ChatAndChillControllers
 router.post("/book", (0, auth_1.default)(auth_constants_1.UserRole.user), chatAndChill_controller_1.ChatAndChillControllers.bookChatAndChill);
 // Get all bookings (Admin/Moderator)
 router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.getAllBookings);
+// Get logged-in user's bookings
+router.get("/my-bookings", (0, auth_1.default)(auth_constants_1.UserRole.user), chatAndChill_controller_1.ChatAndChillControllers.getMyBookings);
+// Schedule a meeting (Admin/Moderator)
+router.put("/schedule-meeting", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.scheduleMeeting);
 // Get single booking by ID
 router.get("/:bookingId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator, auth_constants_1.UserRole.user), chatAndChill_controller_1.ChatAndChillControllers.getSingleBookingById);
 // Get all bookings for a particular user (Admin/Moderator)
 router.get("/user/:userCustomId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.getBookingsByUserId);
-// Get logged-in user's bookings
-router.get("/my-bookings", (0, auth_1.default)(auth_constants_1.UserRole.user), chatAndChill_controller_1.ChatAndChillControllers.getMyBookings);
 // Update booking status (Admin/Moderator)
 router.put("/update-status/:bookingId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.updateBookingStatus);
-// Schedule a meeting (Admin/Moderator)
-router.put("/schedule-meeting", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.scheduleMeeting);
 exports.ChatAndChillRoutes = router;

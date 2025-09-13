@@ -141,6 +141,7 @@ const getBookingsByUserId = (userCustomId) => __awaiter(void 0, void 0, void 0, 
 });
 // Get logged-in user's bookings
 const getMyBookings = (userId) => __awaiter(void 0, void 0, void 0, function* () {
+    console.log(userId);
     return yield chatAndChill_model_1.default.find({ user: userId }).sort({ createdAt: -1 });
 });
 // Update booking status

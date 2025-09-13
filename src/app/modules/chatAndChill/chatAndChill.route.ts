@@ -14,10 +14,7 @@ router.post(
 );
 
 // Verify payment (Razorpay callback)
-router.post(
-  "/verify-payment",
-  ChatAndChillControllers.verifyPayment
-);
+router.post("/verify-payment", ChatAndChillControllers.verifyPayment);
 
 // Book Chat & Chill
 router.post(
@@ -31,6 +28,20 @@ router.get(
   "/",
   auth(UserRole.admin, UserRole.moderator),
   ChatAndChillControllers.getAllBookings
+);
+
+// Get logged-in user's bookings
+router.get(
+  "/my-bookings",
+  auth(UserRole.user),
+  ChatAndChillControllers.getMyBookings
+);
+
+// Schedule a meeting (Admin/Moderator)
+router.put(
+  "/schedule-meeting",
+  auth(UserRole.admin, UserRole.moderator),
+  ChatAndChillControllers.scheduleMeeting
 );
 
 // Get single booking by ID
@@ -47,25 +58,11 @@ router.get(
   ChatAndChillControllers.getBookingsByUserId
 );
 
-// Get logged-in user's bookings
-router.get(
-  "/my-bookings",
-  auth(UserRole.user),
-  ChatAndChillControllers.getMyBookings
-);
-
 // Update booking status (Admin/Moderator)
 router.put(
   "/update-status/:bookingId",
   auth(UserRole.admin, UserRole.moderator),
   ChatAndChillControllers.updateBookingStatus
-);
-
-// Schedule a meeting (Admin/Moderator)
-router.put(
-  "/schedule-meeting",
-  auth(UserRole.admin, UserRole.moderator),
-  ChatAndChillControllers.scheduleMeeting
 );
 
 export const ChatAndChillRoutes = router;

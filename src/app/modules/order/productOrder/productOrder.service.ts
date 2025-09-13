@@ -125,12 +125,17 @@ const getAllProductOrders = async (
 
 // Get single order by ID
 const getSingleProductOrderById = async (orderId: string) => {
-  const result = await ProductOrder.findOne({ orderId }).populate("userId", "name email phoneNumber")
+  const result = await ProductOrder.findOne({ orderId })
+    .populate("userId", "name email phoneNumber")
+    .populate("orderedItems.productId", "name imageUrls category size price");
+
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Order not found");
   }
+
   return result;
 };
+
 
 // Get all orders for a particular user
 const getProductOrdersByUserId = async (userCustomId: string) => {
