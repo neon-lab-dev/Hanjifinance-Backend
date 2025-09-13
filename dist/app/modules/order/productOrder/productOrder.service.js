@@ -62,7 +62,7 @@ const createProductOrder = (user, payload) => __awaiter(void 0, void 0, void 0, 
         userCustomId: user === null || user === void 0 ? void 0 : user.userId,
         orderedItems: payload.orderedItems,
         totalAmount: payload.totalAmount,
-        status: "paid",
+        status: "pending",
     };
     const order = yield productOrder_model_1.ProductOrder.create(payloadData);
     return order;

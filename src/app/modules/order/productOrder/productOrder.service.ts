@@ -63,7 +63,7 @@ const createProductOrder = async (user: any, payload: TProductOrder) => {
     userCustomId: user?.userId,
     orderedItems: payload.orderedItems,
     totalAmount: payload.totalAmount,
-    status: "paid",
+    status: "pending",
   };
 
   const order = await ProductOrder.create(payloadData);
