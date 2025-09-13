@@ -52,7 +52,7 @@ const getAllProductOrders = (0, catchAsync_1.default)((req, res) => __awaiter(vo
         success: true,
         message: "All Orders fetched successfully",
         data: {
-            products: result.data,
+            productOrders: result.data,
             pagination: result.meta,
         },
     });

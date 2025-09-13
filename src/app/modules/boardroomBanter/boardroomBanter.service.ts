@@ -39,7 +39,7 @@ const createSubscription = async (user: any) => {
 
   const subscription = await BoardRoomBanterSubscription.create({
     userId: user?._id,
-    name : user?.name,
+    name: user?.name,
     email: user?.email,
     phoneNumber: userData?.phoneNumber,
     razorpaySubscriptionId: razorpaySubscription.id,
@@ -158,10 +158,6 @@ const getAllSubscriptions = async (
   };
 };
 
-
-
-
-
 // Get single booking
 const getSingleSubscriptionById = async (id: string) => {
   const subscription = await BoardRoomBanterSubscription.findById(id);
@@ -170,6 +166,7 @@ const getSingleSubscriptionById = async (id: string) => {
   }
   return subscription;
 };
+
 const pauseSubscription = async (user: any) => {
   const subscription = await BoardRoomBanterSubscription.findOne({
     userId: user?._id,
