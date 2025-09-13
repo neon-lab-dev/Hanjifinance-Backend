@@ -21,7 +21,7 @@ const productOrder_model_1 = require("./productOrder.model");
 const razorpay_1 = require("../../../utils/razorpay");
 const crypto_1 = __importDefault(require("crypto"));
 const generateOrderId = () => {
-    return "HFP-" + Math.floor(1000 + Math.random() * 9000);
+    return "HFPO-" + Math.floor(1000 + Math.random() * 9000);
 };
 const checkout = (amount) => __awaiter(void 0, void 0, void 0, function* () {
     if (!amount || amount <= 0) {
@@ -70,18 +70,30 @@ const createProductOrder = (user, payload) => __awaiter(void 0, void 0, void 0, 
 // Get all orders
 const getAllProductOrders = (keyword_1, status_1, ...args_1) => __awaiter(void 0, [keyword_1, status_1, ...args_1], void 0, function* (keyword, status, page = 1, limit = 10) {
     const query = {};
-    // Search filter
-    if (keyword) {
-        query.$or = [{ orderId: { $regex: keyword, $options: "i" } }];
-    }
     // Status filter
     if (status && status !== "all") {
         query.status = { $regex: status, $options: "i" };
     }
     // Pagination
     const skip = (page - 1) * limit;
+    // Base query
+    let mongooseQuery = productOrder_model_1.ProductOrder.find(query)
+        .populate("userId", "name email phoneNumber")
+        .skip(skip)
+        .limit(limit);
+    // Apply keyword search (orderId + user fields)
+    if (keyword) {
+        mongooseQuery = mongooseQuery.find({
+            $or: [
+                { orderId: { $regex: keyword, $options: "i" } },
+                { "userId.name": { $regex: keyword, $options: "i" } },
+                { "userId.email": { $regex: keyword, $options: "i" } },
+                { "userId.phoneNumber": { $regex: keyword, $options: "i" } },
+            ],
+        });
+    }
     const [orders, total] = yield Promise.all([
-        productOrder_model_1.ProductOrder.find(query).skip(skip).limit(limit),
+        mongooseQuery.sort({ createdAt: -1 }),
         productOrder_model_1.ProductOrder.countDocuments(query),
     ]);
     return {

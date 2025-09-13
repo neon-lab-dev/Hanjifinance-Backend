@@ -8,7 +8,7 @@ import { razorpay } from "../../../utils/razorpay";
 import crypto from "crypto";
 
 const generateOrderId = () => {
-  return "HFP-" + Math.floor(1000 + Math.random() * 9000);
+  return "HFPO-" + Math.floor(1000 + Math.random() * 9000);
 };
 
 const checkout = async (amount: number) => {
@@ -80,11 +80,6 @@ const getAllProductOrders = async (
 ) => {
   const query: any = {};
 
-  // Search filter
-  if (keyword) {
-    query.$or = [{ orderId: { $regex: keyword, $options: "i" } }];
-  }
-
   // Status filter
   if (status && status !== "all") {
     query.status = { $regex: status, $options: "i" };
@@ -93,8 +88,26 @@ const getAllProductOrders = async (
   // Pagination
   const skip = (page - 1) * limit;
 
+  // Base query
+  let mongooseQuery = ProductOrder.find(query)
+    .populate("userId", "name email phoneNumber")
+    .skip(skip)
+    .limit(limit);
+
+  // Apply keyword search (orderId + user fields)
+  if (keyword) {
+    mongooseQuery = mongooseQuery.find({
+      $or: [
+        { orderId: { $regex: keyword, $options: "i" } },
+        { "userId.name": { $regex: keyword, $options: "i" } },
+        { "userId.email": { $regex: keyword, $options: "i" } },
+        { "userId.phoneNumber": { $regex: keyword, $options: "i" } },
+      ],
+    });
+  }
+
   const [orders, total] = await Promise.all([
-    ProductOrder.find(query).skip(skip).limit(limit),
+    mongooseQuery.sort({ createdAt: -1 }),
     ProductOrder.countDocuments(query),
   ]);
 
@@ -108,6 +121,7 @@ const getAllProductOrders = async (
     data: orders,
   };
 };
+
 
 // Get single order by ID
 const getSingleProductOrderById = async (orderId: string) => {
