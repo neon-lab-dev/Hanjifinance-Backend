@@ -54,7 +54,7 @@ const getAllCourseOrders = catchAsync(async (req, res) => {
     success: true,
     message: "All course orders fetched successfully",
     data: {
-      orders: result.data,
+      courseOrders: result.data,
       pagination: result.meta,
     },
   });

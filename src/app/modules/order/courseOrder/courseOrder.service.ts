@@ -7,7 +7,7 @@ import { razorpay } from "../../../utils/razorpay";
 import crypto from "crypto";
 
 const generateOrderId = () => {
-  return "HFP-" + Math.floor(1000 + Math.random() * 9000);
+  return "HFCO-" + Math.floor(1000 + Math.random() * 9000);
 };
 
 const checkout = async (amount: number) => {
@@ -53,7 +53,7 @@ const createCourseOrder = async (user: any, payload: TCourseOrder) => {
     orderId,
     userId: user?._id,
     userCustomId: user?.userId,
-    purchasedCourses: payload.purchasedCourses,
+    courseId: payload.courseId,
     totalAmount: payload.totalAmount,
   };
 
@@ -65,16 +65,25 @@ const createCourseOrder = async (user: any, payload: TCourseOrder) => {
 const getAllCourseOrders = async (keyword?: string, page = 1, limit = 10) => {
   const query: any = {};
 
-  // Search filter
   if (keyword) {
-    query.$or = [{ orderId: { $regex: keyword, $options: "i" } }];
+    const regex = { $regex: keyword, $options: "i" };
+    query.$or = [
+      { orderId: regex },
+      { "userId.name": regex },
+      { "userId.email": regex },
+      { "userId.phoneNumber": regex },
+    ];
   }
 
-  // Pagination
   const skip = (page - 1) * limit;
 
   const [orders, total] = await Promise.all([
-    CourseOrder.find(query).skip(skip).limit(limit),
+    CourseOrder.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .populate("userId", "name email phoneNumber")
+      .populate("courseId", "title discountedPrice"),
     CourseOrder.countDocuments(query),
   ]);
 
@@ -91,7 +100,9 @@ const getAllCourseOrders = async (keyword?: string, page = 1, limit = 10) => {
 
 // Get single course
 const getSingleCourseOrderById = async (orderId: string) => {
-  const result = await CourseOrder.findOne({ orderId });
+  const result = await CourseOrder.findOne({ orderId })
+    .populate("userId", "name email phoneNumber")
+    .populate("courseId", "title discountedPrice");
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Course order not found");
   }

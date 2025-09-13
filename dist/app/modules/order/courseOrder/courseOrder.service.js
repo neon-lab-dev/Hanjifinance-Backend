@@ -20,7 +20,7 @@ const courseOrder_model_1 = require("./courseOrder.model");
 const razorpay_1 = require("../../../utils/razorpay");
 const crypto_1 = __importDefault(require("crypto"));
 const generateOrderId = () => {
-    return "HFP-" + Math.floor(1000 + Math.random() * 9000);
+    return "HFCO-" + Math.floor(1000 + Math.random() * 9000);
 };
 const checkout = (amount) => __awaiter(void 0, void 0, void 0, function* () {
     if (!amount || amount <= 0) {
@@ -53,7 +53,7 @@ const createCourseOrder = (user, payload) => __awaiter(void 0, void 0, void 0, f
         orderId,
         userId: user === null || user === void 0 ? void 0 : user._id,
         userCustomId: user === null || user === void 0 ? void 0 : user.userId,
-        purchasedCourses: payload.purchasedCourses,
+        courseId: payload.courseId,
         totalAmount: payload.totalAmount,
     };
     const order = yield courseOrder_model_1.CourseOrder.create(payloadData);
@@ -62,14 +62,23 @@ const createCourseOrder = (user, payload) => __awaiter(void 0, void 0, void 0, f
 // Get all course orders (Admin/Moderator)
 const getAllCourseOrders = (keyword_1, ...args_1) => __awaiter(void 0, [keyword_1, ...args_1], void 0, function* (keyword, page = 1, limit = 10) {
     const query = {};
-    // Search filter
     if (keyword) {
-        query.$or = [{ orderId: { $regex: keyword, $options: "i" } }];
+        const regex = { $regex: keyword, $options: "i" };
+        query.$or = [
+            { orderId: regex },
+            { "userId.name": regex },
+            { "userId.email": regex },
+            { "userId.phoneNumber": regex },
+        ];
     }
-    // Pagination
     const skip = (page - 1) * limit;
     const [orders, total] = yield Promise.all([
-        courseOrder_model_1.CourseOrder.find(query).skip(skip).limit(limit),
+        courseOrder_model_1.CourseOrder.find(query)
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 })
+            .populate("userId", "name email phoneNumber")
+            .populate("courseId", "title discountedPrice"),
         courseOrder_model_1.CourseOrder.countDocuments(query),
     ]);
     return {
@@ -84,7 +93,9 @@ const getAllCourseOrders = (keyword_1, ...args_1) => __awaiter(void 0, [keyword_
 });
 // Get single course
 const getSingleCourseOrderById = (orderId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield courseOrder_model_1.CourseOrder.findOne({ orderId });
+    const result = yield courseOrder_model_1.CourseOrder.findOne({ orderId })
+        .populate("userId", "name email phoneNumber")
+        .populate("courseId", "title discountedPrice");
     if (!result) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Course order not found");
     }

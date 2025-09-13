@@ -52,7 +52,7 @@ const getAllCourseOrders = (0, catchAsync_1.default)((req, res) => __awaiter(voi
         success: true,
         message: "All course orders fetched successfully",
         data: {
-            orders: result.data,
+            courseOrders: result.data,
             pagination: result.meta,
         },
     });

@@ -4,7 +4,7 @@ export interface TCourseOrder {
   orderId: string;
   userId: ObjectId;
   userCustomId: string;
-  purchasedCourses: string[];
+  courseId: ObjectId;
   totalAmount: number;
   razorpayOrderId?: string;
 }
