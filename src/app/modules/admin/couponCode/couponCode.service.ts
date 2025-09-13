@@ -14,12 +14,22 @@ const addCouponCode = async (payload: any) => {
 };
 
 // Get All Coupon Codes
-const getAllCouponCodes = async (page: number, limit: number) => {
+const getAllCouponCodes = async (
+  keyword: string,
+  page: number,
+  limit: number
+) => {
+  const query: any = {};
   const skip = (page - 1) * limit;
 
+  // Search filter
+  if (keyword) {
+    query.$or = [{ code: { $regex: keyword, $options: "i" } }];
+  }
+
   const [data, total] = await Promise.all([
-    CouponCode.find().skip(skip).limit(limit).sort({ createdAt: -1 }),
-    CouponCode.countDocuments(),
+    CouponCode.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+    CouponCode.countDocuments(query),
   ]);
 
   return {
@@ -46,7 +56,7 @@ const validateCouponCode = async (code: string) => {
   const coupon = await CouponCode.findOne({ code });
 
   if (!coupon) {
-    throw new AppError(httpStatus.NOT_FOUND, "Invalid coupon code");
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid coupon code");
   }
 
   return coupon;
@@ -56,5 +66,5 @@ export const CouponCodeService = {
   addCouponCode,
   getAllCouponCodes,
   deleteCouponCode,
-  validateCouponCode
+  validateCouponCode,
 };

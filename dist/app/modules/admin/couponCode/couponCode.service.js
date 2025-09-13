@@ -26,11 +26,16 @@ const addCouponCode = (payload) => __awaiter(void 0, void 0, void 0, function* (
     return coupon;
 });
 // Get All Coupon Codes
-const getAllCouponCodes = (page, limit) => __awaiter(void 0, void 0, void 0, function* () {
+const getAllCouponCodes = (keyword, page, limit) => __awaiter(void 0, void 0, void 0, function* () {
+    const query = {};
     const skip = (page - 1) * limit;
+    // Search filter
+    if (keyword) {
+        query.$or = [{ code: { $regex: keyword, $options: "i" } }];
+    }
     const [data, total] = yield Promise.all([
-        couponCode_model_1.default.find().skip(skip).limit(limit).sort({ createdAt: -1 }),
-        couponCode_model_1.default.countDocuments(),
+        couponCode_model_1.default.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+        couponCode_model_1.default.countDocuments(query),
     ]);
     return {
         data,
@@ -53,7 +58,7 @@ const deleteCouponCode = (couponCodeId) => __awaiter(void 0, void 0, void 0, fun
 const validateCouponCode = (code) => __awaiter(void 0, void 0, void 0, function* () {
     const coupon = yield couponCode_model_1.default.findOne({ code });
     if (!coupon) {
-        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Invalid coupon code");
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Invalid coupon code");
     }
     return coupon;
 });
@@ -61,5 +66,5 @@ exports.CouponCodeService = {
     addCouponCode,
     getAllCouponCodes,
     deleteCouponCode,
-    validateCouponCode
+    validateCouponCode,
 };

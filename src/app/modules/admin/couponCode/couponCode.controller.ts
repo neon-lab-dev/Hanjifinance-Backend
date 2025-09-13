@@ -17,9 +17,10 @@ const addCouponCode = catchAsync(async (req, res) => {
 
 // Get All Coupon Codes
 const getAllCouponCodes = catchAsync(async (req, res) => {
-  const { page = "1", limit = "10" } = req.query;
+  const { keyword, page = "1", limit = "10" } = req.query;
 
   const result = await CouponCodeService.getAllCouponCodes(
+    keyword as string,
     Number(page),
     Number(limit)
   );

@@ -29,8 +29,8 @@ const addCouponCode = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, 
 }));
 // Get All Coupon Codes
 const getAllCouponCodes = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { page = "1", limit = "10" } = req.query;
-    const result = yield couponCode_service_1.CouponCodeService.getAllCouponCodes(Number(page), Number(limit));
+    const { keyword, page = "1", limit = "10" } = req.query;
+    const result = yield couponCode_service_1.CouponCodeService.getAllCouponCodes(keyword, Number(page), Number(limit));
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
