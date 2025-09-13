@@ -107,9 +107,7 @@ const getAllCourseOrders = async (keyword?: string, page = 1, limit = 10) => {
 
 // Get single course
 const getSingleCourseOrderById = async (orderId: string) => {
-  const result = await CourseOrder.findOne({ orderId })
-    .populate("userId", "name email phoneNumber")
-    .populate("courseId", "title discountedPrice");
+  const result = await CourseOrder.findOne({ orderId });
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Course order not found");
   }

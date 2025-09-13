@@ -100,9 +100,7 @@ const getAllCourseOrders = (keyword_1, ...args_1) => __awaiter(void 0, [keyword_
 });
 // Get single course
 const getSingleCourseOrderById = (orderId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield courseOrder_model_1.CourseOrder.findOne({ orderId })
-        .populate("userId", "name email phoneNumber")
-        .populate("courseId", "title discountedPrice");
+    const result = yield courseOrder_model_1.CourseOrder.findOne({ orderId });
     if (!result) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Course order not found");
     }
