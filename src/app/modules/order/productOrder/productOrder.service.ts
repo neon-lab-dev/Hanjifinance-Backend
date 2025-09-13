@@ -125,7 +125,7 @@ const getAllProductOrders = async (
 
 // Get single order by ID
 const getSingleProductOrderById = async (orderId: string) => {
-  const result = await ProductOrder.findOne({ orderId });
+  const result = await ProductOrder.findOne({ orderId }).populate("userId", "name email phoneNumber")
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Order not found");
   }

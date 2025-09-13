@@ -108,7 +108,7 @@ const getAllProductOrders = (keyword_1, status_1, ...args_1) => __awaiter(void 0
 });
 // Get single order by ID
 const getSingleProductOrderById = (orderId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield productOrder_model_1.ProductOrder.findOne({ orderId });
+    const result = yield productOrder_model_1.ProductOrder.findOne({ orderId }).populate("userId", "name email phoneNumber");
     if (!result) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Order not found");
     }
