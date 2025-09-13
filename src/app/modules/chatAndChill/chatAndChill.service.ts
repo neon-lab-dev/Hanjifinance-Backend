@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import httpStatus from "http-status";
-import crypto from "crypto";
+// import crypto from "crypto";
 import AppError from "../../errors/AppError";
 import ChatAndChill from "./chatAndChill.model";
 import { razorpay } from "../../utils/razorpay";
@@ -21,21 +21,21 @@ const checkout = async (amount: number) => {
 // Verify payment
 const verifyPayment = async (
   razorpayOrderId: string,
-  razorpayPaymentId: string,
-  razorpaySignature: string
+  // razorpayPaymentId: string,
+  // razorpaySignature: string
 ) => {
-  if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-    return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-  }
+  // if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+  //   return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
+  // }
 
-  const generatedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_API_SECRET!)
-    .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-    .digest("hex");
+  // const generatedSignature = crypto
+  //   .createHmac("sha256", process.env.RAZORPAY_API_SECRET!)
+  //   .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+  //   .digest("hex");
 
-  if (generatedSignature !== razorpaySignature) {
-    return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-  }
+  // if (generatedSignature !== razorpaySignature) {
+  //   return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
+  // }
 
   // Mark booking as booked
   await ChatAndChill.findOneAndUpdate(

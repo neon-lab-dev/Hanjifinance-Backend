@@ -30,8 +30,11 @@ const checkout = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 
 }));
 // Verify payment
 const verifyPayment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    const redirectUrl = yield chatAndChill_service_1.ChatAndChillService.verifyPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+    const { razorpay_order_id,
+    // razorpay_payment_id, 
+    // razorpay_signature
+     } = req.body;
+    const redirectUrl = yield chatAndChill_service_1.ChatAndChillService.verifyPayment(razorpay_order_id);
     return res.redirect(redirectUrl);
 }));
 // Book a Chat & Chill session

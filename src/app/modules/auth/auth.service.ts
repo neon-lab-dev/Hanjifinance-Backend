@@ -100,8 +100,9 @@ const verifyOtp = async (email: string, otp: string) => {
 
   return {
     userId: user._id,
-    email: user.email,
     name: user.name,
+    email: user.email,
+    phoneNumber: user.phoneNumber,
     isOtpVerified: user.isOtpVerified,
   };
 };
@@ -146,6 +147,7 @@ const loginUser = async (payload: TLoginAuth) => {
     userId: user.userId,
     name: user.name,
     email: user.email,
+    phoneNumber: user.phoneNumber,
     role: user.role,
     avatar: user.avatar || [],
   };
@@ -170,6 +172,7 @@ const loginUser = async (payload: TLoginAuth) => {
       userId: user.userId,
       name: user.name,
       email: user.email,
+      phoneNumber: user.phoneNumber,
       role: user.role,
       avatar: user.avatar || "",
     },
@@ -213,6 +216,7 @@ const refreshToken = async (token: string) => {
     userId: user.userId,
     name: user.name,
     email: user.email,
+    phoneNumber: user.phoneNumber,
     role: user.role,
     avatar: user.avatar || [],
   };

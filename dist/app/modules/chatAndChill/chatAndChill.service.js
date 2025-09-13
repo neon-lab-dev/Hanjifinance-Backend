@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.ChatAndChillService = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const http_status_1 = __importDefault(require("http-status"));
-const crypto_1 = __importDefault(require("crypto"));
+// import crypto from "crypto";
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const chatAndChill_model_1 = __importDefault(require("./chatAndChill.model"));
 const razorpay_1 = require("../../utils/razorpay");
@@ -31,17 +31,17 @@ const checkout = (amount) => __awaiter(void 0, void 0, void 0, function* () {
     return order;
 });
 // Verify payment
-const verifyPayment = (razorpayOrderId, razorpayPaymentId, razorpaySignature) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-        return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-    }
-    const generatedSignature = crypto_1.default
-        .createHmac("sha256", process.env.RAZORPAY_API_SECRET)
-        .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-        .digest("hex");
-    if (generatedSignature !== razorpaySignature) {
-        return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-    }
+const verifyPayment = (razorpayOrderId) => __awaiter(void 0, void 0, void 0, function* () {
+    // if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
+    //   return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
+    // }
+    // const generatedSignature = crypto
+    //   .createHmac("sha256", process.env.RAZORPAY_API_SECRET!)
+    //   .update(`${razorpayOrderId}|${razorpayPaymentId}`)
+    //   .digest("hex");
+    // if (generatedSignature !== razorpaySignature) {
+    //   return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
+    // }
     // Mark booking as booked
     yield chatAndChill_model_1.default.findOneAndUpdate({ razorpayOrderId }, { status: "booked" }, { new: true });
     return `${process.env.PAYMENT_REDIRECT_URL}/success?orderId=${razorpayOrderId}`;

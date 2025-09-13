@@ -88,8 +88,9 @@ const verifyOtp = (email, otp) => __awaiter(void 0, void 0, void 0, function* ()
     yield user.save();
     return {
         userId: user._id,
-        email: user.email,
         name: user.name,
+        email: user.email,
+        phoneNumber: user.phoneNumber,
         isOtpVerified: user.isOtpVerified,
     };
 });
@@ -123,6 +124,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
         userId: user.userId,
         name: user.name,
         email: user.email,
+        phoneNumber: user.phoneNumber,
         role: user.role,
         avatar: user.avatar || [],
     };
@@ -136,6 +138,7 @@ const loginUser = (payload) => __awaiter(void 0, void 0, void 0, function* () {
             userId: user.userId,
             name: user.name,
             email: user.email,
+            phoneNumber: user.phoneNumber,
             role: user.role,
             avatar: user.avatar || "",
         },
@@ -165,6 +168,7 @@ const refreshToken = (token) => __awaiter(void 0, void 0, void 0, function* () {
         userId: user.userId,
         name: user.name,
         email: user.email,
+        phoneNumber: user.phoneNumber,
         role: user.role,
         avatar: user.avatar || [],
     };
