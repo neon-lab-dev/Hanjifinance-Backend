@@ -12,6 +12,6 @@ export interface TProductOrder {
   userCustomId: string;
   orderedItems: TProductOrderItem[];
   totalAmount: number;
-  status: "pending" | "delivered" | "cancelled";
+  status: "pending" | "shipped" | "cancelled";
   razorpayOrderId?: string;
 }

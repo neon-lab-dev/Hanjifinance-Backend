@@ -15,7 +15,7 @@ const ProductOrderSchema = new mongoose_1.Schema({
     totalAmount: { type: Number, required: true },
     status: {
         type: String,
-        enum: ["pending", "delivered", "cancelled"],
+        enum: ["pending", "shipped", "cancelled"],
         default: "pending",
     },
     razorpayOrderId: { type: String },

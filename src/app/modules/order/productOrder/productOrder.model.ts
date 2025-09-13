@@ -17,7 +17,7 @@ const ProductOrderSchema = new Schema<TProductOrder>(
     totalAmount: { type: Number, required: true },
     status: {
       type: String,
-      enum: ["pending", "delivered", "cancelled"],
+      enum: ["pending", "shipped", "cancelled"],
       default: "pending",
     },
     razorpayOrderId: { type: String },
