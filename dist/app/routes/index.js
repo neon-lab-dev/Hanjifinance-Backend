@@ -12,6 +12,7 @@ const chatAndChill_route_1 = require("../modules/chatAndChill/chatAndChill.route
 const availability_route_1 = require("../modules/admin/availability/availability.route");
 const courseOrder_route_1 = require("../modules/order/courseOrder/courseOrder.route");
 const newsletter_route_1 = require("../modules/newsletter/newsletter.route");
+const couponCode_route_1 = require("../modules/admin/couponCode/couponCode.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -41,6 +42,10 @@ const moduleRoutes = [
     {
         path: "/course-order",
         route: courseOrder_route_1.CourseOrderRoutes,
+    },
+    {
+        path: "/coupon-code",
+        route: couponCode_route_1.CouponCodeRoutes,
     },
     {
         path: "/boardroom-banter-subscription",

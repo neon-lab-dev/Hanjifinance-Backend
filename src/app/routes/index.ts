@@ -10,6 +10,7 @@ import { ChatAndChillRoutes } from "../modules/chatAndChill/chatAndChill.route";
 import { AvailabilityRoutes } from "../modules/admin/availability/availability.route";
 import { CourseOrderRoutes } from "../modules/order/courseOrder/courseOrder.route";
 import { NewsletterRoutes } from "../modules/newsletter/newsletter.route";
+import { CouponCodeRoutes } from "../modules/admin/couponCode/couponCode.route";
 
 const router = Router();
 
@@ -41,6 +42,10 @@ const moduleRoutes = [
   {
     path: "/course-order",
     route: CourseOrderRoutes,
+  },
+  {
+    path: "/coupon-code",
+    route: CouponCodeRoutes,
   },
   {
     path: "/boardroom-banter-subscription",
