@@ -19,6 +19,8 @@ const http_status_1 = __importDefault(require("http-status"));
 const courseOrder_model_1 = require("./courseOrder.model");
 const razorpay_1 = require("../../../utils/razorpay");
 const crypto_1 = __importDefault(require("crypto"));
+const auth_model_1 = require("../../auth/auth.model");
+const course_model_1 = __importDefault(require("../../admin/course/course.model"));
 const generateOrderId = () => {
     return "HFCO-" + Math.floor(1000 + Math.random() * 9000);
 };
@@ -49,11 +51,18 @@ const verifyPayment = (razorpayOrderId, razorpayPaymentId, razorpaySignature) =>
 // Create course order
 const createCourseOrder = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const orderId = generateOrderId();
+    const userData = yield auth_model_1.User.findById(user === null || user === void 0 ? void 0 : user._id);
+    const courseData = yield course_model_1.default.findById(payload.courseId);
     const payloadData = {
         orderId,
         userId: user === null || user === void 0 ? void 0 : user._id,
+        name: userData === null || userData === void 0 ? void 0 : userData.name,
+        email: userData === null || userData === void 0 ? void 0 : userData.email,
+        phoneNumber: userData === null || userData === void 0 ? void 0 : userData.phoneNumber,
         userCustomId: user === null || user === void 0 ? void 0 : user.userId,
         courseId: payload.courseId,
+        courseTitle: courseData === null || courseData === void 0 ? void 0 : courseData.title,
+        coursePrice: courseData === null || courseData === void 0 ? void 0 : courseData.discountedPrice,
         totalAmount: payload.totalAmount,
     };
     const order = yield courseOrder_model_1.CourseOrder.create(payloadData);
@@ -66,9 +75,9 @@ const getAllCourseOrders = (keyword_1, ...args_1) => __awaiter(void 0, [keyword_
         const regex = { $regex: keyword, $options: "i" };
         query.$or = [
             { orderId: regex },
-            { "userId.name": regex },
-            { "userId.email": regex },
-            { "userId.phoneNumber": regex },
+            { name: regex },
+            { email: regex },
+            { phoneNumber: regex },
         ];
     }
     const skip = (page - 1) * limit;
@@ -76,9 +85,7 @@ const getAllCourseOrders = (keyword_1, ...args_1) => __awaiter(void 0, [keyword_
         courseOrder_model_1.CourseOrder.find(query)
             .skip(skip)
             .limit(limit)
-            .sort({ createdAt: -1 })
-            .populate("userId", "name email phoneNumber")
-            .populate("courseId", "title discountedPrice"),
+            .sort({ createdAt: -1 }),
         courseOrder_model_1.CourseOrder.countDocuments(query),
     ]);
     return {

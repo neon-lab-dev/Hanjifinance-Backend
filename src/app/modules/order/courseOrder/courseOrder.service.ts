@@ -5,6 +5,8 @@ import { TCourseOrder } from "./courseOrder.interface";
 import { CourseOrder } from "./courseOrder.model";
 import { razorpay } from "../../../utils/razorpay";
 import crypto from "crypto";
+import { User } from "../../auth/auth.model";
+import Course from "../../admin/course/course.model";
 
 const generateOrderId = () => {
   return "HFCO-" + Math.floor(1000 + Math.random() * 9000);
@@ -48,12 +50,19 @@ const verifyPayment = async (
 // Create course order
 const createCourseOrder = async (user: any, payload: TCourseOrder) => {
   const orderId = generateOrderId();
+  const userData = await User.findById(user?._id);
+  const courseData = await Course.findById(payload.courseId);
 
   const payloadData: Partial<TCourseOrder> = {
     orderId,
     userId: user?._id,
+    name : userData?.name,
+    email : userData?.email,
+    phoneNumber : userData?.phoneNumber,
     userCustomId: user?.userId,
     courseId: payload.courseId,
+    courseTitle: courseData?.title,
+    coursePrice: courseData?.discountedPrice,
     totalAmount: payload.totalAmount,
   };
 
@@ -69,9 +78,9 @@ const getAllCourseOrders = async (keyword?: string, page = 1, limit = 10) => {
     const regex = { $regex: keyword, $options: "i" };
     query.$or = [
       { orderId: regex },
-      { "userId.name": regex },
-      { "userId.email": regex },
-      { "userId.phoneNumber": regex },
+      { name: regex },
+      { email: regex },
+      { phoneNumber: regex },
     ];
   }
 
@@ -81,9 +90,7 @@ const getAllCourseOrders = async (keyword?: string, page = 1, limit = 10) => {
     CourseOrder.find(query)
       .skip(skip)
       .limit(limit)
-      .sort({ createdAt: -1 })
-      .populate("userId", "name email phoneNumber")
-      .populate("courseId", "title discountedPrice"),
+      .sort({ createdAt: -1 }),
     CourseOrder.countDocuments(query),
   ]);
 
