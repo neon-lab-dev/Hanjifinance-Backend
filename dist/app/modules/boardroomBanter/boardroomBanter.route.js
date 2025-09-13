@@ -9,6 +9,8 @@ const auth_1 = __importDefault(require("../../middlewares/auth"));
 const auth_constants_1 = require("../auth/auth.constants");
 const boardroomBanter_controller_1 = require("./boardroomBanter.controller");
 const router = express_1.default.Router();
+router.post("/join-waitlist", (0, auth_1.default)(auth_constants_1.UserRole.user, auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.joinWaitlist);
+router.put("/send-coupon-code", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.sendCouponCode);
 router.post("/create", (0, auth_1.default)(auth_constants_1.UserRole.user, auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.createSubscription);
 router.post("/pause", (0, auth_1.default)(auth_constants_1.UserRole.user, auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.pauseSubscription);
 router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.getAllSubscriptions);

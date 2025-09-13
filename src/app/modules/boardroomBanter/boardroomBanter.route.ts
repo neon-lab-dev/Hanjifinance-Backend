@@ -6,6 +6,18 @@ import { BoardRoomBanterSubscriptionController } from "./boardroomBanter.control
 const router = express.Router();
 
 router.post(
+  "/join-waitlist",
+  auth(UserRole.user, UserRole.admin, UserRole.moderator),
+  BoardRoomBanterSubscriptionController.joinWaitlist
+);
+
+router.put(
+  "/send-coupon-code",
+  auth(UserRole.admin, UserRole.moderator),
+  BoardRoomBanterSubscriptionController.sendCouponCode
+);
+
+router.post(
   "/create",
   auth(UserRole.user, UserRole.admin, UserRole.moderator),
   BoardRoomBanterSubscriptionController.createSubscription
@@ -42,7 +54,7 @@ router.get(
 
 router.put(
   "/update-whatsapp-status",
-  auth( UserRole.admin, UserRole.moderator),
+  auth(UserRole.admin, UserRole.moderator),
   BoardRoomBanterSubscriptionController.updateWhatsappGroupStatus
 );
 

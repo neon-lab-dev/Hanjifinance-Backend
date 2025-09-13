@@ -3,6 +3,32 @@ import sendResponse from "../../utils/sendResponse";
 import httpStatus from "http-status";
 import { BoardRoomBanterSubscriptionService } from "./boardroomBanter.service";
 
+const joinWaitlist = catchAsync(async (req, res) => {
+  const result = await BoardRoomBanterSubscriptionService.joinWaitlist(
+    req.user, req.body
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "We've received your request. We will contact you soon!",
+    data: result,
+  });
+});
+
+const sendCouponCode = catchAsync(async (req, res) => {
+  const result = await BoardRoomBanterSubscriptionService.sendCouponCode(
+    req.body
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.CREATED,
+    success: true,
+    message: "Coupon code sent!",
+    data: result,
+  });
+});
+
 const createSubscription = catchAsync(async (req, res) => {
   const result = await BoardRoomBanterSubscriptionService.createSubscription(
     req.user
@@ -191,6 +217,8 @@ const reAddUser = catchAsync(async (req, res) => {
 });
 
 export const BoardRoomBanterSubscriptionController = {
+  sendCouponCode,
+  joinWaitlist,
   createSubscription,
   verifySubscription,
   getAllSubscriptions,

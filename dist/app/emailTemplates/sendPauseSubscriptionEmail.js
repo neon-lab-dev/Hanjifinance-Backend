@@ -12,14 +12,14 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendSubscriptionEmails = exports.sendSubscriptionStatusEmails = void 0;
+exports.sendCouponCodeEmail = exports.sendSubscriptionEmails = exports.sendSubscriptionStatusEmails = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../errors/AppError"));
 const sendEmail_1 = require("../utils/sendEmail");
 const sendSubscriptionStatusEmails = (user, subscriptionDetails, action) => __awaiter(void 0, void 0, void 0, function* () {
-    const actionTense = action === 'paused' ? 'paused' : 'active';
-    const actionTitle = action === 'paused' ? 'Paused' : 'Resumed';
+    const actionTense = action === "paused" ? "paused" : "active";
+    const actionTitle = action === "paused" ? "Paused" : "Resumed";
     // Email to user
     const userSubject = `Subscription ${actionTitle} - Boardroom Banter`;
     const userHtmlBody = `
@@ -36,9 +36,9 @@ const sendSubscriptionStatusEmails = (user, subscriptionDetails, action) => __aw
         <p style="font-size:14px; margin:5px 0;"><strong>${actionTitle} Date:</strong> ${new Date().toLocaleDateString()}</p>
       </div>
       <p style="font-size:15px; color:#555;">
-        ${action === 'paused'
-        ? 'Your subscription benefits will be temporarily unavailable while paused. You can resume your subscription at any time from your account settings.'
-        : 'Your subscription benefits have been restored. You now have full access to all premium features.'}
+        ${action === "paused"
+        ? "Your subscription benefits will be temporarily unavailable while paused. You can resume your subscription at any time from your account settings."
+        : "Your subscription benefits have been restored. You now have full access to all premium features."}
       </p>
       <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
       <p style="font-size:16px; font-weight:bold; color:#c0392b;">The Boardroom Banter Team</p>
@@ -141,3 +141,38 @@ const sendSubscriptionEmails = (user, subscriptionDetails) => __awaiter(void 0, 
     }
 });
 exports.sendSubscriptionEmails = sendSubscriptionEmails;
+const sendCouponCodeEmail = (user, couponCode) => __awaiter(void 0, void 0, void 0, function* () {
+    const subject = `Your Exclusive Coupon Code - Boardroom Banter`;
+    const htmlBody = `
+  <div style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:20px;">
+    <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; padding:30px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+      <h2 style="color:#c0392b; text-align:center;">Boardroom Banter</h2>
+      <p style="font-size:16px; color:#333;">Hello <strong>${user.name}</strong>,</p>
+      <p style="font-size:15px; color:#555;">
+        We’re excited to share your exclusive coupon code for a Boardroom Banter subscription.
+      </p>
+      <div style="background:#f5f5f5; padding:20px; border-radius:6px; margin:20px 0; text-align:center;">
+        <p style="font-size:14px; color:#555; margin-bottom:8px;">Here’s your coupon code:</p>
+        <p style="font-size:24px; font-weight:bold; letter-spacing:2px; color:#c0392b; margin:0;">${couponCode}</p>
+      </div>
+      <p style="font-size:15px; color:#555; line-height:1.6;">
+        Use this code during checkout to purchase your <strong>Boardroom Banter Subscription</strong> 
+        and enjoy premium access to exclusive content, discussions, and resources.
+      </p>
+      <p style="font-size:15px; color:#555; margin-top:20px;">
+        Don’t miss out — activate your subscription today and become part of our growing community of forward-thinkers.
+      </p>
+      <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
+      <p style="font-size:16px; font-weight:bold; color:#c0392b;">The Boardroom Banter Team</p>
+    </div>
+  </div>
+  `;
+    try {
+        yield (0, sendEmail_1.sendEmail)(user.email, subject, htmlBody);
+        console.log(`Coupon code email sent to ${user.email}`);
+    }
+    catch (error) {
+        console.error(`Failed to send coupon code email:`, error);
+    }
+});
+exports.sendCouponCodeEmail = sendCouponCodeEmail;

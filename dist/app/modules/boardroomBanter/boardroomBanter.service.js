@@ -22,6 +22,16 @@ const crypto_1 = __importDefault(require("crypto"));
 const config_1 = __importDefault(require("../../config"));
 const sendPauseSubscriptionEmail_1 = require("../../emailTemplates/sendPauseSubscriptionEmail");
 const auth_model_1 = require("../auth/auth.model");
+const joinWaitlist = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.create(Object.assign(Object.assign({}, payload), { userId: user._id, status: "waitlist" }));
+    return subscription;
+});
+const sendCouponCode = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const user = yield auth_model_1.User.findOne({ email: payload === null || payload === void 0 ? void 0 : payload.email });
+    const result = yield boardroomBanter_model_1.BoardRoomBanterSubscription.findByIdAndUpdate(payload.subscriptionId, { isCouponCodeSent: true });
+    yield (0, sendPauseSubscriptionEmail_1.sendCouponCodeEmail)(user, payload === null || payload === void 0 ? void 0 : payload.couponCode);
+    return result;
+});
 const createSubscription = (user) => __awaiter(void 0, void 0, void 0, function* () {
     const planId = config_1.default.boardroom_banter_plan_id;
     if (!planId) {
@@ -185,6 +195,8 @@ const reAddUser = (userId) => __awaiter(void 0, void 0, void 0, function* () {
     return yield boardroomBanter_model_1.BoardRoomBanterSubscription.findByIdAndUpdate(userId, { isRemoved: false }, { new: true });
 });
 exports.BoardRoomBanterSubscriptionService = {
+    joinWaitlist,
+    sendCouponCode,
     createSubscription,
     verifySubscription,
     getAllSubscriptions,

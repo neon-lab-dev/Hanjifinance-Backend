@@ -6,10 +6,37 @@ import { razorpay } from "../../utils/razorpay";
 import crypto from "crypto";
 import config from "../../config";
 import {
+  sendCouponCodeEmail,
   sendSubscriptionEmails,
   sendSubscriptionStatusEmails,
 } from "../../emailTemplates/sendPauseSubscriptionEmail";
 import { User } from "../auth/auth.model";
+import { TBoardRoomBanterSubscription } from "./boardroomBanter.interface";
+
+const joinWaitlist = async (
+  user: any,
+  payload: TBoardRoomBanterSubscription
+) => {
+  const subscription = await BoardRoomBanterSubscription.create({
+    ...payload,
+    userId: user._id,
+    status: "waitlist",
+  });
+
+  return subscription;
+};
+
+const sendCouponCode = async (payload: any) => {
+  const user = await User.findOne({ email: payload?.email });
+  const result = await BoardRoomBanterSubscription.findByIdAndUpdate(
+    payload.subscriptionId,
+    { isCouponCodeSent: true }
+  );
+
+  await sendCouponCodeEmail(user, payload?.couponCode);
+
+  return result;
+};
 
 const createSubscription = async (user: any) => {
   const planId = config.boardroom_banter_plan_id;
@@ -257,6 +284,8 @@ const reAddUser = async (userId: string) => {
 };
 
 export const BoardRoomBanterSubscriptionService = {
+  joinWaitlist,
+  sendCouponCode,
   createSubscription,
   verifySubscription,
   getAllSubscriptions,
