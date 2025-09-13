@@ -127,7 +127,7 @@ const getAllProductOrders = async (
 const getSingleProductOrderById = async (orderId: string) => {
   const result = await ProductOrder.findOne({ orderId })
     .populate("userId", "name email phoneNumber")
-    .populate("orderedItems.productId", "name imageUrls category size price");
+    .populate("orderedItems.productId", "name imageUrls category");
 
   if (!result) {
     throw new AppError(httpStatus.NOT_FOUND, "Order not found");
