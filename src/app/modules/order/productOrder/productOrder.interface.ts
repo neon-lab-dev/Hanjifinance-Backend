@@ -3,6 +3,7 @@ import { ObjectId } from "mongoose";
 export interface TProductOrderItem {
   productId: ObjectId;
   quantity: number;
+  size: string;
   price: number;
 }
 
