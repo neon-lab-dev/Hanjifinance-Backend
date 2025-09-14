@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.post(
   "/join-waitlist",
-  auth(UserRole.user, UserRole.admin, UserRole.moderator),
+  auth(UserRole.user),
   BoardRoomBanterSubscriptionController.joinWaitlist
 );
 
@@ -19,14 +19,31 @@ router.put(
 
 router.post(
   "/create",
-  auth(UserRole.user, UserRole.admin, UserRole.moderator),
+  auth(UserRole.user),
   BoardRoomBanterSubscriptionController.createSubscription
 );
 
 router.post(
+  "/verify-payment",
+  BoardRoomBanterSubscriptionController.verifySubscription
+);
+
+router.post(
   "/pause",
-  auth(UserRole.user, UserRole.admin, UserRole.moderator),
+  auth(UserRole.user),
   BoardRoomBanterSubscriptionController.pauseSubscription
+);
+
+router.post(
+  "/resume",
+  auth(UserRole.user),
+  BoardRoomBanterSubscriptionController.resumeSubscription
+);
+
+router.post(
+  "/cancel",
+  auth(UserRole.user),
+  BoardRoomBanterSubscriptionController.cancelSubscription
 );
 
 router.get(
@@ -40,11 +57,7 @@ router.get(
   BoardRoomBanterSubscriptionController.getSingleSubscriptionById
 );
 
-router.post(
-  "/resume",
-  auth(UserRole.user, UserRole.admin, UserRole.moderator),
-  BoardRoomBanterSubscriptionController.resumeSubscription
-);
+
 
 router.get(
   "/my-subscription",

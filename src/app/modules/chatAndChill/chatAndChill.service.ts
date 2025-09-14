@@ -20,8 +20,8 @@ const checkout = async (amount: number) => {
 
 // Verify payment
 const verifyPayment = async (
-  razorpayOrderId: string,
-  // razorpayPaymentId: string,
+  // razorpayOrderId: string,
+  razorpayPaymentId: string,
   // razorpaySignature: string
 ) => {
   // if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
@@ -38,13 +38,13 @@ const verifyPayment = async (
   // }
 
   // Mark booking as booked
-  await ChatAndChill.findOneAndUpdate(
-    { razorpayOrderId },
-    { status: "booked" },
-    { new: true }
-  );
+  // await ChatAndChill.findOneAndUpdate(
+  //   { razorpayOrderId },
+  //   { status: "booked" },
+  //   { new: true }
+  // );
 
-  return `${process.env.PAYMENT_REDIRECT_URL}/success?orderId=${razorpayOrderId}`;
+  return `${process.env.PAYMENT_REDIRECT_URL}-success?type=chatAndChill&orderId=${razorpayPaymentId}`;
 };
 
 // Book Chat & Chill

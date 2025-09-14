@@ -6,10 +6,21 @@ import { sendEmail } from "../utils/sendEmail";
 export const sendSubscriptionStatusEmails = async (
   user: any,
   subscriptionDetails: any,
-  action: "paused" | "active"
+  action: "paused" | "active" | "cancelled"
 ) => {
-  const actionTense = action === "paused" ? "paused" : "active";
-  const actionTitle = action === "paused" ? "Paused" : "Resumed";
+  const actionTense =
+    action === "paused"
+      ? "paused"
+      : action === "active"
+      ? "resumed"
+      : "cancelled";
+
+  const actionTitle =
+    action === "paused"
+      ? "Paused"
+      : action === "active"
+      ? "Resumed"
+      : "Cancelled";
 
   // Email to user
   const userSubject = `Subscription ${actionTitle} - Boardroom Banter`;
@@ -30,7 +41,9 @@ export const sendSubscriptionStatusEmails = async (
         ${
           action === "paused"
             ? "Your subscription benefits will be temporarily unavailable while paused. You can resume your subscription at any time from your account settings."
-            : "Your subscription benefits have been restored. You now have full access to all premium features."
+            : action === "active"
+            ? "Your subscription benefits have been restored. You now have full access to all premium features."
+            : "Your subscription has been cancelled. You will no longer have access to premium features. If this was a mistake, you can purchase a new subscription anytime."
         }
       </p>
       <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
@@ -73,10 +86,9 @@ export const sendSubscriptionStatusEmails = async (
     console.log(`Subscription ${action} emails sent successfully`);
   } catch (error) {
     console.error(`Failed to send ${action} emails:`, error);
-    // Don't throw error here as subscription action was completed successfully
-    // Just log the email failure
   }
 };
+
 
 export const sendSubscriptionEmails = async (
   user: any,

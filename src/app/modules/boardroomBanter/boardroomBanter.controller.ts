@@ -5,7 +5,8 @@ import { BoardRoomBanterSubscriptionService } from "./boardroomBanter.service";
 
 const joinWaitlist = catchAsync(async (req, res) => {
   const result = await BoardRoomBanterSubscriptionService.joinWaitlist(
-    req.user, req.body
+    req.user,
+    req.body
   );
 
   sendResponse(res, {
@@ -43,24 +44,14 @@ const createSubscription = catchAsync(async (req, res) => {
 });
 
 const verifySubscription = catchAsync(async (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-    req.body;
+  const { razorpay_payment_id } = req.body;
 
-  const result = await BoardRoomBanterSubscriptionService.verifySubscription(
-    razorpay_order_id,
-    razorpay_payment_id,
-    razorpay_signature
-  );
+  const redirectUrl =
+    await BoardRoomBanterSubscriptionService.verifySubscription(
+      razorpay_payment_id
+    );
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "Payment verified successfully",
-    data: {
-      redirectUrl: result.redirectUrl,
-      subscription: result.subscription,
-    },
-  });
+  return res.redirect(redirectUrl);
 });
 
 // Get all subscriptions (Admin/Moderator)
@@ -133,6 +124,19 @@ const resumeSubscription = catchAsync(async (req, res) => {
     statusCode: httpStatus.OK,
     success: true,
     message: "BoardRoomBanter subscription resumed successfully",
+    data: result,
+  });
+});
+
+const cancelSubscription = catchAsync(async (req, res) => {
+  const result = await BoardRoomBanterSubscriptionService.cancelSubscription(
+    req.user
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "BoardRoomBanter subscription cancelled!",
     data: result,
   });
 });
@@ -225,6 +229,7 @@ export const BoardRoomBanterSubscriptionController = {
   getSingleSubscriptionById,
   pauseSubscription,
   resumeSubscription,
+  cancelSubscription,
   getMySubscription,
   updateWhatsappGroupStatus,
   suspendUser,

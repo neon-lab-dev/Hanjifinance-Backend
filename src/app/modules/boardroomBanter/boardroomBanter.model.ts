@@ -23,7 +23,7 @@ const boardRoomBanterSubscriptionSchema =
       },
       status: {
         type: String,
-        enum: ["waitlist", "active", "paused", "expired", "pending"],
+        enum: ["waitlist", "code sent", "active", "paused", "expired", "pending", "cancelled"],
         default: "active",
       },
       pauseDate: {
@@ -32,13 +32,16 @@ const boardRoomBanterSubscriptionSchema =
       resumeDate: {
         type: Date,
       },
+      cancelDate: {
+        type: Date,
+        required: false,
+      },
       razorpaySubscriptionId: { type: String, required: false, default: "" },
       razorpayPaymentId: { type: String },
       razorpaySignature: { type: String },
       isAddedToWhatsappGroup: { type: Boolean, default: false },
       isSuspended: { type: Boolean, default: false },
       isRemoved: { type: Boolean, default: false },
-      isCouponCodeSent: { type: Boolean, default: false },
     },
     { timestamps: true }
   );

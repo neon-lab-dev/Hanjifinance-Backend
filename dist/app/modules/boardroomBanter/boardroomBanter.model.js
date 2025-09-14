@@ -22,7 +22,7 @@ const boardRoomBanterSubscriptionSchema = new mongoose_1.Schema({
     },
     status: {
         type: String,
-        enum: ["waitlist", "active", "paused", "expired", "pending"],
+        enum: ["waitlist", "code sent", "active", "paused", "expired", "pending", "cancelled"],
         default: "active",
     },
     pauseDate: {
@@ -31,12 +31,15 @@ const boardRoomBanterSubscriptionSchema = new mongoose_1.Schema({
     resumeDate: {
         type: Date,
     },
+    cancelDate: {
+        type: Date,
+        required: false,
+    },
     razorpaySubscriptionId: { type: String, required: false, default: "" },
     razorpayPaymentId: { type: String },
     razorpaySignature: { type: String },
     isAddedToWhatsappGroup: { type: Boolean, default: false },
     isSuspended: { type: Boolean, default: false },
     isRemoved: { type: Boolean, default: false },
-    isCouponCodeSent: { type: Boolean, default: false },
 }, { timestamps: true });
 exports.BoardRoomBanterSubscription = (0, mongoose_1.model)("BoardRoomBanterSubscription", boardRoomBanterSubscriptionSchema);

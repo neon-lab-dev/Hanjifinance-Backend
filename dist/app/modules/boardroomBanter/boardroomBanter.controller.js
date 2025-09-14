@@ -45,17 +45,9 @@ const createSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(voi
     });
 }));
 const verifySubscription = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.verifySubscription(razorpay_order_id, razorpay_payment_id, razorpay_signature);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: "Payment verified successfully",
-        data: {
-            redirectUrl: result.redirectUrl,
-            subscription: result.subscription,
-        },
-    });
+    const { razorpay_payment_id } = req.body;
+    const redirectUrl = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.verifySubscription(razorpay_payment_id);
+    return res.redirect(redirectUrl);
 }));
 // Get all subscriptions (Admin/Moderator)
 const getAllSubscriptions = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -97,6 +89,15 @@ const resumeSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(voi
         statusCode: http_status_1.default.OK,
         success: true,
         message: "BoardRoomBanter subscription resumed successfully",
+        data: result,
+    });
+}));
+const cancelSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.cancelSubscription(req.user);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "BoardRoomBanter subscription cancelled!",
         data: result,
     });
 }));
@@ -169,6 +170,7 @@ exports.BoardRoomBanterSubscriptionController = {
     getSingleSubscriptionById,
     pauseSubscription,
     resumeSubscription,
+    cancelSubscription,
     getMySubscription,
     updateWhatsappGroupStatus,
     suspendUser,

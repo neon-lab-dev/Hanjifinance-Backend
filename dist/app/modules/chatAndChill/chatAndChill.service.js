@@ -31,7 +31,9 @@ const checkout = (amount) => __awaiter(void 0, void 0, void 0, function* () {
     return order;
 });
 // Verify payment
-const verifyPayment = (razorpayOrderId) => __awaiter(void 0, void 0, void 0, function* () {
+const verifyPayment = (
+// razorpayOrderId: string,
+razorpayPaymentId) => __awaiter(void 0, void 0, void 0, function* () {
     // if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
     //   return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
     // }
@@ -43,8 +45,12 @@ const verifyPayment = (razorpayOrderId) => __awaiter(void 0, void 0, void 0, fun
     //   return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
     // }
     // Mark booking as booked
-    yield chatAndChill_model_1.default.findOneAndUpdate({ razorpayOrderId }, { status: "booked" }, { new: true });
-    return `${process.env.PAYMENT_REDIRECT_URL}/success?orderId=${razorpayOrderId}`;
+    // await ChatAndChill.findOneAndUpdate(
+    //   { razorpayOrderId },
+    //   { status: "booked" },
+    //   { new: true }
+    // );
+    return `${process.env.PAYMENT_REDIRECT_URL}-success?type=chatAndChill&orderId=${razorpayPaymentId}`;
 });
 // Book Chat & Chill
 const bookChatAndChill = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {

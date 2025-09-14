@@ -17,15 +17,16 @@ const checkout = catchAsync(async (req, res) => {
 
 // Verify payment
 const verifyPayment = catchAsync(async (req, res) => {
-  const { razorpay_order_id, 
-    // razorpay_payment_id, 
+  const {
+    //  razorpay_order_id, 
+    razorpay_payment_id, 
     // razorpay_signature
    } =
     req.body;
 
   const redirectUrl = await ChatAndChillService.verifyPayment(
-    razorpay_order_id,
-    // razorpay_payment_id,
+    // razorpay_order_id,
+    razorpay_payment_id,
     // razorpay_signature
   );
 

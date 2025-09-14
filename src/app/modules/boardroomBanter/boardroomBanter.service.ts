@@ -3,7 +3,6 @@ import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import { BoardRoomBanterSubscription } from "./boardroomBanter.model";
 import { razorpay } from "../../utils/razorpay";
-import crypto from "crypto";
 import config from "../../config";
 import {
   sendCouponCodeEmail,
@@ -30,7 +29,7 @@ const sendCouponCode = async (payload: any) => {
   const user = await User.findOne({ email: payload?.email });
   const result = await BoardRoomBanterSubscription.findByIdAndUpdate(
     payload.subscriptionId,
-    { isCouponCodeSent: true }
+    { status: "code sent" }
   );
 
   await sendCouponCodeEmail(user, payload?.couponCode);
@@ -56,76 +55,43 @@ const createSubscription = async (user: any) => {
       quantity: 1,
     });
   } catch (error: any) {
-    console.error("Razorpay subscription creation failed:", error);
     throw new AppError(
       httpStatus.INTERNAL_SERVER_ERROR,
       "Failed to create subscription"
     );
   }
+
   const userData = await User.findById(user?._id);
 
-  const subscription = await BoardRoomBanterSubscription.create({
-    userId: user?._id,
-    name: user?.name,
-    email: user?.email,
-    phoneNumber: userData?.phoneNumber,
-    razorpaySubscriptionId: razorpaySubscription.id,
-    status: "pending", // pending until payment verified
-  });
+  // upsert: update if exists, otherwise create new
+  const subscription = await BoardRoomBanterSubscription.findOneAndUpdate(
+    { userId: user?._id },
+    {
+      $set: {
+        name: user?.name,
+        email: user?.email,
+        phoneNumber: userData?.phoneNumber,
+        razorpaySubscriptionId: razorpaySubscription.id,
+        status: "active",
+        startDate: razorpaySubscription.start_at
+          ? new Date(razorpaySubscription.start_at * 1000)
+          : new Date(),
+        endDate: razorpaySubscription.end_at
+          ? new Date(razorpaySubscription.end_at * 1000)
+          : null,
+      },
+    },
+    { upsert: true, new: true }
+  );
 
   await sendSubscriptionEmails(user, subscription);
 
   return subscription;
 };
 
-const verifySubscription = async (
-  razorpaySubscriptionId: string,
-  razorpayPaymentId: string,
-  razorpaySignature: string
-) => {
-  if (!razorpaySubscriptionId || !razorpayPaymentId || !razorpaySignature) {
-    return {
-      success: false,
-      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/failed`,
-    };
-  }
 
-  const generatedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_API_SECRET!)
-    .update(`${razorpaySubscriptionId}|${razorpayPaymentId}`)
-    .digest("hex");
-
-  if (generatedSignature !== razorpaySignature) {
-    return {
-      success: false,
-      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/failed`,
-    };
-  }
-
-  const subscription = await BoardRoomBanterSubscription.findOneAndUpdate(
-    { razorpaySubscriptionId },
-    {
-      razorpayPaymentId,
-      razorpaySignature,
-      status: "active",
-      startDate: new Date(),
-      endDate: new Date(new Date().setMonth(new Date().getMonth() + 1)),
-    },
-    { new: true }
-  );
-
-  if (!subscription) {
-    return {
-      success: false,
-      redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/failed`,
-    };
-  }
-
-  return {
-    success: true,
-    redirectUrl: `${process.env.PAYMENT_REDIRECT_URL}/success?subscriptionId=${razorpaySubscriptionId}`,
-    subscription,
-  };
+const verifySubscription = async (razorpayPaymentId: string) => {
+  return `${process.env.PAYMENT_REDIRECT_URL}-success?type=boardroomBanter&orderId=${razorpayPaymentId}`;
 };
 
 // Get all bookings (with pagination, filter by keyword + status)
@@ -194,6 +160,7 @@ const getSingleSubscriptionById = async (id: string) => {
   return subscription;
 };
 
+// Pause Subscription
 const pauseSubscription = async (user: any) => {
   const subscription = await BoardRoomBanterSubscription.findOne({
     userId: user?._id,
@@ -201,10 +168,16 @@ const pauseSubscription = async (user: any) => {
   });
 
   if (!subscription) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "No active subscription found to pause"
-    );
+    throw new AppError(httpStatus.NOT_FOUND, "No active subscription found to pause");
+  }
+
+  try {
+    await razorpay.subscriptions.pause(subscription.razorpaySubscriptionId!, {
+      pause_at: "now",
+    });
+  } catch (error: any) {
+    console.error("Razorpay pause failed:", error);
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to pause subscription in Razorpay");
   }
 
   subscription.status = "paused";
@@ -212,10 +185,10 @@ const pauseSubscription = async (user: any) => {
   await subscription.save();
 
   await sendSubscriptionStatusEmails(user, subscription, "paused");
-
   return subscription;
 };
 
+// Resume Subscription
 const resumeSubscription = async (user: any) => {
   const subscription = await BoardRoomBanterSubscription.findOne({
     userId: user?._id,
@@ -223,19 +196,53 @@ const resumeSubscription = async (user: any) => {
   });
 
   if (!subscription) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "No paused subscription found to resume"
-    );
+    throw new AppError(httpStatus.NOT_FOUND, "No paused subscription found to resume");
+  }
+
+  try {
+    await razorpay.subscriptions.resume(subscription.razorpaySubscriptionId!, {
+      resume_at: "now",
+    });
+  } catch (error: any) {
+    console.error("Razorpay resume failed:", error);
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to resume subscription in Razorpay");
   }
 
   subscription.status = "active";
   subscription.resumeDate = new Date();
-
   await subscription.save();
+
   await sendSubscriptionStatusEmails(user, subscription, "active");
   return subscription;
 };
+
+// Cancel Subscription
+const cancelSubscription = async (user: any) => {
+  const subscription = await BoardRoomBanterSubscription.findOne({
+    userId: user?._id,
+    status: { $in: ["active", "paused"] },
+  });
+
+  if (!subscription) {
+    throw new AppError(httpStatus.NOT_FOUND, "No subscription found to cancel");
+  }
+
+  try {
+    // Call Razorpay cancel API
+    await razorpay.subscriptions.cancel(subscription.razorpaySubscriptionId!);
+  } catch (error: any) {
+    console.error("Razorpay cancel failed:", error);
+    throw new AppError(httpStatus.INTERNAL_SERVER_ERROR, "Failed to cancel subscription in Razorpay");
+  }
+
+  subscription.status = "cancelled";
+  subscription.cancelDate = new Date();
+  await subscription.save();
+
+  await sendSubscriptionStatusEmails(user, subscription, "cancelled");
+  return subscription;
+};
+
 
 const getMySubscription = async (userId: string) => {
   return await BoardRoomBanterSubscription.findOne({ userId }).sort({
@@ -292,6 +299,7 @@ export const BoardRoomBanterSubscriptionService = {
   getSingleSubscriptionById,
   pauseSubscription,
   resumeSubscription,
+  cancelSubscription,
   getMySubscription,
   updateWhatsappGroupStatus,
   suspendUser,

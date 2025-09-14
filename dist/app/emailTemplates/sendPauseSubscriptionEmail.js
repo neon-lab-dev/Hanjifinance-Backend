@@ -18,8 +18,16 @@ const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../errors/AppError"));
 const sendEmail_1 = require("../utils/sendEmail");
 const sendSubscriptionStatusEmails = (user, subscriptionDetails, action) => __awaiter(void 0, void 0, void 0, function* () {
-    const actionTense = action === "paused" ? "paused" : "active";
-    const actionTitle = action === "paused" ? "Paused" : "Resumed";
+    const actionTense = action === "paused"
+        ? "paused"
+        : action === "active"
+            ? "resumed"
+            : "cancelled";
+    const actionTitle = action === "paused"
+        ? "Paused"
+        : action === "active"
+            ? "Resumed"
+            : "Cancelled";
     // Email to user
     const userSubject = `Subscription ${actionTitle} - Boardroom Banter`;
     const userHtmlBody = `
@@ -38,7 +46,9 @@ const sendSubscriptionStatusEmails = (user, subscriptionDetails, action) => __aw
       <p style="font-size:15px; color:#555;">
         ${action === "paused"
         ? "Your subscription benefits will be temporarily unavailable while paused. You can resume your subscription at any time from your account settings."
-        : "Your subscription benefits have been restored. You now have full access to all premium features."}
+        : action === "active"
+            ? "Your subscription benefits have been restored. You now have full access to all premium features."
+            : "Your subscription has been cancelled. You will no longer have access to premium features. If this was a mistake, you can purchase a new subscription anytime."}
       </p>
       <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
       <p style="font-size:16px; font-weight:bold; color:#c0392b;">The Boardroom Banter Team</p>
@@ -77,8 +87,6 @@ const sendSubscriptionStatusEmails = (user, subscriptionDetails, action) => __aw
     }
     catch (error) {
         console.error(`Failed to send ${action} emails:`, error);
-        // Don't throw error here as subscription action was completed successfully
-        // Just log the email failure
     }
 });
 exports.sendSubscriptionStatusEmails = sendSubscriptionStatusEmails;

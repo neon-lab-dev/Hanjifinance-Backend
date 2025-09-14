@@ -10,14 +10,14 @@ export interface TBoardRoomBanterSubscription extends Document {
   message?:string;
   startDate: Date;
   endDate: Date;
-  status: "waitlist" | "active" | "paused" | "expired" | "pending";
+  status: "waitlist" | "code sent" | "active" | "paused" | "expired" | "pending" | "cancelled";
   pauseDate?: Date;
   resumeDate?: Date;
+  cancelDate?: Date;
   razorpaySubscriptionId?: string;
   razorpayPaymentId?: string;
   razorpaySignature?: string;
   isAddedToWhatsappGroup?: boolean;
   isSuspended?: boolean;
   isRemoved?: boolean;
-  isCouponCodeSent?: boolean;
 }
