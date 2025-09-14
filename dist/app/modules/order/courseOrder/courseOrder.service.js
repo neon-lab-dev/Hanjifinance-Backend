@@ -18,7 +18,6 @@ const AppError_1 = __importDefault(require("../../../errors/AppError"));
 const http_status_1 = __importDefault(require("http-status"));
 const courseOrder_model_1 = require("./courseOrder.model");
 const razorpay_1 = require("../../../utils/razorpay");
-const crypto_1 = __importDefault(require("crypto"));
 const auth_model_1 = require("../../auth/auth.model");
 const course_model_1 = __importDefault(require("../../admin/course/course.model"));
 const generateOrderId = () => {
@@ -35,18 +34,8 @@ const checkout = (amount) => __awaiter(void 0, void 0, void 0, function* () {
     return razorpayOrder;
 });
 // Verify payment
-const verifyPayment = (razorpayOrderId, razorpayPaymentId, razorpaySignature) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-        return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-    }
-    const generatedSignature = crypto_1.default
-        .createHmac("sha256", process.env.RAZORPAY_API_SECRET)
-        .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-        .digest("hex");
-    if (generatedSignature !== razorpaySignature) {
-        return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-    }
-    return `${process.env.PAYMENT_REDIRECT_URL}/success?orderId=${razorpayOrderId}`;
+const verifyPayment = (razorpayPaymentId) => __awaiter(void 0, void 0, void 0, function* () {
+    return `${process.env.PAYMENT_REDIRECT_URL}-success?type=course&orderId=${razorpayPaymentId}`;
 });
 // Create course order
 const createCourseOrder = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -82,10 +71,7 @@ const getAllCourseOrders = (keyword_1, ...args_1) => __awaiter(void 0, [keyword_
     }
     const skip = (page - 1) * limit;
     const [orders, total] = yield Promise.all([
-        courseOrder_model_1.CourseOrder.find(query)
-            .skip(skip)
-            .limit(limit)
-            .sort({ createdAt: -1 }),
+        courseOrder_model_1.CourseOrder.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
         courseOrder_model_1.CourseOrder.countDocuments(query),
     ]);
     return {

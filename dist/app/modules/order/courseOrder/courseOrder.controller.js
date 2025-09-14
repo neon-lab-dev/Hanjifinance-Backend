@@ -27,10 +27,10 @@ const checkout = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 
         data: razorpayOrder,
     });
 }));
-// Verify payment (Razorpay callback)
+// Verify payment
 const verifyPayment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-    const redirectUrl = yield courseOrder_service_1.CourseOrderService.verifyPayment(razorpay_order_id, razorpay_payment_id, razorpay_signature);
+    const { razorpay_payment_id } = req.body;
+    const redirectUrl = yield courseOrder_service_1.CourseOrderService.verifyPayment(razorpay_payment_id);
     return res.redirect(redirectUrl);
 }));
 // Create order (customer)

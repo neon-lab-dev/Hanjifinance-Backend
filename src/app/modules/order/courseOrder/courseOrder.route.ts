@@ -14,7 +14,6 @@ router.post(
 
 router.post(
   "/verify-payment",
-  auth(UserRole.admin, UserRole.moderator, UserRole.user),
   CourseOrderControllers.verifyPayment
 );
 

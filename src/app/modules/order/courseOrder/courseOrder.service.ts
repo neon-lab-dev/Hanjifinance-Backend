@@ -4,7 +4,6 @@ import httpStatus from "http-status";
 import { TCourseOrder } from "./courseOrder.interface";
 import { CourseOrder } from "./courseOrder.model";
 import { razorpay } from "../../../utils/razorpay";
-import crypto from "crypto";
 import { User } from "../../auth/auth.model";
 import Course from "../../admin/course/course.model";
 
@@ -26,25 +25,8 @@ const checkout = async (amount: number) => {
 };
 
 // Verify payment
-const verifyPayment = async (
-  razorpayOrderId: string,
-  razorpayPaymentId: string,
-  razorpaySignature: string
-): Promise<string> => {
-  if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-    return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-  }
-
-  const generatedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_API_SECRET!)
-    .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-    .digest("hex");
-
-  if (generatedSignature !== razorpaySignature) {
-    return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-  }
-
-  return `${process.env.PAYMENT_REDIRECT_URL}/success?orderId=${razorpayOrderId}`;
+const verifyPayment = async (razorpayPaymentId: string) => {
+  return `${process.env.PAYMENT_REDIRECT_URL}-success?type=course&orderId=${razorpayPaymentId}`;
 };
 
 // Create course order
@@ -56,9 +38,9 @@ const createCourseOrder = async (user: any, payload: TCourseOrder) => {
   const payloadData: Partial<TCourseOrder> = {
     orderId,
     userId: user?._id,
-    name : userData?.name,
-    email : userData?.email,
-    phoneNumber : userData?.phoneNumber,
+    name: userData?.name,
+    email: userData?.email,
+    phoneNumber: userData?.phoneNumber,
     userCustomId: user?.userId,
     courseId: payload.courseId,
     courseTitle: courseData?.title,
@@ -87,10 +69,7 @@ const getAllCourseOrders = async (keyword?: string, page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
 
   const [orders, total] = await Promise.all([
-    CourseOrder.find(query)
-      .skip(skip)
-      .limit(limit)
-      .sort({ createdAt: -1 }),
+    CourseOrder.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
     CourseOrder.countDocuments(query),
   ]);
 

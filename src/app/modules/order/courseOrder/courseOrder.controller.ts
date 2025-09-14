@@ -14,19 +14,16 @@ const checkout = catchAsync(async (req, res) => {
   });
 });
 
-// Verify payment (Razorpay callback)
+// Verify payment
 const verifyPayment = catchAsync(async (req, res) => {
-  const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-    req.body;
+  const { razorpay_payment_id } = req.body;
 
-  const redirectUrl = await CourseOrderService.verifyPayment(
-    razorpay_order_id,
-    razorpay_payment_id,
-    razorpay_signature
-  );
+  const redirectUrl =
+    await CourseOrderService.verifyPayment(razorpay_payment_id);
 
   return res.redirect(redirectUrl);
 });
+
 // Create order (customer)
 const createCourseOrder = catchAsync(async (req, res) => {
   const result = await CourseOrderService.createCourseOrder(req.user, req.body);
