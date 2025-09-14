@@ -6,7 +6,7 @@ import { ProductOrderControllers } from "./productOrder.controller";
 const router = Router();
 
 router.post("/checkout", auth(UserRole.admin, UserRole.moderator, UserRole.user), ProductOrderControllers.checkout);
-router.post("/verify-payment", auth(UserRole.admin, UserRole.moderator, UserRole.user), ProductOrderControllers.verifyPayment);
+router.post("/verify-payment", ProductOrderControllers.verifyPayment);
 router.post("/create", auth(UserRole.admin, UserRole.moderator, UserRole.user), ProductOrderControllers.createProductOrder);
 router.get("/my-orders", auth(UserRole.admin, UserRole.moderator, UserRole.user), ProductOrderControllers.getMyProductOrders);
 

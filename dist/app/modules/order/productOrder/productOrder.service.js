@@ -19,7 +19,6 @@ const http_status_1 = __importDefault(require("http-status"));
 const product_model_1 = __importDefault(require("../../admin/product/product.model"));
 const productOrder_model_1 = require("./productOrder.model");
 const razorpay_1 = require("../../../utils/razorpay");
-const crypto_1 = __importDefault(require("crypto"));
 const generateOrderId = () => {
     return "HFPO-" + Math.floor(1000 + Math.random() * 9000);
 };
@@ -34,19 +33,8 @@ const checkout = (amount) => __awaiter(void 0, void 0, void 0, function* () {
     return razorpayOrder;
 });
 // Verify payment
-const verifyPayment = (razorpayOrderId, razorpayPaymentId, razorpaySignature) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-        return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-    }
-    const generatedSignature = crypto_1.default
-        .createHmac("sha256", process.env.RAZORPAY_API_SECRET)
-        .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-        .digest("hex");
-    if (generatedSignature !== razorpaySignature) {
-        return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-    }
-    // Success
-    return `${process.env.PAYMENT_REDIRECT_URL}/success?orderId=${razorpayOrderId}`;
+const verifyPayment = (razorpayPaymentId) => __awaiter(void 0, void 0, void 0, function* () {
+    return `${process.env.PAYMENT_REDIRECT_URL}-success?type=product&orderId=${razorpayPaymentId}`;
 });
 // Create Razorpay order
 const createProductOrder = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
@@ -78,7 +66,7 @@ const getAllProductOrders = (keyword_1, status_1, ...args_1) => __awaiter(void 0
     const skip = (page - 1) * limit;
     // Base query
     let mongooseQuery = productOrder_model_1.ProductOrder.find(query)
-        .populate("userId", "name email phoneNumber")
+        .populate("userId", "name email phoneNumber pinCode city addressLine1 addressLine2")
         .skip(skip)
         .limit(limit);
     // Apply keyword search (orderId + user fields)
@@ -109,7 +97,7 @@ const getAllProductOrders = (keyword_1, status_1, ...args_1) => __awaiter(void 0
 // Get single order by ID
 const getSingleProductOrderById = (orderId) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield productOrder_model_1.ProductOrder.findOne({ orderId })
-        .populate("userId", "name email phoneNumber")
+        .populate("userId", "name email phoneNumber pinCode city addressLine1 addressLine2")
         .populate("orderedItems.productId", "name imageUrls category");
     if (!result) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Order not found");

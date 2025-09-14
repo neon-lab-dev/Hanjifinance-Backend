@@ -15,12 +15,12 @@ const getAllUser = catchAsync(async (req, res) => {
 });
 
 const getMe = catchAsync(async (req, res) => {
-  const userId = req.user.userId;
+  const userId = req.user._id;
   const result = await UserServices.getMe(userId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: 'User profile retrieved successfully',
+    message: 'Profile retrieved successfully',
     data: result,
   });
 });
@@ -105,7 +105,7 @@ const getSingleUserById = catchAsync(async (req, res) => {
 // Update profile
 const updateProfile = catchAsync(async (req, res) => {
   const file = req.file;
-  const userId = req.user.userId;
+  const userId = req.user._id;
   const result = await UserServices.updateProfile(userId, req.body, file);
 
   sendResponse(res, {

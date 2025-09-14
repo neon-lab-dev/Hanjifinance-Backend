@@ -5,7 +5,6 @@ import { TProductOrder } from "./productOrder.interface";
 import Product from "../../admin/product/product.model";
 import { ProductOrder } from "./productOrder.model";
 import { razorpay } from "../../../utils/razorpay";
-import crypto from "crypto";
 
 const generateOrderId = () => {
   return "HFPO-" + Math.floor(1000 + Math.random() * 9000);
@@ -25,27 +24,10 @@ const checkout = async (amount: number) => {
 };
 
 // Verify payment
-const verifyPayment = async (
-  razorpayOrderId: string,
-  razorpayPaymentId: string,
-  razorpaySignature: string
-): Promise<string> => {
-  if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
-    return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-  }
-
-  const generatedSignature = crypto
-    .createHmac("sha256", process.env.RAZORPAY_API_SECRET!)
-    .update(`${razorpayOrderId}|${razorpayPaymentId}`)
-    .digest("hex");
-
-  if (generatedSignature !== razorpaySignature) {
-    return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
-  }
-
-  // Success
-  return `${process.env.PAYMENT_REDIRECT_URL}/success?orderId=${razorpayOrderId}`;
+const verifyPayment = async (razorpayPaymentId: string) => {
+  return `${process.env.PAYMENT_REDIRECT_URL}-success?type=product&orderId=${razorpayPaymentId}`;
 };
+
 
 // Create Razorpay order
 const createProductOrder = async (user: any, payload: TProductOrder) => {
@@ -90,7 +72,7 @@ const getAllProductOrders = async (
 
   // Base query
   let mongooseQuery = ProductOrder.find(query)
-    .populate("userId", "name email phoneNumber")
+    .populate("userId", "name email phoneNumber pinCode city addressLine1 addressLine2")
     .skip(skip)
     .limit(limit);
 
@@ -126,7 +108,7 @@ const getAllProductOrders = async (
 // Get single order by ID
 const getSingleProductOrderById = async (orderId: string) => {
   const result = await ProductOrder.findOne({ orderId })
-    .populate("userId", "name email phoneNumber")
+    .populate("userId", "name email phoneNumber pinCode city addressLine1 addressLine2")
     .populate("orderedItems.productId", "name imageUrls category");
 
   if (!result) {

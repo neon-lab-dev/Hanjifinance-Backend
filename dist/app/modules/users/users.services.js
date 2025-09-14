@@ -23,7 +23,7 @@ const getAllUser = () => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 const getMe = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield auth_model_1.User.findOne({ userId });
+    const result = yield auth_model_1.User.findById(userId);
     return result;
 });
 const getMyOrders = (userId) => __awaiter(void 0, void 0, void 0, function* () {
