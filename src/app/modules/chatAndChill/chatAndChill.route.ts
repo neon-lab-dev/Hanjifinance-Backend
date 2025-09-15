@@ -61,7 +61,7 @@ router.get(
 // Update booking status (Admin/Moderator)
 router.put(
   "/update-status/:bookingId",
-  auth(UserRole.admin, UserRole.moderator),
+  auth(UserRole.admin, UserRole.moderator, UserRole.user),
   ChatAndChillControllers.updateBookingStatus
 );
 

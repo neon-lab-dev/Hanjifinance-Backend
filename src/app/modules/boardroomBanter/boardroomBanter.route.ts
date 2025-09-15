@@ -51,13 +51,6 @@ router.get(
   auth(UserRole.admin, UserRole.moderator),
   BoardRoomBanterSubscriptionController.getAllSubscriptions
 );
-router.get(
-  "/:id",
-  auth(UserRole.admin, UserRole.moderator),
-  BoardRoomBanterSubscriptionController.getSingleSubscriptionById
-);
-
-
 
 router.get(
   "/my-subscription",
@@ -69,6 +62,12 @@ router.put(
   "/update-whatsapp-status",
   auth(UserRole.admin, UserRole.moderator),
   BoardRoomBanterSubscriptionController.updateWhatsappGroupStatus
+);
+
+router.get(
+  "/:id",
+  auth(UserRole.admin, UserRole.moderator),
+  BoardRoomBanterSubscriptionController.getSingleSubscriptionById
 );
 
 router.put(

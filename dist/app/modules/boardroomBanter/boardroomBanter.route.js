@@ -17,9 +17,9 @@ router.post("/pause", (0, auth_1.default)(auth_constants_1.UserRole.user), board
 router.post("/resume", (0, auth_1.default)(auth_constants_1.UserRole.user), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.resumeSubscription);
 router.post("/cancel", (0, auth_1.default)(auth_constants_1.UserRole.user), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.cancelSubscription);
 router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.getAllSubscriptions);
-router.get("/:id", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.getSingleSubscriptionById);
 router.get("/my-subscription", (0, auth_1.default)(auth_constants_1.UserRole.user, auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.getMySubscription);
 router.put("/update-whatsapp-status", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.updateWhatsappGroupStatus);
+router.get("/:id", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.getSingleSubscriptionById);
 router.put("/suspend/:userId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.suspendUser);
 router.put("/withdraw-suspension/:userId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.withdrawSuspension);
 router.put("/remove/:userId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.removeUser);

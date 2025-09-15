@@ -63,6 +63,22 @@ const createSubscription = async (user: any) => {
 
   const userData = await User.findById(user?._id);
 
+  // Convert timestamps safely
+  const startDate = razorpaySubscription.start_at
+    ? new Date(razorpaySubscription.start_at * 1000)
+    : new Date();
+
+  // If end_at is missing, calculate it manually
+  let endDate = razorpaySubscription.end_at
+    ? new Date(razorpaySubscription.end_at * 1000)
+    : null;
+
+  // Example: If your plan is monthly, calculate 1 month ahead
+  if (!endDate && razorpaySubscription.plan_id === planId) {
+    endDate = new Date(startDate);
+    endDate.setMonth(endDate.getMonth() + 1); // Adjust for plan duration
+  }
+
   // upsert: update if exists, otherwise create new
   const subscription = await BoardRoomBanterSubscription.findOneAndUpdate(
     { userId: user?._id },
@@ -73,12 +89,8 @@ const createSubscription = async (user: any) => {
         phoneNumber: userData?.phoneNumber,
         razorpaySubscriptionId: razorpaySubscription.id,
         status: "active",
-        startDate: razorpaySubscription.start_at
-          ? new Date(razorpaySubscription.start_at * 1000)
-          : new Date(),
-        endDate: razorpaySubscription.end_at
-          ? new Date(razorpaySubscription.end_at * 1000)
-          : null,
+        startDate,
+        endDate,
       },
     },
     { upsert: true, new: true }
@@ -88,6 +100,7 @@ const createSubscription = async (user: any) => {
 
   return subscription;
 };
+
 
 
 const verifySubscription = async (razorpayPaymentId: string) => {

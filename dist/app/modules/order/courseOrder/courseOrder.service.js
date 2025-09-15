@@ -115,10 +115,7 @@ const getMyCourseOrders = (userId_1, keyword_1, status_1, ...args_1) => __awaite
             .skip(skip)
             .limit(limit)
             .sort({ createdAt: -1 })
-            .populate({
-            path: "courseId",
-            select: "imageUrl",
-        }),
+            .populate("courseId", "imageUrl tagline subtitle"),
         courseOrder_model_1.CourseOrder.countDocuments(query),
     ]);
     return {

@@ -27,5 +27,5 @@ router.get("/:bookingId", (0, auth_1.default)(auth_constants_1.UserRole.admin, a
 // Get all bookings for a particular user (Admin/Moderator)
 router.get("/user/:userCustomId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.getBookingsByUserId);
 // Update booking status (Admin/Moderator)
-router.put("/update-status/:bookingId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.updateBookingStatus);
+router.put("/update-status/:bookingId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator, auth_constants_1.UserRole.user), chatAndChill_controller_1.ChatAndChillControllers.updateBookingStatus);
 exports.ChatAndChillRoutes = router;

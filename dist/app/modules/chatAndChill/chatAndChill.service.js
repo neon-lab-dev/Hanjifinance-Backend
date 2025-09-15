@@ -147,7 +147,7 @@ const getBookingsByUserId = (userCustomId) => __awaiter(void 0, void 0, void 0, 
 });
 // Get logged-in user's bookings
 const getMyBookings = (userId_1, ...args_1) => __awaiter(void 0, [userId_1, ...args_1], void 0, function* (userId, page = 1, limit = 10) {
-    const query = { userId };
+    const query = { user: userId };
     const skip = (page - 1) * limit;
     const [orders, total] = yield Promise.all([
         chatAndChill_model_1.default.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),

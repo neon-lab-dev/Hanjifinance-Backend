@@ -91,14 +91,14 @@ const getBookingsByUserId = (0, catchAsync_1.default)((req, res) => __awaiter(vo
 // Get logged-in user's bookings (user)
 const getMyBookings = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user._id;
-    const { page = "1", limit = "10" } = req.query;
+    const { page = "1", limit = "5" } = req.query;
     const result = yield chatAndChill_service_1.ChatAndChillService.getMyBookings(userId, Number(page), Number(limit));
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
         message: "My bookings fetched successfully",
         data: {
-            orders: result.data,
+            bookings: result.data,
             pagination: result.meta,
         },
     });

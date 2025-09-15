@@ -49,6 +49,19 @@ const createSubscription = (user) => __awaiter(void 0, void 0, void 0, function*
         throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to create subscription");
     }
     const userData = yield auth_model_1.User.findById(user === null || user === void 0 ? void 0 : user._id);
+    // Convert timestamps safely
+    const startDate = razorpaySubscription.start_at
+        ? new Date(razorpaySubscription.start_at * 1000)
+        : new Date();
+    // If end_at is missing, calculate it manually
+    let endDate = razorpaySubscription.end_at
+        ? new Date(razorpaySubscription.end_at * 1000)
+        : null;
+    // Example: If your plan is monthly, calculate 1 month ahead
+    if (!endDate && razorpaySubscription.plan_id === planId) {
+        endDate = new Date(startDate);
+        endDate.setMonth(endDate.getMonth() + 1); // Adjust for plan duration
+    }
     // upsert: update if exists, otherwise create new
     const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.findOneAndUpdate({ userId: user === null || user === void 0 ? void 0 : user._id }, {
         $set: {
@@ -57,12 +70,8 @@ const createSubscription = (user) => __awaiter(void 0, void 0, void 0, function*
             phoneNumber: userData === null || userData === void 0 ? void 0 : userData.phoneNumber,
             razorpaySubscriptionId: razorpaySubscription.id,
             status: "active",
-            startDate: razorpaySubscription.start_at
-                ? new Date(razorpaySubscription.start_at * 1000)
-                : new Date(),
-            endDate: razorpaySubscription.end_at
-                ? new Date(razorpaySubscription.end_at * 1000)
-                : null,
+            startDate,
+            endDate,
         },
     }, { upsert: true, new: true });
     yield (0, sendPauseSubscriptionEmail_1.sendSubscriptionEmails)(user, subscription);

@@ -96,7 +96,7 @@ const getBookingsByUserId = catchAsync(async (req, res) => {
 // Get logged-in user's bookings (user)
 const getMyBookings = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  const { page = "1", limit = "10" } = req.query;
+  const { page = "1", limit = "5" } = req.query;
 
   const result = await ChatAndChillService.getMyBookings(
     userId,
@@ -109,7 +109,7 @@ const getMyBookings = catchAsync(async (req, res) => {
     success: true,
     message: "My bookings fetched successfully",
     data: {
-      orders: result.data,
+      bookings: result.data,
       pagination: result.meta,
     },
   });
