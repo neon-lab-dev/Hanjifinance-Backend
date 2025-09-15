@@ -101,9 +101,35 @@ const getCourseOrdersByUserId = (userCustomId) => __awaiter(void 0, void 0, void
     return result;
 });
 // Get my course orders (logged-in user)
-const getMyCourseOrders = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield courseOrder_model_1.CourseOrder.find({ userId });
-    return result;
+const getMyCourseOrders = (userId_1, keyword_1, status_1, ...args_1) => __awaiter(void 0, [userId_1, keyword_1, status_1, ...args_1], void 0, function* (userId, keyword, status, page = 1, limit = 10) {
+    const query = { userId };
+    if (keyword) {
+        query.$or = [{ orderId: { $regex: keyword, $options: "i" } }];
+    }
+    if (status && status !== "all") {
+        query.status = { $regex: status, $options: "i" };
+    }
+    const skip = (page - 1) * limit;
+    const [orders, total] = yield Promise.all([
+        courseOrder_model_1.CourseOrder.find(query)
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 })
+            .populate({
+            path: "courseId",
+            select: "imageUrl",
+        }),
+        courseOrder_model_1.CourseOrder.countDocuments(query),
+    ]);
+    return {
+        meta: {
+            total,
+            page,
+            limit,
+            pages: Math.ceil(total / limit),
+        },
+        data: orders,
+    };
 });
 exports.CourseOrderService = {
     checkout,

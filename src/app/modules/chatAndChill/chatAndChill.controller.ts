@@ -18,15 +18,14 @@ const checkout = catchAsync(async (req, res) => {
 // Verify payment
 const verifyPayment = catchAsync(async (req, res) => {
   const {
-    //  razorpay_order_id, 
-    razorpay_payment_id, 
+    //  razorpay_order_id,
+    razorpay_payment_id,
     // razorpay_signature
-   } =
-    req.body;
+  } = req.body;
 
   const redirectUrl = await ChatAndChillService.verifyPayment(
     // razorpay_order_id,
-    razorpay_payment_id,
+    razorpay_payment_id
     // razorpay_signature
   );
 
@@ -40,7 +39,8 @@ const bookChatAndChill = catchAsync(async (req, res) => {
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "Chat & Chill booked successfully. Please wait for admin to schedule a meeting.",
+    message:
+      "Chat & Chill booked successfully. Please wait for admin to schedule a meeting.",
     data: result,
   });
 });
@@ -95,22 +95,33 @@ const getBookingsByUserId = catchAsync(async (req, res) => {
 
 // Get logged-in user's bookings (user)
 const getMyBookings = catchAsync(async (req, res) => {
-  console.log("object");
   const userId = req.user._id;
-  const result = await ChatAndChillService.getMyBookings(userId);
+  const { page = "1", limit = "10" } = req.query;
+
+  const result = await ChatAndChillService.getMyBookings(
+    userId,
+    Number(page),
+    Number(limit)
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "My bookings fetched successfully",
-    data: result,
+    data: {
+      orders: result.data,
+      pagination: result.meta,
+    },
   });
 });
 
 // Update booking status (pending, booked, scheduled)
 const updateBookingStatus = catchAsync(async (req, res) => {
   const { bookingId } = req.params;
-  const result = await ChatAndChillService.updateBookingStatus(bookingId, req.body);
+  const result = await ChatAndChillService.updateBookingStatus(
+    bookingId,
+    req.body
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

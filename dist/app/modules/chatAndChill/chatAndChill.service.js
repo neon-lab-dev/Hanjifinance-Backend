@@ -146,9 +146,22 @@ const getBookingsByUserId = (userCustomId) => __awaiter(void 0, void 0, void 0, 
     return yield chatAndChill_model_1.default.find({ userCustomId }).sort({ createdAt: -1 });
 });
 // Get logged-in user's bookings
-const getMyBookings = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log(userId);
-    return yield chatAndChill_model_1.default.find({ user: userId }).sort({ createdAt: -1 });
+const getMyBookings = (userId_1, ...args_1) => __awaiter(void 0, [userId_1, ...args_1], void 0, function* (userId, page = 1, limit = 10) {
+    const query = { userId };
+    const skip = (page - 1) * limit;
+    const [orders, total] = yield Promise.all([
+        chatAndChill_model_1.default.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+        chatAndChill_model_1.default.countDocuments(query),
+    ]);
+    return {
+        meta: {
+            total,
+            page,
+            limit,
+            pages: Math.ceil(total / limit),
+        },
+        data: orders,
+    };
 });
 // Update booking status
 const updateBookingStatus = (bookingId, payload) => __awaiter(void 0, void 0, void 0, function* () {

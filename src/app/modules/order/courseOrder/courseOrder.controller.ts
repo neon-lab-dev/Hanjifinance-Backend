@@ -86,13 +86,24 @@ const getCourseOrdersByUserId = catchAsync(async (req, res) => {
 // Get logged-in user's orders
 const getMyCourseOrders = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  const result = await CourseOrderService.getMyCourseOrders(userId);
+  const { keyword, status, page = "1", limit = "10" } = req.query;
+
+  const result = await CourseOrderService.getMyCourseOrders(
+    userId,
+    keyword as string,
+    status as string,
+    Number(page),
+    Number(limit)
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "My course orders fetched successfully",
-    data: result,
+    data: {
+      orders: result.data,
+      pagination: result.meta,
+    },
   });
 });
 

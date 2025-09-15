@@ -88,15 +88,27 @@ const getProductOrdersByUserId = catchAsync(async (req, res) => {
 // Get logged-in user's orders (user)
 const getMyProductOrders = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  const result = await ProductOrderService.getMyProductOrders(userId);
+  const { keyword, status, page = "1", limit = "10" } = req.query;
+
+  const result = await ProductOrderService.getMyProductOrders(
+    userId,
+    keyword as string,
+    status as string,
+    Number(page),
+    Number(limit)
+  );
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "My orders fetched successfully",
-    data: result,
+    data: {
+      orders: result.data,
+      pagination: result.meta,
+    },
   });
 });
+
 
 // Update delivery status (Admin/Moderator)
 const updateDeliveryStatus = catchAsync(async (req, res) => {

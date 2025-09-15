@@ -82,12 +82,16 @@ const getProductOrdersByUserId = (0, catchAsync_1.default)((req, res) => __await
 // Get logged-in user's orders (user)
 const getMyProductOrders = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user._id;
-    const result = yield productOrder_service_1.ProductOrderService.getMyProductOrders(userId);
+    const { keyword, status, page = "1", limit = "10" } = req.query;
+    const result = yield productOrder_service_1.ProductOrderService.getMyProductOrders(userId, keyword, status, Number(page), Number(limit));
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
         message: "My orders fetched successfully",
-        data: result,
+        data: {
+            orders: result.data,
+            pagination: result.meta,
+        },
     });
 }));
 // Update delivery status (Admin/Moderator)

@@ -171,9 +171,29 @@ const getBookingsByUserId = async (userCustomId: string) => {
 };
 
 // Get logged-in user's bookings
-const getMyBookings = async (userId: string) => {
-  console.log(userId);
-  return await ChatAndChill.find({ user: userId }).sort({ createdAt: -1 });
+const getMyBookings = async (
+  userId: string,
+  page = 1,
+  limit = 10
+) => {
+  const query: any = { userId };
+
+  const skip = (page - 1) * limit;
+
+  const [orders, total] = await Promise.all([
+    ChatAndChill.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+    ChatAndChill.countDocuments(query),
+  ]);
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    },
+    data: orders,
+  };
 };
 
 // Update booking status

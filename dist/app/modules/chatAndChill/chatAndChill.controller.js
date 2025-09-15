@@ -31,13 +31,15 @@ const checkout = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 
 // Verify payment
 const verifyPayment = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { 
-    //  razorpay_order_id, 
+    //  razorpay_order_id,
     razorpay_payment_id,
     // razorpay_signature
      } = req.body;
     const redirectUrl = yield chatAndChill_service_1.ChatAndChillService.verifyPayment(
     // razorpay_order_id,
-    razorpay_payment_id);
+    razorpay_payment_id
+    // razorpay_signature
+    );
     return res.redirect(redirectUrl);
 }));
 // Book a Chat & Chill session
@@ -88,14 +90,17 @@ const getBookingsByUserId = (0, catchAsync_1.default)((req, res) => __awaiter(vo
 }));
 // Get logged-in user's bookings (user)
 const getMyBookings = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    console.log("object");
     const userId = req.user._id;
-    const result = yield chatAndChill_service_1.ChatAndChillService.getMyBookings(userId);
+    const { page = "1", limit = "10" } = req.query;
+    const result = yield chatAndChill_service_1.ChatAndChillService.getMyBookings(userId, Number(page), Number(limit));
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
         message: "My bookings fetched successfully",
-        data: result,
+        data: {
+            orders: result.data,
+            pagination: result.meta,
+        },
     });
 }));
 // Update booking status (pending, booked, scheduled)

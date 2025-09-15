@@ -106,10 +106,48 @@ const getCourseOrdersByUserId = async (userCustomId: string) => {
 };
 
 // Get my course orders (logged-in user)
-const getMyCourseOrders = async (userId: string) => {
-  const result = await CourseOrder.find({ userId });
-  return result;
+const getMyCourseOrders = async (
+  userId: string,
+  keyword?: string,
+  status?: string,
+  page = 1,
+  limit = 10
+) => {
+  const query: any = { userId };
+
+  if (keyword) {
+    query.$or = [{ orderId: { $regex: keyword, $options: "i" } }];
+  }
+
+  if (status && status !== "all") {
+    query.status = { $regex: status, $options: "i" };
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [orders, total] = await Promise.all([
+    CourseOrder.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "courseId",
+        select: "imageUrl",
+      }),
+    CourseOrder.countDocuments(query),
+  ]);
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    },
+    data: orders,
+  };
 };
+
 
 export const CourseOrderService = {
   checkout,

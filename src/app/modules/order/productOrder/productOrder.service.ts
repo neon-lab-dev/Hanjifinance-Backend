@@ -128,11 +128,42 @@ const getProductOrdersByUserId = async (userCustomId: string) => {
   return result;
 };
 
-// Get my orders (user)
-const getMyProductOrders = async (userId: string) => {
-  const result = await ProductOrder.find({ userId });
-  return result;
+// Get my orders
+const getMyProductOrders = async (
+  userId: string,
+  keyword?: string,
+  status?: string,
+  page = 1,
+  limit = 10
+) => {
+  const query: any = { userId };
+
+  if (keyword) {
+    query.$or = [{ orderId: { $regex: keyword, $options: "i" } }];
+  }
+
+  if (status && status !== "all") {
+    query.status = { $regex: status, $options: "i" };
+  }
+
+  const skip = (page - 1) * limit;
+
+  const [orders, total] = await Promise.all([
+    ProductOrder.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+    ProductOrder.countDocuments(query),
+  ]);
+
+  return {
+    meta: {
+      total,
+      page,
+      limit,
+      pages: Math.ceil(total / limit),
+    },
+    data: orders,
+  };
 };
+
 
 // Get my orders (user)
 const updateDeliveryStatus = async (payload: {
