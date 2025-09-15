@@ -21,11 +21,15 @@ const razorpay_1 = require("../../utils/razorpay");
 const config_1 = __importDefault(require("../../config"));
 const sendPauseSubscriptionEmail_1 = require("../../emailTemplates/sendPauseSubscriptionEmail");
 const auth_model_1 = require("../auth/auth.model");
+const couponCode_model_1 = __importDefault(require("../admin/couponCode/couponCode.model"));
 const joinWaitlist = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.create(Object.assign(Object.assign({}, payload), { userId: user._id, status: "waitlist" }));
     return subscription;
 });
 const sendCouponCode = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const couponCode = yield couponCode_model_1.default.findOne({ code: payload === null || payload === void 0 ? void 0 : payload.couponCode });
+    if (!couponCode)
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Invalid coupon code");
     const user = yield auth_model_1.User.findOne({ email: payload === null || payload === void 0 ? void 0 : payload.email });
     const result = yield boardroomBanter_model_1.BoardRoomBanterSubscription.findByIdAndUpdate(payload.subscriptionId, { status: "code sent" });
     yield (0, sendPauseSubscriptionEmail_1.sendCouponCodeEmail)(user, payload === null || payload === void 0 ? void 0 : payload.couponCode);
@@ -129,7 +133,7 @@ const getSingleSubscriptionById = (id) => __awaiter(void 0, void 0, void 0, func
     return subscription;
 });
 // Pause Subscription
-const pauseSubscription = (user) => __awaiter(void 0, void 0, void 0, function* () {
+const pauseSubscription = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.findOne({
         userId: user === null || user === void 0 ? void 0 : user._id,
         status: "active",
@@ -137,17 +141,24 @@ const pauseSubscription = (user) => __awaiter(void 0, void 0, void 0, function* 
     if (!subscription) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "No active subscription found to pause");
     }
-    try {
-        yield razorpay_1.razorpay.subscriptions.pause(subscription.razorpaySubscriptionId, {
-            pause_at: "now",
-        });
+    if ((subscription === null || subscription === void 0 ? void 0 : subscription.status) === "cancelled") {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Subscription is already cancelled!");
     }
-    catch (error) {
-        console.error("Razorpay pause failed:", error);
-        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to pause subscription in Razorpay");
-    }
+    // try {
+    //   await razorpay.subscriptions.pause(subscription.razorpaySubscriptionId!, {
+    //     pause_at: "now",
+    //   });
+    // } catch (error: any) {
+    //   console.error("Razorpay pause failed:", error);
+    //   throw new AppError(
+    //     httpStatus.INTERNAL_SERVER_ERROR,
+    //     "Failed to pause subscription in Razorpay"
+    //   );
+    // }
     subscription.status = "paused";
     subscription.pauseDate = new Date();
+    subscription.dateRange = payload === null || payload === void 0 ? void 0 : payload.dateRange;
+    subscription.pauseReason = payload === null || payload === void 0 ? void 0 : payload.pauseReason;
     yield subscription.save();
     yield (0, sendPauseSubscriptionEmail_1.sendSubscriptionStatusEmails)(user, subscription, "paused");
     return subscription;
@@ -161,15 +172,17 @@ const resumeSubscription = (user) => __awaiter(void 0, void 0, void 0, function*
     if (!subscription) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "No paused subscription found to resume");
     }
-    try {
-        yield razorpay_1.razorpay.subscriptions.resume(subscription.razorpaySubscriptionId, {
-            resume_at: "now",
-        });
-    }
-    catch (error) {
-        console.error("Razorpay resume failed:", error);
-        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to resume subscription in Razorpay");
-    }
+    // try {
+    //   await razorpay.subscriptions.resume(subscription.razorpaySubscriptionId!, {
+    //     resume_at: "now",
+    //   });
+    // } catch (error: any) {
+    //   console.error("Razorpay resume failed:", error);
+    //   throw new AppError(
+    //     httpStatus.INTERNAL_SERVER_ERROR,
+    //     "Failed to resume subscription in Razorpay"
+    //   );
+    // }
     subscription.status = "active";
     subscription.resumeDate = new Date();
     yield subscription.save();
@@ -177,7 +190,7 @@ const resumeSubscription = (user) => __awaiter(void 0, void 0, void 0, function*
     return subscription;
 });
 // Cancel Subscription
-const cancelSubscription = (user) => __awaiter(void 0, void 0, void 0, function* () {
+const cancelSubscription = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.findOne({
         userId: user === null || user === void 0 ? void 0 : user._id,
         status: { $in: ["active", "paused"] },
@@ -185,16 +198,21 @@ const cancelSubscription = (user) => __awaiter(void 0, void 0, void 0, function*
     if (!subscription) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "No subscription found to cancel");
     }
-    try {
-        // Call Razorpay cancel API
-        yield razorpay_1.razorpay.subscriptions.cancel(subscription.razorpaySubscriptionId);
+    if ((subscription === null || subscription === void 0 ? void 0 : subscription.status) === "cancelled") {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Subscription is already cancelled!");
     }
-    catch (error) {
-        console.error("Razorpay cancel failed:", error);
-        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to cancel subscription in Razorpay");
-    }
+    // try {
+    //   await razorpay.subscriptions.cancel(subscription.razorpaySubscriptionId!);
+    // } catch (error: any) {
+    //   console.error("Razorpay cancel failed:", error);
+    //   throw new AppError(
+    //     httpStatus.INTERNAL_SERVER_ERROR,
+    //     "Failed to cancel subscription in Razorpay"
+    //   );
+    // }
     subscription.status = "cancelled";
     subscription.cancelDate = new Date();
+    subscription.cancelReason = payload === null || payload === void 0 ? void 0 : payload.cancelReason;
     yield subscription.save();
     yield (0, sendPauseSubscriptionEmail_1.sendSubscriptionStatusEmails)(user, subscription, "cancelled");
     return subscription;

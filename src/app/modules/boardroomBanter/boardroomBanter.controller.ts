@@ -104,7 +104,8 @@ const getSingleSubscriptionById = catchAsync(async (req, res) => {
 
 const pauseSubscription = catchAsync(async (req, res) => {
   const result = await BoardRoomBanterSubscriptionService.pauseSubscription(
-    req.user
+    req.user,
+    req.body
   );
 
   sendResponse(res, {
@@ -130,7 +131,8 @@ const resumeSubscription = catchAsync(async (req, res) => {
 
 const cancelSubscription = catchAsync(async (req, res) => {
   const result = await BoardRoomBanterSubscriptionService.cancelSubscription(
-    req.user
+    req.user,
+    req.body
   );
 
   sendResponse(res, {

@@ -75,7 +75,7 @@ const getSingleSubscriptionById = (0, catchAsync_1.default)((req, res) => __awai
     });
 }));
 const pauseSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.pauseSubscription(req.user);
+    const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.pauseSubscription(req.user, req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -93,7 +93,7 @@ const resumeSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(voi
     });
 }));
 const cancelSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.cancelSubscription(req.user);
+    const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.cancelSubscription(req.user, req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

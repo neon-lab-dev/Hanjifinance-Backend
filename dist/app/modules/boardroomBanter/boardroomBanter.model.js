@@ -41,5 +41,9 @@ const boardRoomBanterSubscriptionSchema = new mongoose_1.Schema({
     isAddedToWhatsappGroup: { type: Boolean, default: false },
     isSuspended: { type: Boolean, default: false },
     isRemoved: { type: Boolean, default: false },
+    pausedReason: { type: String, required: false, trim: true },
+    cancelReason: { type: String, required: false, trim: true },
+    dateRange: { type: String, required: false, trim: true },
+    pauseReason: { type: String, required: false, trim: true },
 }, { timestamps: true });
 exports.BoardRoomBanterSubscription = (0, mongoose_1.model)("BoardRoomBanterSubscription", boardRoomBanterSubscriptionSchema);

@@ -42,6 +42,10 @@ const boardRoomBanterSubscriptionSchema =
       isAddedToWhatsappGroup: { type: Boolean, default: false },
       isSuspended: { type: Boolean, default: false },
       isRemoved: { type: Boolean, default: false },
+      pausedReason: { type: String, required: false, trim: true },
+      cancelReason: { type: String, required: false, trim: true },
+      dateRange: { type: String, required: false, trim: true },
+      pauseReason: { type: String, required: false, trim: true },
     },
     { timestamps: true }
   );

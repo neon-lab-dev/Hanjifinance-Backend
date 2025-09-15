@@ -1,6 +1,5 @@
-import { Document } from "mongoose";
 
-export interface TBoardRoomBanterSubscription extends Document {
+export type TBoardRoomBanterSubscription={
   userId: string;
   name: string;
   email: string;
@@ -20,4 +19,8 @@ export interface TBoardRoomBanterSubscription extends Document {
   isAddedToWhatsappGroup?: boolean;
   isSuspended?: boolean;
   isRemoved?: boolean;
+  pausedReason?: string;
+  cancelReason?: string;
+  dateRange?: string;
+  pauseReason?: string;
 }
