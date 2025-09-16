@@ -19,6 +19,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const product_model_1 = __importDefault(require("../../admin/product/product.model"));
 const productOrder_model_1 = require("./productOrder.model");
 const razorpay_1 = require("../../../utils/razorpay");
+const activities_services_1 = require("../../activities/activities.services");
 const generateOrderId = () => {
     return "HFPO-" + Math.floor(1000 + Math.random() * 9000);
 };
@@ -38,6 +39,7 @@ const verifyPayment = (razorpayPaymentId) => __awaiter(void 0, void 0, void 0, f
 });
 // Create Razorpay order
 const createProductOrder = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
     const productIds = payload.orderedItems.map((i) => i.productId);
     const products = yield product_model_1.default.find({ _id: { $in: productIds } });
     if (products.length !== payload.orderedItems.length) {
@@ -53,6 +55,15 @@ const createProductOrder = (user, payload) => __awaiter(void 0, void 0, void 0, 
         status: "pending",
     };
     const order = yield productOrder_model_1.ProductOrder.create(payloadData);
+    const activityPayload = {
+        userId: user === null || user === void 0 ? void 0 : user._id,
+        title: `Purchased Products`,
+        description: `You've purchased ${(_a = payload.orderedItems) === null || _a === void 0 ? void 0 : _a.length} products for ₹${payload.totalAmount}`,
+    };
+    const createActivity = activities_services_1.ActivityServices.addActivity(activityPayload);
+    if (!createActivity) {
+        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to add activity");
+    }
     return order;
 });
 // Get all orders

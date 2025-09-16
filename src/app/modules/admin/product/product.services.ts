@@ -148,10 +148,8 @@ const deleteProduct = async (id: string) => {
         const parts = url.split("/");
         const filename = parts[parts.length - 1];
         const publicId = decodeURIComponent(filename.split(".")[0]);
-        console.log("Deleting Cloudinary image with publicId:", publicId);
 
         await cloudinary.uploader.destroy(publicId);
-        console.log("Cloudinary image deleted successfully");
       } catch (err) {
         console.error("Error deleting Cloudinary image:", err);
       }

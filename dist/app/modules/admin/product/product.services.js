@@ -116,9 +116,7 @@ const deleteProduct = (id) => __awaiter(void 0, void 0, void 0, function* () {
                 const parts = url.split("/");
                 const filename = parts[parts.length - 1];
                 const publicId = decodeURIComponent(filename.split(".")[0]);
-                console.log("Deleting Cloudinary image with publicId:", publicId);
                 yield cloudinary_1.v2.uploader.destroy(publicId);
-                console.log("Cloudinary image deleted successfully");
             }
             catch (err) {
                 console.error("Error deleting Cloudinary image:", err);

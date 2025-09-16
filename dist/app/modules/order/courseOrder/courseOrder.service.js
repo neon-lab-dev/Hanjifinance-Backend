@@ -20,6 +20,7 @@ const courseOrder_model_1 = require("./courseOrder.model");
 const razorpay_1 = require("../../../utils/razorpay");
 const auth_model_1 = require("../../auth/auth.model");
 const course_model_1 = __importDefault(require("../../admin/course/course.model"));
+const activities_services_1 = require("../../activities/activities.services");
 const generateOrderId = () => {
     return "HFCO-" + Math.floor(1000 + Math.random() * 9000);
 };
@@ -55,6 +56,15 @@ const createCourseOrder = (user, payload) => __awaiter(void 0, void 0, void 0, f
         totalAmount: payload.totalAmount,
     };
     const order = yield courseOrder_model_1.CourseOrder.create(payloadData);
+    const activityPayload = {
+        userId: user === null || user === void 0 ? void 0 : user._id,
+        title: `Purchased Course`,
+        description: `You've purchased ${courseData === null || courseData === void 0 ? void 0 : courseData.title} course for ₹${courseData === null || courseData === void 0 ? void 0 : courseData.discountedPrice}`,
+    };
+    const createActivity = activities_services_1.ActivityServices.addActivity(activityPayload);
+    if (!createActivity) {
+        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to add activity");
+    }
     return order;
 });
 // Get all course orders (Admin/Moderator)

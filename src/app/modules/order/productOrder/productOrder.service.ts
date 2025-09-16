@@ -5,6 +5,7 @@ import { TProductOrder } from "./productOrder.interface";
 import Product from "../../admin/product/product.model";
 import { ProductOrder } from "./productOrder.model";
 import { razorpay } from "../../../utils/razorpay";
+import { ActivityServices } from "../../activities/activities.services";
 
 const generateOrderId = () => {
   return "HFPO-" + Math.floor(1000 + Math.random() * 9000);
@@ -28,7 +29,6 @@ const verifyPayment = async (razorpayPaymentId: string) => {
   return `${process.env.PAYMENT_REDIRECT_URL}-success?type=product&orderId=${razorpayPaymentId}`;
 };
 
-
 // Create Razorpay order
 const createProductOrder = async (user: any, payload: TProductOrder) => {
   const productIds = payload.orderedItems.map((i) => i.productId);
@@ -49,6 +49,19 @@ const createProductOrder = async (user: any, payload: TProductOrder) => {
   };
 
   const order = await ProductOrder.create(payloadData);
+
+  const activityPayload = {
+    userId: user?._id,
+    title: `Purchased Products`,
+    description: `You've purchased ${payload.orderedItems?.length} products for ₹${payload.totalAmount}`,
+  };
+  const createActivity = ActivityServices.addActivity(activityPayload);
+  if (!createActivity) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to add activity"
+    );
+  }
 
   return order;
 };
@@ -72,7 +85,10 @@ const getAllProductOrders = async (
 
   // Base query
   let mongooseQuery = ProductOrder.find(query)
-    .populate("userId", "name email phoneNumber pinCode city addressLine1 addressLine2")
+    .populate(
+      "userId",
+      "name email phoneNumber pinCode city addressLine1 addressLine2"
+    )
     .skip(skip)
     .limit(limit);
 
@@ -104,11 +120,13 @@ const getAllProductOrders = async (
   };
 };
 
-
 // Get single order by ID
 const getSingleProductOrderById = async (orderId: string) => {
   const result = await ProductOrder.findOne({ orderId })
-    .populate("userId", "name email phoneNumber pinCode city addressLine1 addressLine2")
+    .populate(
+      "userId",
+      "name email phoneNumber pinCode city addressLine1 addressLine2"
+    )
     .populate("orderedItems.productId", "name imageUrls category");
 
   if (!result) {
@@ -117,7 +135,6 @@ const getSingleProductOrderById = async (orderId: string) => {
 
   return result;
 };
-
 
 // Get all orders for a particular user
 const getProductOrdersByUserId = async (userCustomId: string) => {
@@ -163,7 +180,6 @@ const getMyProductOrders = async (
     data: orders,
   };
 };
-
 
 // Get my orders (user)
 const updateDeliveryStatus = async (payload: {

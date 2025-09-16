@@ -103,7 +103,6 @@ const cancelSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(voi
 }));
 const getMySubscription = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const userId = req.user._id;
-    console.log(userId);
     const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.getMySubscription(userId);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,

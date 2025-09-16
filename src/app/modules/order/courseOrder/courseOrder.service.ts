@@ -6,6 +6,7 @@ import { CourseOrder } from "./courseOrder.model";
 import { razorpay } from "../../../utils/razorpay";
 import { User } from "../../auth/auth.model";
 import Course from "../../admin/course/course.model";
+import { ActivityServices } from "../../activities/activities.services";
 
 const generateOrderId = () => {
   return "HFCO-" + Math.floor(1000 + Math.random() * 9000);
@@ -49,6 +50,19 @@ const createCourseOrder = async (user: any, payload: TCourseOrder) => {
   };
 
   const order = await CourseOrder.create(payloadData);
+
+  const activityPayload = {
+    userId: user?._id,
+    title: `Purchased Course`,
+    description: `You've purchased ${courseData?.title} course for ₹${courseData?.discountedPrice}`,
+  };
+  const createActivity = ActivityServices.addActivity(activityPayload);
+  if (!createActivity) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to add activity"
+    );
+  }
   return order;
 };
 
@@ -144,7 +158,6 @@ const getMyCourseOrders = async (
     data: orders,
   };
 };
-
 
 export const CourseOrderService = {
   checkout,

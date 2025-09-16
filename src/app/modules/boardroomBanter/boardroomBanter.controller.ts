@@ -145,7 +145,6 @@ const cancelSubscription = catchAsync(async (req, res) => {
 
 const getMySubscription = catchAsync(async (req, res) => {
   const userId = req.user._id;
-  console.log(userId);
   const result =
     await BoardRoomBanterSubscriptionService.getMySubscription(userId);
 

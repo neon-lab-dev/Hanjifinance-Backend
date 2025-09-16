@@ -14,6 +14,7 @@ const courseOrder_route_1 = require("../modules/order/courseOrder/courseOrder.ro
 const newsletter_route_1 = require("../modules/newsletter/newsletter.route");
 const couponCode_route_1 = require("../modules/admin/couponCode/couponCode.route");
 const category_route_1 = require("../modules/category/category.route");
+const activities_route_1 = require("../modules/activities/activities.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -67,6 +68,10 @@ const moduleRoutes = [
     {
         path: "/newsletter",
         route: newsletter_route_1.NewsletterRoutes,
+    },
+    {
+        path: "/activity",
+        route: activities_route_1.ActivityRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

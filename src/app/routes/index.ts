@@ -12,6 +12,7 @@ import { CourseOrderRoutes } from "../modules/order/courseOrder/courseOrder.rout
 import { NewsletterRoutes } from "../modules/newsletter/newsletter.route";
 import { CouponCodeRoutes } from "../modules/admin/couponCode/couponCode.route";
 import { CategoryRoutes } from "../modules/category/category.route";
+import { ActivityRoutes } from "../modules/activities/activities.route";
 
 const router = Router();
 
@@ -67,6 +68,10 @@ const moduleRoutes = [
   {
     path: "/newsletter",
     route: NewsletterRoutes,
+  },
+  {
+    path: "/activity",
+    route: ActivityRoutes,
   },
 ];
 
