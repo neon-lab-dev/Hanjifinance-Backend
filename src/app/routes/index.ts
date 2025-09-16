@@ -11,6 +11,7 @@ import { AvailabilityRoutes } from "../modules/admin/availability/availability.r
 import { CourseOrderRoutes } from "../modules/order/courseOrder/courseOrder.route";
 import { NewsletterRoutes } from "../modules/newsletter/newsletter.route";
 import { CouponCodeRoutes } from "../modules/admin/couponCode/couponCode.route";
+import { CategoryRoutes } from "../modules/category/category.route";
 
 const router = Router();
 
@@ -30,6 +31,10 @@ const moduleRoutes = [
   {
     path: "/course-lecture",
     route: CourseLectureRoutes,
+  },
+  {
+    path: "/category",
+    route: CategoryRoutes,
   },
   {
     path: "/product",
