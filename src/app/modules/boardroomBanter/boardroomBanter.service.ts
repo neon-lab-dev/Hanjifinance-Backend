@@ -12,6 +12,7 @@ import {
 import { User } from "../auth/auth.model";
 import { TBoardRoomBanterSubscription } from "./boardroomBanter.interface";
 import CouponCode from "../admin/couponCode/couponCode.model";
+import { ActivityServices } from "../activities/activities.services";
 
 const joinWaitlist = async (
   user: any,
@@ -28,7 +29,8 @@ const joinWaitlist = async (
 
 const sendCouponCode = async (payload: any) => {
   const couponCode = await CouponCode.findOne({ code: payload?.couponCode });
-  if(!couponCode) throw new AppError(httpStatus.BAD_REQUEST, "Invalid coupon code");
+  if (!couponCode)
+    throw new AppError(httpStatus.BAD_REQUEST, "Invalid coupon code");
   const user = await User.findOne({ email: payload?.email });
   const result = await BoardRoomBanterSubscription.findByIdAndUpdate(
     payload.subscriptionId,
@@ -100,6 +102,19 @@ const createSubscription = async (user: any) => {
   );
 
   await sendSubscriptionEmails(user, subscription);
+
+  const activityPayload = {
+    userId: user?._id,
+    title: `Purchased Premium Chat Subscription `,
+    description: `You've purchased Premium Chat Subscription for ₹999/month`,
+  };
+  const createActivity = ActivityServices.addActivity(activityPayload);
+  if (!createActivity) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to add activity"
+    );
+  }
 
   return subscription;
 };
@@ -175,7 +190,7 @@ const getSingleSubscriptionById = async (id: string) => {
 };
 
 // Pause Subscription
-const pauseSubscription = async (user: any, payload:any) => {
+const pauseSubscription = async (user: any, payload: any) => {
   const subscription = await BoardRoomBanterSubscription.findOne({
     userId: user?._id,
     status: "active",
@@ -252,7 +267,7 @@ const resumeSubscription = async (user: any) => {
 };
 
 // Cancel Subscription
-const cancelSubscription = async (user: any, payload:any) => {
+const cancelSubscription = async (user: any, payload: any) => {
   const subscription = await BoardRoomBanterSubscription.findOne({
     userId: user?._id,
     status: { $in: ["active", "paused"] },
@@ -263,7 +278,10 @@ const cancelSubscription = async (user: any, payload:any) => {
   }
 
   if (subscription?.status === "cancelled") {
-    throw new AppError(httpStatus.BAD_REQUEST, "Subscription is already cancelled!");
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Subscription is already cancelled!"
+    );
   }
 
   // try {

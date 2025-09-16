@@ -53,7 +53,7 @@ const createProductOrder = async (user: any, payload: TProductOrder) => {
   const activityPayload = {
     userId: user?._id,
     title: `Purchased Products`,
-    description: `You've purchased ${payload.orderedItems?.length} products for ₹${payload.totalAmount}`,
+    description: `You've purchased ${payload.orderedItems?.length} product${payload.orderedItems?.length > 1 ? "s" : ""} for ₹${payload.totalAmount}`,
   };
   const createActivity = ActivityServices.addActivity(activityPayload);
   if (!createActivity) {

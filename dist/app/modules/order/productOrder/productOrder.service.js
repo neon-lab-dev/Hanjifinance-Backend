@@ -39,7 +39,7 @@ const verifyPayment = (razorpayPaymentId) => __awaiter(void 0, void 0, void 0, f
 });
 // Create Razorpay order
 const createProductOrder = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
+    var _a, _b;
     const productIds = payload.orderedItems.map((i) => i.productId);
     const products = yield product_model_1.default.find({ _id: { $in: productIds } });
     if (products.length !== payload.orderedItems.length) {
@@ -58,7 +58,7 @@ const createProductOrder = (user, payload) => __awaiter(void 0, void 0, void 0, 
     const activityPayload = {
         userId: user === null || user === void 0 ? void 0 : user._id,
         title: `Purchased Products`,
-        description: `You've purchased ${(_a = payload.orderedItems) === null || _a === void 0 ? void 0 : _a.length} products for ₹${payload.totalAmount}`,
+        description: `You've purchased ${(_a = payload.orderedItems) === null || _a === void 0 ? void 0 : _a.length} product${((_b = payload.orderedItems) === null || _b === void 0 ? void 0 : _b.length) > 1 ? "s" : ""} for ₹${payload.totalAmount}`,
     };
     const createActivity = activities_services_1.ActivityServices.addActivity(activityPayload);
     if (!createActivity) {

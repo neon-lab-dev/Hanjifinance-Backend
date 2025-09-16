@@ -19,7 +19,7 @@ const http_status_1 = __importDefault(require("http-status"));
 const newsletter_services_1 = require("./newsletter.services");
 // Add Newsletter
 const subscribeNewsletter = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield newsletter_services_1.NewsletterServices.subscribeNewsletter(req.body);
+    const result = yield newsletter_services_1.NewsletterServices.subscribeNewsletter(req.user, req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.CREATED,
         success: true,

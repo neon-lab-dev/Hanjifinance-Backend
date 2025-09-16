@@ -22,6 +22,7 @@ const config_1 = __importDefault(require("../../config"));
 const sendPauseSubscriptionEmail_1 = require("../../emailTemplates/sendPauseSubscriptionEmail");
 const auth_model_1 = require("../auth/auth.model");
 const couponCode_model_1 = __importDefault(require("../admin/couponCode/couponCode.model"));
+const activities_services_1 = require("../activities/activities.services");
 const joinWaitlist = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.create(Object.assign(Object.assign({}, payload), { userId: user._id, status: "waitlist" }));
     return subscription;
@@ -79,6 +80,15 @@ const createSubscription = (user) => __awaiter(void 0, void 0, void 0, function*
         },
     }, { upsert: true, new: true });
     yield (0, sendPauseSubscriptionEmail_1.sendSubscriptionEmails)(user, subscription);
+    const activityPayload = {
+        userId: user === null || user === void 0 ? void 0 : user._id,
+        title: `Purchased Premium Chat Subscription `,
+        description: `You've purchased Premium Chat Subscription for ₹999/month`,
+    };
+    const createActivity = activities_services_1.ActivityServices.addActivity(activityPayload);
+    if (!createActivity) {
+        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to add activity");
+    }
     return subscription;
 });
 const verifySubscription = (razorpayPaymentId) => __awaiter(void 0, void 0, void 0, function* () {

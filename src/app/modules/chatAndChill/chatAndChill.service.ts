@@ -6,6 +6,7 @@ import ChatAndChill from "./chatAndChill.model";
 import { razorpay } from "../../utils/razorpay";
 import Availability from "../admin/availability/availability.model";
 import { sendEmail } from "../../utils/sendEmail";
+import { ActivityServices } from "../activities/activities.services";
 
 // Checkout
 const checkout = async (amount: number) => {
@@ -113,6 +114,19 @@ const bookChatAndChill = async (user: any, payload: any) => {
   `;
 
   await sendEmail(payload.email, subject, htmlBody);
+
+  const activityPayload = {
+    userId: user?._id,
+    title: `Booked 1-to-1 Call With Aman`,
+    description: `You've booked 1-to-1 Call With Aman for ₹999`,
+  };
+  const createActivity = ActivityServices.addActivity(activityPayload);
+  if (!createActivity) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to add activity"
+    );
+  }
 
   return booking;
 };

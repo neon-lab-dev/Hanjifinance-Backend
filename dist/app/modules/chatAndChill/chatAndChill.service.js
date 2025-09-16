@@ -21,6 +21,7 @@ const chatAndChill_model_1 = __importDefault(require("./chatAndChill.model"));
 const razorpay_1 = require("../../utils/razorpay");
 const availability_model_1 = __importDefault(require("../admin/availability/availability.model"));
 const sendEmail_1 = require("../../utils/sendEmail");
+const activities_services_1 = require("../activities/activities.services");
 // Checkout
 const checkout = (amount) => __awaiter(void 0, void 0, void 0, function* () {
     const options = {
@@ -103,6 +104,15 @@ const bookChatAndChill = (user, payload) => __awaiter(void 0, void 0, void 0, fu
   </div>
   `;
     yield (0, sendEmail_1.sendEmail)(payload.email, subject, htmlBody);
+    const activityPayload = {
+        userId: user === null || user === void 0 ? void 0 : user._id,
+        title: `Booked 1-to-1 Call With Aman`,
+        description: `You've booked 1-to-1 Call With Aman for ₹999`,
+    };
+    const createActivity = activities_services_1.ActivityServices.addActivity(activityPayload);
+    if (!createActivity) {
+        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to add activity");
+    }
     return booking;
 });
 // Get all bookings (with pagination, filter by keyword + status)

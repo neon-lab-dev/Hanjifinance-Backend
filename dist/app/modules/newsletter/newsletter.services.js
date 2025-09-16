@@ -17,13 +17,25 @@ exports.NewsletterServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const newsletter_model_1 = __importDefault(require("./newsletter.model"));
+const activities_services_1 = require("../activities/activities.services");
 // Add Newsletter
-const subscribeNewsletter = (payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const isAlreadySubscribed = yield newsletter_model_1.default.findOne({ email: payload.email });
+const subscribeNewsletter = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const isAlreadySubscribed = yield newsletter_model_1.default.findOne({
+        email: payload.email,
+    });
     if (isAlreadySubscribed) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "You've already subscribed.");
     }
     const result = yield newsletter_model_1.default.create(payload);
+    const activityPayload = {
+        userId: user === null || user === void 0 ? void 0 : user._id,
+        title: `Subscribed Newsletter`,
+        description: `You've subscribed to our newsletter`,
+    };
+    const createActivity = activities_services_1.ActivityServices.addActivity(activityPayload);
+    if (!createActivity) {
+        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to add activity");
+    }
     return result;
 });
 // Get all Newsletters

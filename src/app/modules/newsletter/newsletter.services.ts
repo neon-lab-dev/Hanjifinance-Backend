@@ -3,14 +3,30 @@ import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import Newsletter from "./newsletter.model";
 import { TNewsletter } from "./newsletter.interface";
+import { ActivityServices } from "../activities/activities.services";
 
 // Add Newsletter
-const subscribeNewsletter = async (payload: TNewsletter) => {
-  const isAlreadySubscribed = await Newsletter.findOne({ email: payload.email });
+const subscribeNewsletter = async (user: any, payload: TNewsletter) => {
+  const isAlreadySubscribed = await Newsletter.findOne({
+    email: payload.email,
+  });
   if (isAlreadySubscribed) {
     throw new AppError(httpStatus.BAD_REQUEST, "You've already subscribed.");
   }
   const result = await Newsletter.create(payload);
+
+  const activityPayload = {
+    userId: user?._id,
+    title: `Subscribed Newsletter`,
+    description: `You've subscribed to our newsletter`,
+  };
+  const createActivity = ActivityServices.addActivity(activityPayload);
+  if (!createActivity) {
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Failed to add activity"
+    );
+  }
   return result;
 };
 

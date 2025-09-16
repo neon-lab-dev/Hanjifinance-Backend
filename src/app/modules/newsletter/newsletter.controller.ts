@@ -5,7 +5,7 @@ import { NewsletterServices } from "./newsletter.services";
 
 // Add Newsletter
 const subscribeNewsletter = catchAsync(async (req, res) => {
-  const result = await NewsletterServices.subscribeNewsletter(req.body);
+  const result = await NewsletterServices.subscribeNewsletter(req.user, req.body);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
