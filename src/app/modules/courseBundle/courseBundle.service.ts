@@ -3,10 +3,29 @@ import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import CourseBundle from "./courseBundle.model";
 import { TCourseBundle } from "./courseBundle.interface";
+import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 
 // Add Course Bundle
-const addCourseBundle = async (payload: TCourseBundle) => {
-  const bundle = await CourseBundle.create(payload);
+const addCourseBundle = async (
+  payload: TCourseBundle,
+  file: Express.Multer.File | undefined
+) => {
+  let imageUrl = "";
+
+  if (file) {
+    const imageName = `${payload.name}-${Date.now()}`;
+    const path = file.path;
+
+    const { secure_url } = await sendImageToCloudinary(imageName, path);
+    imageUrl = secure_url;
+  }
+
+  const payloadData = {
+    ...payload,
+    imageUrl,
+  };
+
+  const bundle = await CourseBundle.create(payloadData);
   return bundle;
 };
 
@@ -51,16 +70,34 @@ const getSingleCourseBundle = async (bundleId: string) => {
 // Update Course Bundle
 const updateCourseBundle = async (
   bundleId: string,
-  payload: Partial<TCourseBundle>
+  payload: Partial<TCourseBundle>,
+  file: any
 ) => {
-  const bundle = await CourseBundle.findByIdAndUpdate(bundleId, payload, {
+  const existing = await CourseBundle.findById(bundleId);
+
+  if (!existing) {
+    throw new AppError(httpStatus.NOT_FOUND, "Course bundle not found");
+  }
+
+  let imageUrl: string | undefined;
+
+  if (file) {
+    const imageName = `${payload?.name || existing.name}-${Date.now()}`;
+    const path = file.path;
+
+    const { secure_url } = await sendImageToCloudinary(imageName, path);
+    imageUrl = secure_url;
+  }
+
+  const updatePayload = {
+    ...payload,
+    ...(imageUrl && { imageUrl }),
+  };
+
+  const bundle = await CourseBundle.findByIdAndUpdate(bundleId, updatePayload, {
     new: true,
     runValidators: true,
   });
-
-  if (!bundle) {
-    throw new AppError(httpStatus.NOT_FOUND, "Course bundle not found");
-  }
 
   return bundle;
 };

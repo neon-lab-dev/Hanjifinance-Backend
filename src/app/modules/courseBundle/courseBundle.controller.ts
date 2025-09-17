@@ -5,8 +5,8 @@ import { CourseBundleService } from "./courseBundle.service";
 
 // Create a Course Bundle
 const addCourseBundle = catchAsync(async (req, res) => {
-  const result = await CourseBundleService.addCourseBundle(req.body);
-
+  const file = req.file;
+  const result = await CourseBundleService.addCourseBundle(req.body, file);
   sendResponse(res, {
     statusCode: httpStatus.CREATED,
     success: true,
@@ -52,7 +52,8 @@ const getSingleCourseBundle = catchAsync(async (req, res) => {
 // Update Course Bundle
 const updateCourseBundle = catchAsync(async (req, res) => {
   const { bundleId } = req.params;
-  const result = await CourseBundleService.updateCourseBundle(bundleId, req.body);
+  const file = req.file;
+  const result = await CourseBundleService.updateCourseBundle(bundleId, req.body , file);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
