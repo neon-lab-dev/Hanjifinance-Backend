@@ -20,8 +20,6 @@ const CourseOrderSchema = new mongoose_1.Schema({
             coursePrice: { type: Number, required: true },
         },
     ],
-    courseTitle: { type: String, required: true },
-    coursePrice: { type: Number, required: true },
     totalAmount: { type: Number, required: true },
     razorpayOrderId: { type: String },
     orderType: { type: String, enum: ["single", "bundle"], required: true },

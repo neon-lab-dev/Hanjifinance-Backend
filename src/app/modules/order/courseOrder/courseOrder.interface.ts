@@ -13,8 +13,6 @@ export interface TCourseOrder {
   email: string;
   phoneNumber: string;
   courses: TCourseOrderItem[];
-  courseTitle: string;
-  coursePrice: number;
   totalAmount: number;
   razorpayOrderId?: string;
   orderType? : "single" | "bundle";

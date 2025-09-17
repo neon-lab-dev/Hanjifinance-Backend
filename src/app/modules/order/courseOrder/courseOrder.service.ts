@@ -34,20 +34,23 @@ const verifyPayment = async (razorpayPaymentId: string) => {
 const createCourseOrder = async (
   user: any,
   payload: {
-    courseId: Types.ObjectId[];
+    courses: { courseId: Types.ObjectId }[];
     totalAmount: number;
     orderType: "single" | "bundle";
   }
 ) => {
-  if (!payload.courseId || payload.courseId.length === 0) {
+  if (!payload.courses || payload.courses.length === 0) {
     throw new AppError(httpStatus.BAD_REQUEST, "No courses provided");
   }
 
   const userData = await User.findById(user?._id);
   if (!userData) throw new AppError(httpStatus.NOT_FOUND, "User not found");
 
+  // Extract course IDs from payload
+  const courseIds = payload.courses.map((c) => c.courseId);
+
   // Fetching all courses by ids
-  const courses = await Course.find({ _id: { $in: payload.courseId } });
+  const courses = await Course.find({ _id: { $in: courseIds } });
 
   if (!courses || courses.length === 0) {
     throw new AppError(httpStatus.NOT_FOUND, "Courses not found");
@@ -87,6 +90,7 @@ const createCourseOrder = async (
 
   return order;
 };
+
 
 // Get all course orders (Admin/Moderator)
 const getAllCourseOrders = async (keyword?: string, page = 1, limit = 10) => {

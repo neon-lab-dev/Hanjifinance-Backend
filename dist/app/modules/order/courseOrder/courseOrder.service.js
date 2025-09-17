@@ -40,14 +40,16 @@ const verifyPayment = (razorpayPaymentId) => __awaiter(void 0, void 0, void 0, f
 });
 // Create course order
 const createCourseOrder = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    if (!payload.courseId || payload.courseId.length === 0) {
+    if (!payload.courses || payload.courses.length === 0) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "No courses provided");
     }
     const userData = yield auth_model_1.User.findById(user === null || user === void 0 ? void 0 : user._id);
     if (!userData)
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found");
+    // Extract course IDs from payload
+    const courseIds = payload.courses.map((c) => c.courseId);
     // Fetching all courses by ids
-    const courses = yield course_model_1.default.find({ _id: { $in: payload.courseId } });
+    const courses = yield course_model_1.default.find({ _id: { $in: courseIds } });
     if (!courses || courses.length === 0) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Courses not found");
     }
