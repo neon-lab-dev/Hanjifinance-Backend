@@ -15,6 +15,7 @@ const newsletter_route_1 = require("../modules/newsletter/newsletter.route");
 const couponCode_route_1 = require("../modules/admin/couponCode/couponCode.route");
 const category_route_1 = require("../modules/category/category.route");
 const activities_route_1 = require("../modules/activities/activities.route");
+const courseBundle_route_1 = require("../modules/courseBundle/courseBundle.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -32,6 +33,10 @@ const moduleRoutes = [
     {
         path: "/course-lecture",
         route: courseLecture_route_1.CourseLectureRoutes,
+    },
+    {
+        path: "/course-bundle",
+        route: courseBundle_route_1.CourseBundleRoutes,
     },
     {
         path: "/category",

@@ -13,6 +13,7 @@ import { NewsletterRoutes } from "../modules/newsletter/newsletter.route";
 import { CouponCodeRoutes } from "../modules/admin/couponCode/couponCode.route";
 import { CategoryRoutes } from "../modules/category/category.route";
 import { ActivityRoutes } from "../modules/activities/activities.route";
+import { CourseBundleRoutes } from "../modules/courseBundle/courseBundle.route";
 
 const router = Router();
 
@@ -32,6 +33,10 @@ const moduleRoutes = [
   {
     path: "/course-lecture",
     route: CourseLectureRoutes,
+  },
+  {
+    path: "/course-bundle",
+    route: CourseBundleRoutes,
   },
   {
     path: "/category",
