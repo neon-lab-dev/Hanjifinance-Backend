@@ -19,8 +19,8 @@ const http_status_1 = __importDefault(require("http-status"));
 const courseOrder_model_1 = require("./courseOrder.model");
 const razorpay_1 = require("../../../utils/razorpay");
 const auth_model_1 = require("../../auth/auth.model");
-const course_model_1 = __importDefault(require("../../admin/course/course.model"));
 const activities_services_1 = require("../../activities/activities.services");
+const course_model_1 = __importDefault(require("../../admin/course/course.model"));
 const generateOrderId = () => {
     return "HFCO-" + Math.floor(1000 + Math.random() * 9000);
 };
@@ -40,30 +40,43 @@ const verifyPayment = (razorpayPaymentId) => __awaiter(void 0, void 0, void 0, f
 });
 // Create course order
 const createCourseOrder = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const orderId = generateOrderId();
+    if (!payload.courseId || payload.courseId.length === 0) {
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "No courses provided");
+    }
     const userData = yield auth_model_1.User.findById(user === null || user === void 0 ? void 0 : user._id);
-    const courseData = yield course_model_1.default.findById(payload.courseId);
-    const payloadData = {
+    if (!userData)
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "User not found");
+    // Fetching all courses by ids
+    const courses = yield course_model_1.default.find({ _id: { $in: payload.courseId } });
+    if (!courses || courses.length === 0) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Courses not found");
+    }
+    const orderId = generateOrderId();
+    // Map courses to objects for DB
+    const coursesData = courses.map((c) => ({
+        courseId: c._id,
+        courseTitle: c.title,
+        coursePrice: c.discountedPrice,
+    }));
+    const orderData = {
         orderId,
-        userId: user === null || user === void 0 ? void 0 : user._id,
-        name: userData === null || userData === void 0 ? void 0 : userData.name,
-        email: userData === null || userData === void 0 ? void 0 : userData.email,
-        phoneNumber: userData === null || userData === void 0 ? void 0 : userData.phoneNumber,
-        userCustomId: user === null || user === void 0 ? void 0 : user.userId,
-        courseId: payload.courseId,
-        courseTitle: courseData === null || courseData === void 0 ? void 0 : courseData.title,
-        coursePrice: courseData === null || courseData === void 0 ? void 0 : courseData.discountedPrice,
+        userId: user._id,
+        userCustomId: user.userId,
+        name: userData.name,
+        email: userData.email,
+        phoneNumber: userData.phoneNumber,
+        courses: coursesData,
         totalAmount: payload.totalAmount,
+        orderType: payload.orderType,
     };
-    const order = yield courseOrder_model_1.CourseOrder.create(payloadData);
-    const activityPayload = {
-        userId: user === null || user === void 0 ? void 0 : user._id,
-        title: `Purchased Course`,
-        description: `You've purchased ${courseData === null || courseData === void 0 ? void 0 : courseData.title} course for ₹${courseData === null || courseData === void 0 ? void 0 : courseData.discountedPrice}`,
-    };
-    const createActivity = activities_services_1.ActivityServices.addActivity(activityPayload);
-    if (!createActivity) {
-        throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to add activity");
+    const order = yield courseOrder_model_1.CourseOrder.create(orderData);
+    // Add activity for each course
+    for (const course of coursesData) {
+        yield activities_services_1.ActivityServices.addActivity({
+            userId: user._id,
+            title: `Purchased Course`,
+            description: `You've purchased ${course.courseTitle} course for ₹${course.coursePrice}`,
+        });
     }
     return order;
 });

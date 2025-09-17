@@ -1,12 +1,12 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import AppError from "../../../errors/AppError";
 import httpStatus from "http-status";
-import { TCourseOrder } from "./courseOrder.interface";
 import { CourseOrder } from "./courseOrder.model";
 import { razorpay } from "../../../utils/razorpay";
 import { User } from "../../auth/auth.model";
-import Course from "../../admin/course/course.model";
 import { ActivityServices } from "../../activities/activities.services";
+import Course from "../../admin/course/course.model";
+import { Types } from "mongoose";
 
 const generateOrderId = () => {
   return "HFCO-" + Math.floor(1000 + Math.random() * 9000);
@@ -31,38 +31,60 @@ const verifyPayment = async (razorpayPaymentId: string) => {
 };
 
 // Create course order
-const createCourseOrder = async (user: any, payload: TCourseOrder) => {
-  const orderId = generateOrderId();
-  const userData = await User.findById(user?._id);
-  const courseData = await Course.findById(payload.courseId);
-
-  const payloadData: Partial<TCourseOrder> = {
-    orderId,
-    userId: user?._id,
-    name: userData?.name,
-    email: userData?.email,
-    phoneNumber: userData?.phoneNumber,
-    userCustomId: user?.userId,
-    courseId: payload.courseId,
-    courseTitle: courseData?.title,
-    coursePrice: courseData?.discountedPrice,
-    totalAmount: payload.totalAmount,
-  };
-
-  const order = await CourseOrder.create(payloadData);
-
-  const activityPayload = {
-    userId: user?._id,
-    title: `Purchased Course`,
-    description: `You've purchased ${courseData?.title} course for ₹${courseData?.discountedPrice}`,
-  };
-  const createActivity = ActivityServices.addActivity(activityPayload);
-  if (!createActivity) {
-    throw new AppError(
-      httpStatus.INTERNAL_SERVER_ERROR,
-      "Failed to add activity"
-    );
+const createCourseOrder = async (
+  user: any,
+  payload: {
+    courseId: Types.ObjectId[];
+    totalAmount: number;
+    orderType: "single" | "bundle";
   }
+) => {
+  if (!payload.courseId || payload.courseId.length === 0) {
+    throw new AppError(httpStatus.BAD_REQUEST, "No courses provided");
+  }
+
+  const userData = await User.findById(user?._id);
+  if (!userData) throw new AppError(httpStatus.NOT_FOUND, "User not found");
+
+  // Fetching all courses by ids
+  const courses = await Course.find({ _id: { $in: payload.courseId } });
+
+  if (!courses || courses.length === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, "Courses not found");
+  }
+
+  const orderId = generateOrderId();
+
+  // Map courses to objects for DB
+  const coursesData = courses.map((c) => ({
+    courseId: c._id,
+    courseTitle: c.title,
+    coursePrice: c.discountedPrice,
+  }));
+
+  const orderData = {
+    orderId,
+    userId: user._id,
+    userCustomId: user.userId,
+    name: userData.name,
+    email: userData.email,
+    phoneNumber: userData.phoneNumber,
+    courses: coursesData,
+    totalAmount: payload.totalAmount,
+    orderType: payload.orderType,
+  };
+
+  const order = await CourseOrder.create(orderData);
+
+  // Add activity for each course
+  for (const course of coursesData) {
+    await ActivityServices.addActivity({
+      userId: user._id,
+      title: `Purchased Course`,
+      description: `You've purchased ${course.courseTitle} course for ₹${course.coursePrice}`,
+    });
+  }
+
   return order;
 };
 
