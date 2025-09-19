@@ -14,6 +14,7 @@ import { CouponCodeRoutes } from "../modules/admin/couponCode/couponCode.route";
 import { CategoryRoutes } from "../modules/category/category.route";
 import { ActivityRoutes } from "../modules/activities/activities.route";
 import { CourseBundleRoutes } from "../modules/courseBundle/courseBundle.route";
+import { HelpDeskRoutes } from "../modules/helpdesk/helpdesk.route";
 
 const router = Router();
 
@@ -77,6 +78,10 @@ const moduleRoutes = [
   {
     path: "/activity",
     route: ActivityRoutes,
+  },
+  {
+    path: "/helpdesk",
+    route: HelpDeskRoutes,
   },
 ];
 
