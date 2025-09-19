@@ -31,7 +31,8 @@ const sendCouponCode = async (payload: any) => {
   const couponCode = await CouponCode.findOne({ code: payload?.couponCode });
   if (!couponCode)
     throw new AppError(httpStatus.BAD_REQUEST, "Invalid coupon code");
-  const user = await User.findOne({ email: payload?.email });
+  const email = payload?.email;
+  const user = await User.findOne({ email });
   const result = await BoardRoomBanterSubscription.findByIdAndUpdate(
     payload.subscriptionId,
     { status: "code sent" }
@@ -190,81 +191,57 @@ const getSingleSubscriptionById = async (id: string) => {
 };
 
 // Pause Subscription
-const pauseSubscription = async (user: any, payload: any) => {
-  const subscription = await BoardRoomBanterSubscription.findOne({
-    userId: user?._id,
-    status: "active",
-  });
+// const pauseSubscription = async (user: any, payload: any) => {
+//   const subscription = await BoardRoomBanterSubscription.findOne({
+//     userId: user?._id,
+//     status: "active",
+//   });
 
-  if (!subscription) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "No active subscription found to pause"
-    );
-  }
+//   if (!subscription) {
+//     throw new AppError(
+//       httpStatus.NOT_FOUND,
+//       "No active subscription found to pause"
+//     );
+//   }
 
-  if (subscription?.status === "cancelled") {
-    throw new AppError(
-      httpStatus.BAD_REQUEST,
-      "Subscription is already cancelled!"
-    );
-  }
+//   if (subscription?.status === "cancelled") {
+//     throw new AppError(
+//       httpStatus.BAD_REQUEST,
+//       "Subscription is already cancelled!"
+//     );
+//   }
 
-  // try {
-  //   await razorpay.subscriptions.pause(subscription.razorpaySubscriptionId!, {
-  //     pause_at: "now",
-  //   });
-  // } catch (error: any) {
-  //   console.error("Razorpay pause failed:", error);
-  //   throw new AppError(
-  //     httpStatus.INTERNAL_SERVER_ERROR,
-  //     "Failed to pause subscription in Razorpay"
-  //   );
-  // }
+//   subscription.status = "paused";
+//   subscription.pauseDate = new Date();
+//   subscription.dateRange = payload?.dateRange;
+//   subscription.pauseReason = payload?.pauseReason;
+//   await subscription.save();
 
-  subscription.status = "paused";
-  subscription.pauseDate = new Date();
-  subscription.dateRange = payload?.dateRange;
-  subscription.pauseReason = payload?.pauseReason;
-  await subscription.save();
-
-  await sendSubscriptionStatusEmails(user, subscription, "paused");
-  return subscription;
-};
+//   await sendSubscriptionStatusEmails(user, subscription, "paused");
+//   return subscription;
+// };
 
 // Resume Subscription
-const resumeSubscription = async (user: any) => {
-  const subscription = await BoardRoomBanterSubscription.findOne({
-    userId: user?._id,
-    status: "paused",
-  });
+// const resumeSubscription = async (user: any) => {
+//   const subscription = await BoardRoomBanterSubscription.findOne({
+//     userId: user?._id,
+//     status: "paused",
+//   });
 
-  if (!subscription) {
-    throw new AppError(
-      httpStatus.NOT_FOUND,
-      "No paused subscription found to resume"
-    );
-  }
+//   if (!subscription) {
+//     throw new AppError(
+//       httpStatus.NOT_FOUND,
+//       "No paused subscription found to resume"
+//     );
+//   }
 
-  // try {
-  //   await razorpay.subscriptions.resume(subscription.razorpaySubscriptionId!, {
-  //     resume_at: "now",
-  //   });
-  // } catch (error: any) {
-  //   console.error("Razorpay resume failed:", error);
-  //   throw new AppError(
-  //     httpStatus.INTERNAL_SERVER_ERROR,
-  //     "Failed to resume subscription in Razorpay"
-  //   );
-  // }
+//   subscription.status = "active";
+//   subscription.resumeDate = new Date();
+//   await subscription.save();
 
-  subscription.status = "active";
-  subscription.resumeDate = new Date();
-  await subscription.save();
-
-  await sendSubscriptionStatusEmails(user, subscription, "active");
-  return subscription;
-};
+//   await sendSubscriptionStatusEmails(user, subscription, "active");
+//   return subscription;
+// };
 
 // Cancel Subscription
 const cancelSubscription = async (user: any, payload: any) => {
@@ -283,16 +260,6 @@ const cancelSubscription = async (user: any, payload: any) => {
       "Subscription is already cancelled!"
     );
   }
-
-  // try {
-  //   await razorpay.subscriptions.cancel(subscription.razorpaySubscriptionId!);
-  // } catch (error: any) {
-  //   console.error("Razorpay cancel failed:", error);
-  //   throw new AppError(
-  //     httpStatus.INTERNAL_SERVER_ERROR,
-  //     "Failed to cancel subscription in Razorpay"
-  //   );
-  // }
 
   subscription.status = "cancelled";
   subscription.cancelDate = new Date();
@@ -356,8 +323,6 @@ export const BoardRoomBanterSubscriptionService = {
   verifySubscription,
   getAllSubscriptions,
   getSingleSubscriptionById,
-  pauseSubscription,
-  resumeSubscription,
   cancelSubscription,
   getMySubscription,
   updateWhatsappGroupStatus,

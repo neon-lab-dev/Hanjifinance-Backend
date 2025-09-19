@@ -102,32 +102,32 @@ const getSingleSubscriptionById = catchAsync(async (req, res) => {
   });
 });
 
-const pauseSubscription = catchAsync(async (req, res) => {
-  const result = await BoardRoomBanterSubscriptionService.pauseSubscription(
-    req.user,
-    req.body
-  );
+// const pauseSubscription = catchAsync(async (req, res) => {
+//   const result = await BoardRoomBanterSubscriptionService.pauseSubscription(
+//     req.user,
+//     req.body
+//   );
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "BoardRoomBanter subscription paused successfully",
-    data: result,
-  });
-});
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: "BoardRoomBanter subscription paused successfully",
+//     data: result,
+//   });
+// });
 
-const resumeSubscription = catchAsync(async (req, res) => {
-  const result = await BoardRoomBanterSubscriptionService.resumeSubscription(
-    req.user
-  );
+// const resumeSubscription = catchAsync(async (req, res) => {
+//   const result = await BoardRoomBanterSubscriptionService.resumeSubscription(
+//     req.user
+//   );
 
-  sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "BoardRoomBanter subscription resumed successfully",
-    data: result,
-  });
-});
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: "BoardRoomBanter subscription resumed successfully",
+//     data: result,
+//   });
+// });
 
 const cancelSubscription = catchAsync(async (req, res) => {
   const result = await BoardRoomBanterSubscriptionService.cancelSubscription(
@@ -229,8 +229,6 @@ export const BoardRoomBanterSubscriptionController = {
   verifySubscription,
   getAllSubscriptions,
   getSingleSubscriptionById,
-  pauseSubscription,
-  resumeSubscription,
   cancelSubscription,
   getMySubscription,
   updateWhatsappGroupStatus,

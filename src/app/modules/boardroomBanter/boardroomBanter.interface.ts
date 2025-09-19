@@ -9,7 +9,7 @@ export type TBoardRoomBanterSubscription={
   message?:string;
   startDate: Date;
   endDate: Date;
-  status: "waitlist" | "code sent" | "active" | "paused" | "expired" | "pending" | "cancelled";
+  status: "waitlist" | "code sent" | "active" | "expired" | "pending" | "cancelled";
   pauseDate?: Date;
   resumeDate?: Date;
   cancelDate?: Date;

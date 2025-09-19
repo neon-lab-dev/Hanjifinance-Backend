@@ -28,17 +28,17 @@ router.post(
   BoardRoomBanterSubscriptionController.verifySubscription
 );
 
-router.post(
-  "/pause",
-  auth(UserRole.user),
-  BoardRoomBanterSubscriptionController.pauseSubscription
-);
+// router.post(
+//   "/pause",
+//   auth(UserRole.user),
+//   BoardRoomBanterSubscriptionController.pauseSubscription
+// );
 
-router.post(
-  "/resume",
-  auth(UserRole.user),
-  BoardRoomBanterSubscriptionController.resumeSubscription
-);
+// router.post(
+//   "/resume",
+//   auth(UserRole.user),
+//   BoardRoomBanterSubscriptionController.resumeSubscription
+// );
 
 router.post(
   "/cancel",
