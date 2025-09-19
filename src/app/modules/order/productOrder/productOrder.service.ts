@@ -37,6 +37,40 @@ const createProductOrder = async (user: any, payload: TProductOrder) => {
   if (products.length !== payload.orderedItems.length) {
     throw new Error("Some products not found");
   }
+
+  for (const item of payload.orderedItems) {
+    const product = products.find(
+      (p) => p._id.toString() === item.productId.toString()
+    );
+
+    if (!product) {
+      throw new Error(`Product ${item.productId} not found`);
+    }
+
+    // Check size availability
+    const sizeObj = product.sizes.find((s: any) => s.size === item.size);
+    if (!sizeObj) {
+      throw new Error(
+        `Size ${item.size} is not available for product ${product.name}`
+      );
+    }
+
+    // Check quantity availability
+    if (sizeObj.quantity < item.quantity) {
+      throw new Error(
+        `Not enough stock for size ${item.size} of product ${product.name}. Available: ${sizeObj.quantity}`
+      );
+    }
+
+    // Reduce stock
+    sizeObj.quantity -= item.quantity;
+    if (sizeObj.quantity < 0) sizeObj.quantity = 0;
+
+    // Save updated product
+    await product.save();
+  }
+
+  // Create Order ID
   const orderId = generateOrderId();
 
   const payloadData = {
@@ -50,12 +84,16 @@ const createProductOrder = async (user: any, payload: TProductOrder) => {
 
   const order = await ProductOrder.create(payloadData);
 
+  // Add Activity
   const activityPayload = {
     userId: user?._id,
     title: `Purchased Products`,
-    description: `You've purchased ${payload.orderedItems?.length} product${payload.orderedItems?.length > 1 ? "s" : ""} for ₹${payload.totalAmount}`,
+    description: `You've purchased ${payload.orderedItems?.length} product${
+      payload.orderedItems?.length > 1 ? "s" : ""
+    } for ₹${payload.totalAmount}`,
   };
-  const createActivity = ActivityServices.addActivity(activityPayload);
+
+  const createActivity = await ActivityServices.addActivity(activityPayload);
   if (!createActivity) {
     throw new AppError(
       httpStatus.INTERNAL_SERVER_ERROR,
