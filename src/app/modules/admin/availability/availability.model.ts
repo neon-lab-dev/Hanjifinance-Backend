@@ -16,6 +16,11 @@ const AvailabilitySchema = new Schema<TAvailability>(
       required: false,
       default : false
     },
+    isAvailable: {
+      type: Boolean,
+      required: false,
+      default : true
+    },
     user: {
       type: Schema.Types.ObjectId,
       ref: "User",

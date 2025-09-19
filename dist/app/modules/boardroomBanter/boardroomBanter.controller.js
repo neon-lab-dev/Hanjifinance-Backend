@@ -74,24 +74,29 @@ const getSingleSubscriptionById = (0, catchAsync_1.default)((req, res) => __awai
         data: result,
     });
 }));
-const pauseSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.pauseSubscription(req.user, req.body);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: "BoardRoomBanter subscription paused successfully",
-        data: result,
-    });
-}));
-const resumeSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.resumeSubscription(req.user);
-    (0, sendResponse_1.default)(res, {
-        statusCode: http_status_1.default.OK,
-        success: true,
-        message: "BoardRoomBanter subscription resumed successfully",
-        data: result,
-    });
-}));
+// const pauseSubscription = catchAsync(async (req, res) => {
+//   const result = await BoardRoomBanterSubscriptionService.pauseSubscription(
+//     req.user,
+//     req.body
+//   );
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: "BoardRoomBanter subscription paused successfully",
+//     data: result,
+//   });
+// });
+// const resumeSubscription = catchAsync(async (req, res) => {
+//   const result = await BoardRoomBanterSubscriptionService.resumeSubscription(
+//     req.user
+//   );
+//   sendResponse(res, {
+//     statusCode: httpStatus.OK,
+//     success: true,
+//     message: "BoardRoomBanter subscription resumed successfully",
+//     data: result,
+//   });
+// });
 const cancelSubscription = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const result = yield boardroomBanter_service_1.BoardRoomBanterSubscriptionService.cancelSubscription(req.user, req.body);
     (0, sendResponse_1.default)(res, {
@@ -168,8 +173,6 @@ exports.BoardRoomBanterSubscriptionController = {
     verifySubscription,
     getAllSubscriptions,
     getSingleSubscriptionById,
-    pauseSubscription,
-    resumeSubscription,
     cancelSubscription,
     getMySubscription,
     updateWhatsappGroupStatus,

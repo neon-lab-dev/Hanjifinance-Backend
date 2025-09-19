@@ -45,6 +45,28 @@ const createProductOrder = (user, payload) => __awaiter(void 0, void 0, void 0, 
     if (products.length !== payload.orderedItems.length) {
         throw new Error("Some products not found");
     }
+    for (const item of payload.orderedItems) {
+        const product = products.find((p) => p._id.toString() === item.productId.toString());
+        if (!product) {
+            throw new Error(`Product ${item.productId} not found`);
+        }
+        // Check size availability
+        const sizeObj = product.sizes.find((s) => s.size === item.size);
+        if (!sizeObj) {
+            throw new Error(`Size ${item.size} is not available for product ${product.name}`);
+        }
+        // Check quantity availability
+        if (sizeObj.quantity < item.quantity) {
+            throw new Error(`Not enough stock for size ${item.size} of product ${product.name}. Available: ${sizeObj.quantity}`);
+        }
+        // Reduce stock
+        sizeObj.quantity -= item.quantity;
+        if (sizeObj.quantity < 0)
+            sizeObj.quantity = 0;
+        // Save updated product
+        yield product.save();
+    }
+    // Create Order ID
     const orderId = generateOrderId();
     const payloadData = {
         orderId,
@@ -55,12 +77,13 @@ const createProductOrder = (user, payload) => __awaiter(void 0, void 0, void 0, 
         status: "pending",
     };
     const order = yield productOrder_model_1.ProductOrder.create(payloadData);
+    // Add Activity
     const activityPayload = {
         userId: user === null || user === void 0 ? void 0 : user._id,
         title: `Purchased Products`,
         description: `You've purchased ${(_a = payload.orderedItems) === null || _a === void 0 ? void 0 : _a.length} product${((_b = payload.orderedItems) === null || _b === void 0 ? void 0 : _b.length) > 1 ? "s" : ""} for ₹${payload.totalAmount}`,
     };
-    const createActivity = activities_services_1.ActivityServices.addActivity(activityPayload);
+    const createActivity = yield activities_services_1.ActivityServices.addActivity(activityPayload);
     if (!createActivity) {
         throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to add activity");
     }

@@ -15,6 +15,11 @@ const AvailabilitySchema = new mongoose_1.Schema({
         required: false,
         default: false
     },
+    isAvailable: {
+        type: Boolean,
+        required: false,
+        default: true
+    },
     user: {
         type: mongoose_1.Schema.Types.ObjectId,
         ref: "User",

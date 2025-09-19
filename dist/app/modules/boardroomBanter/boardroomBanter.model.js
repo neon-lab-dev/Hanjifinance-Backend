@@ -22,7 +22,7 @@ const boardRoomBanterSubscriptionSchema = new mongoose_1.Schema({
     },
     status: {
         type: String,
-        enum: ["waitlist", "code sent", "active", "paused", "expired", "pending", "cancelled"],
+        enum: ["waitlist", "code sent", "active", "expired", "pending", "cancelled"],
         default: "active",
     },
     pauseDate: {

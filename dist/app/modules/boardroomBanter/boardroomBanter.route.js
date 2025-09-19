@@ -13,8 +13,16 @@ router.post("/join-waitlist", (0, auth_1.default)(auth_constants_1.UserRole.user
 router.put("/send-coupon-code", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.sendCouponCode);
 router.post("/create", (0, auth_1.default)(auth_constants_1.UserRole.user), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.createSubscription);
 router.post("/verify-payment", boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.verifySubscription);
-router.post("/pause", (0, auth_1.default)(auth_constants_1.UserRole.user), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.pauseSubscription);
-router.post("/resume", (0, auth_1.default)(auth_constants_1.UserRole.user), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.resumeSubscription);
+// router.post(
+//   "/pause",
+//   auth(UserRole.user),
+//   BoardRoomBanterSubscriptionController.pauseSubscription
+// );
+// router.post(
+//   "/resume",
+//   auth(UserRole.user),
+//   BoardRoomBanterSubscriptionController.resumeSubscription
+// );
 router.post("/cancel", (0, auth_1.default)(auth_constants_1.UserRole.user), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.cancelSubscription);
 router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.getAllSubscriptions);
 router.get("/my-subscription", (0, auth_1.default)(auth_constants_1.UserRole.user, auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), boardroomBanter_controller_1.BoardRoomBanterSubscriptionController.getMySubscription);

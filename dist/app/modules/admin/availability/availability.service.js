@@ -17,7 +17,7 @@ exports.AvailabilityService = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const availability_model_1 = __importDefault(require("./availability.model"));
 const AppError_1 = __importDefault(require("../../../errors/AppError"));
-// ✅ Add new availability
+// Add new availability
 const addAvailability = (payload) => __awaiter(void 0, void 0, void 0, function* () {
     const payloadData = {
         date: payload.date,
@@ -26,11 +26,13 @@ const addAvailability = (payload) => __awaiter(void 0, void 0, void 0, function*
     const availability = yield availability_model_1.default.create(payloadData);
     return availability;
 });
-// ✅ Get all availabilities (with optional filter + pagination)
+// Get all availabilities
 const getAllAvailabilities = (date, page, limit) => __awaiter(void 0, void 0, void 0, function* () {
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    yield availability_model_1.default.updateMany({ date: { $lt: today }, isAvailable: true }, { $set: { isAvailable: false } });
     const query = {};
     if (date) {
-        // Only match the specific day
         const start = new Date(date);
         const end = new Date(date);
         end.setHours(23, 59, 59, 999);
@@ -51,7 +53,7 @@ const getAllAvailabilities = (date, page, limit) => __awaiter(void 0, void 0, vo
         },
     };
 });
-// ✅ Get single availability
+// Get single availability
 const getSingleAvailabilityById = (availabilityId) => __awaiter(void 0, void 0, void 0, function* () {
     const availability = yield availability_model_1.default.findById(availabilityId);
     if (!availability) {
@@ -59,7 +61,7 @@ const getSingleAvailabilityById = (availabilityId) => __awaiter(void 0, void 0, 
     }
     return availability;
 });
-// ✅ Delete availability
+// Delete availability
 const deleteAvailability = (availabilityId) => __awaiter(void 0, void 0, void 0, function* () {
     const availability = yield availability_model_1.default.findByIdAndDelete(availabilityId);
     if (!availability) {

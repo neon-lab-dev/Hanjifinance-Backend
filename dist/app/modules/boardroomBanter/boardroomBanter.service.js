@@ -31,7 +31,8 @@ const sendCouponCode = (payload) => __awaiter(void 0, void 0, void 0, function* 
     const couponCode = yield couponCode_model_1.default.findOne({ code: payload === null || payload === void 0 ? void 0 : payload.couponCode });
     if (!couponCode)
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Invalid coupon code");
-    const user = yield auth_model_1.User.findOne({ email: payload === null || payload === void 0 ? void 0 : payload.email });
+    const email = payload === null || payload === void 0 ? void 0 : payload.email;
+    const user = yield auth_model_1.User.findOne({ email });
     const result = yield boardroomBanter_model_1.BoardRoomBanterSubscription.findByIdAndUpdate(payload.subscriptionId, { status: "code sent" });
     yield (0, sendPauseSubscriptionEmail_1.sendCouponCodeEmail)(user, payload === null || payload === void 0 ? void 0 : payload.couponCode);
     return result;
@@ -143,62 +144,49 @@ const getSingleSubscriptionById = (id) => __awaiter(void 0, void 0, void 0, func
     return subscription;
 });
 // Pause Subscription
-const pauseSubscription = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
-    const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.findOne({
-        userId: user === null || user === void 0 ? void 0 : user._id,
-        status: "active",
-    });
-    if (!subscription) {
-        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "No active subscription found to pause");
-    }
-    if ((subscription === null || subscription === void 0 ? void 0 : subscription.status) === "cancelled") {
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Subscription is already cancelled!");
-    }
-    // try {
-    //   await razorpay.subscriptions.pause(subscription.razorpaySubscriptionId!, {
-    //     pause_at: "now",
-    //   });
-    // } catch (error: any) {
-    //   console.error("Razorpay pause failed:", error);
-    //   throw new AppError(
-    //     httpStatus.INTERNAL_SERVER_ERROR,
-    //     "Failed to pause subscription in Razorpay"
-    //   );
-    // }
-    subscription.status = "paused";
-    subscription.pauseDate = new Date();
-    subscription.dateRange = payload === null || payload === void 0 ? void 0 : payload.dateRange;
-    subscription.pauseReason = payload === null || payload === void 0 ? void 0 : payload.pauseReason;
-    yield subscription.save();
-    yield (0, sendPauseSubscriptionEmail_1.sendSubscriptionStatusEmails)(user, subscription, "paused");
-    return subscription;
-});
+// const pauseSubscription = async (user: any, payload: any) => {
+//   const subscription = await BoardRoomBanterSubscription.findOne({
+//     userId: user?._id,
+//     status: "active",
+//   });
+//   if (!subscription) {
+//     throw new AppError(
+//       httpStatus.NOT_FOUND,
+//       "No active subscription found to pause"
+//     );
+//   }
+//   if (subscription?.status === "cancelled") {
+//     throw new AppError(
+//       httpStatus.BAD_REQUEST,
+//       "Subscription is already cancelled!"
+//     );
+//   }
+//   subscription.status = "paused";
+//   subscription.pauseDate = new Date();
+//   subscription.dateRange = payload?.dateRange;
+//   subscription.pauseReason = payload?.pauseReason;
+//   await subscription.save();
+//   await sendSubscriptionStatusEmails(user, subscription, "paused");
+//   return subscription;
+// };
 // Resume Subscription
-const resumeSubscription = (user) => __awaiter(void 0, void 0, void 0, function* () {
-    const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.findOne({
-        userId: user === null || user === void 0 ? void 0 : user._id,
-        status: "paused",
-    });
-    if (!subscription) {
-        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "No paused subscription found to resume");
-    }
-    // try {
-    //   await razorpay.subscriptions.resume(subscription.razorpaySubscriptionId!, {
-    //     resume_at: "now",
-    //   });
-    // } catch (error: any) {
-    //   console.error("Razorpay resume failed:", error);
-    //   throw new AppError(
-    //     httpStatus.INTERNAL_SERVER_ERROR,
-    //     "Failed to resume subscription in Razorpay"
-    //   );
-    // }
-    subscription.status = "active";
-    subscription.resumeDate = new Date();
-    yield subscription.save();
-    yield (0, sendPauseSubscriptionEmail_1.sendSubscriptionStatusEmails)(user, subscription, "active");
-    return subscription;
-});
+// const resumeSubscription = async (user: any) => {
+//   const subscription = await BoardRoomBanterSubscription.findOne({
+//     userId: user?._id,
+//     status: "paused",
+//   });
+//   if (!subscription) {
+//     throw new AppError(
+//       httpStatus.NOT_FOUND,
+//       "No paused subscription found to resume"
+//     );
+//   }
+//   subscription.status = "active";
+//   subscription.resumeDate = new Date();
+//   await subscription.save();
+//   await sendSubscriptionStatusEmails(user, subscription, "active");
+//   return subscription;
+// };
 // Cancel Subscription
 const cancelSubscription = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const subscription = yield boardroomBanter_model_1.BoardRoomBanterSubscription.findOne({
@@ -211,15 +199,6 @@ const cancelSubscription = (user, payload) => __awaiter(void 0, void 0, void 0, 
     if ((subscription === null || subscription === void 0 ? void 0 : subscription.status) === "cancelled") {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Subscription is already cancelled!");
     }
-    // try {
-    //   await razorpay.subscriptions.cancel(subscription.razorpaySubscriptionId!);
-    // } catch (error: any) {
-    //   console.error("Razorpay cancel failed:", error);
-    //   throw new AppError(
-    //     httpStatus.INTERNAL_SERVER_ERROR,
-    //     "Failed to cancel subscription in Razorpay"
-    //   );
-    // }
     subscription.status = "cancelled";
     subscription.cancelDate = new Date();
     subscription.cancelReason = payload === null || payload === void 0 ? void 0 : payload.cancelReason;
@@ -254,8 +233,6 @@ exports.BoardRoomBanterSubscriptionService = {
     verifySubscription,
     getAllSubscriptions,
     getSingleSubscriptionById,
-    pauseSubscription,
-    resumeSubscription,
     cancelSubscription,
     getMySubscription,
     updateWhatsappGroupStatus,
