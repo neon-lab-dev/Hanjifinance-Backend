@@ -34,7 +34,9 @@ const checkout = (amount) => __awaiter(void 0, void 0, void 0, function* () {
 // Verify payment
 const verifyPayment = (
 // razorpayOrderId: string,
-razorpayPaymentId) => __awaiter(void 0, void 0, void 0, function* () {
+razorpayPaymentId
+// razorpaySignature: string
+) => __awaiter(void 0, void 0, void 0, function* () {
     // if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
     //   return `${process.env.PAYMENT_REDIRECT_URL}/failed`;
     // }
@@ -70,7 +72,7 @@ const bookChatAndChill = (user, payload) => __awaiter(void 0, void 0, void 0, fu
         bookingDate: payload.bookingDate,
         status: "booked",
     });
-    yield availability_model_1.default.findOneAndUpdate({ date: payload.bookingDate }, { isBooked: true }, { new: true });
+    yield availability_model_1.default.findOneAndUpdate({ date: payload.bookingDate }, { isBooked: true, isAvailable: false }, { new: true });
     // Format date nicely
     const meetingDate = new Date(payload.bookingDate).toLocaleDateString("en-US", {
         weekday: "long",

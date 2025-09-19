@@ -22,7 +22,7 @@ const checkout = async (amount: number) => {
 // Verify payment
 const verifyPayment = async (
   // razorpayOrderId: string,
-  razorpayPaymentId: string,
+  razorpayPaymentId: string
   // razorpaySignature: string
 ) => {
   // if (!razorpayOrderId || !razorpayPaymentId || !razorpaySignature) {
@@ -70,7 +70,7 @@ const bookChatAndChill = async (user: any, payload: any) => {
 
   await Availability.findOneAndUpdate(
     { date: payload.bookingDate },
-    { isBooked: true },
+    { isBooked: true, isAvailable: false },
     { new: true }
   );
 
@@ -185,12 +185,8 @@ const getBookingsByUserId = async (userCustomId: string) => {
 };
 
 // Get logged-in user's bookings
-const getMyBookings = async (
-  userId: string,
-  page = 1,
-  limit = 10
-) => {
-  const query: any = { user:userId };
+const getMyBookings = async (userId: string, page = 1, limit = 10) => {
+  const query: any = { user: userId };
 
   const skip = (page - 1) * limit;
 
