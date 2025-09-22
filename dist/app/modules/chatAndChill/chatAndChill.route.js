@@ -22,6 +22,8 @@ router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_consta
 router.get("/my-bookings", (0, auth_1.default)(auth_constants_1.UserRole.user), chatAndChill_controller_1.ChatAndChillControllers.getMyBookings);
 // Schedule a meeting (Admin/Moderator)
 router.put("/schedule-meeting", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.scheduleMeeting);
+// Schedule a meeting (Admin/Moderator)
+router.put("/re-schedule-meeting", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), chatAndChill_controller_1.ChatAndChillControllers.reScheduleMeeting);
 // Get single booking by ID
 router.get("/:bookingId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator, auth_constants_1.UserRole.user), chatAndChill_controller_1.ChatAndChillControllers.getSingleBookingById);
 // Get all bookings for a particular user (Admin/Moderator)

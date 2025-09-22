@@ -44,6 +44,13 @@ router.put(
   ChatAndChillControllers.scheduleMeeting
 );
 
+// Schedule a meeting (Admin/Moderator)
+router.put(
+  "/re-schedule-meeting",
+  auth(UserRole.admin, UserRole.moderator),
+  ChatAndChillControllers.reScheduleMeeting
+);
+
 // Get single booking by ID
 router.get(
   "/:bookingId",

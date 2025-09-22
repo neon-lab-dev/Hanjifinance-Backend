@@ -114,10 +114,20 @@ const updateBookingStatus = (0, catchAsync_1.default)((req, res) => __awaiter(vo
         data: result,
     });
 }));
-// Schedule a meeting (update scheduledAt + mark as scheduled)
+// Schedule a meeting
 const scheduleMeeting = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { bookingId, meetingLink } = req.body;
     const result = yield chatAndChill_service_1.ChatAndChillService.scheduleMeeting(bookingId, meetingLink);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Meeting scheduled successfully",
+        data: result,
+    });
+}));
+// Re-Schedule meeting
+const reScheduleMeeting = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield chatAndChill_service_1.ChatAndChillService.reScheduleMeeting(req.body);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,
@@ -135,4 +145,5 @@ exports.ChatAndChillControllers = {
     getMyBookings,
     updateBookingStatus,
     scheduleMeeting,
+    reScheduleMeeting,
 };

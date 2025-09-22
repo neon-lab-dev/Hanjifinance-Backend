@@ -232,6 +232,57 @@ const scheduleMeeting = (bookingId, meetingLink) => __awaiter(void 0, void 0, vo
     yield (0, sendEmail_1.sendEmail)(booking.user.email, subject, htmlBody);
     return booking;
 });
+// Re-Schedule a meeting
+const reScheduleMeeting = (payload) => __awaiter(void 0, void 0, void 0, function* () {
+    const { bookingId, bookingDate } = payload;
+    const booking = yield chatAndChill_model_1.default.findByIdAndUpdate(bookingId, { bookingDate }, { new: true }).populate("user", "name email");
+    if (!booking) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Booking not found");
+    }
+    // Format meeting date
+    const meetingDate = booking.bookingDate
+        ? new Date(booking.bookingDate).toLocaleDateString("en-US", {
+            weekday: "long",
+            year: "numeric",
+            month: "long",
+            day: "numeric",
+        })
+        : "Not provided";
+    const meetingSlot = "07:00 PM - 07:30 PM";
+    const subject = "Your Meeting is Re-Scheduled - Hanjifinance";
+    const htmlBody = `
+<div style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:20px;">
+  <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; padding:30px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
+    <h2 style="color:#c0392b; text-align:center;">Hanjifinance</h2>
+    <p style="font-size:16px; color:#333;">Hello <strong>${booking.user.name}</strong>,</p>
+    <p style="font-size:15px; color:#555;">
+      Your meeting has been <strong>rescheduled</strong>. Please find the updated details below:
+    </p>
+    <p style="font-size:15px; color:#555;">
+      <strong>Topic:</strong> ${booking.title || "Chat & Chill"} <br/>
+      <strong>New Date:</strong> ${meetingDate} <br/>
+      <strong>Slot:</strong> ${meetingSlot}
+    </p>
+    <p style="font-size:15px; color:#555;">
+      Kindly make a note of the new schedule. We apologize for any inconvenience caused and appreciate your understanding.
+    </p>
+    <div style="text-align:center; margin:30px 0;">
+      <a href="${booking === null || booking === void 0 ? void 0 : booking.meetingLink}" target="_blank" style="background:#c0392b; color:#fff; text-decoration:none; padding:12px 24px; border-radius:6px; font-size:16px; font-weight:bold;">
+        Join Meeting
+      </a>
+    </div>
+    <p style="font-size:14px; color:#777;">
+      Please make sure to join on time. If you have any questions or need assistance, contact our support team.
+    </p>
+    <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
+    <p style="font-size:16px; font-weight:bold; color:#c0392b;">The Hanjifinance Team</p>
+  </div>
+</div>
+`;
+    // Send email
+    yield (0, sendEmail_1.sendEmail)(booking.user.email, subject, htmlBody);
+    return booking;
+});
 exports.ChatAndChillService = {
     checkout,
     verifyPayment,
@@ -242,4 +293,5 @@ exports.ChatAndChillService = {
     getMyBookings,
     updateBookingStatus,
     scheduleMeeting,
+    reScheduleMeeting,
 };

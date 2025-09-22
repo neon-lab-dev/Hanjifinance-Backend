@@ -131,7 +131,7 @@ const updateBookingStatus = catchAsync(async (req, res) => {
   });
 });
 
-// Schedule a meeting (update scheduledAt + mark as scheduled)
+// Schedule a meeting
 const scheduleMeeting = catchAsync(async (req, res) => {
   const { bookingId, meetingLink } = req.body;
 
@@ -139,6 +139,19 @@ const scheduleMeeting = catchAsync(async (req, res) => {
     bookingId,
     meetingLink
   );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Meeting scheduled successfully",
+    data: result,
+  });
+});
+
+// Re-Schedule meeting
+const reScheduleMeeting = catchAsync(async (req, res) => {
+
+  const result = await ChatAndChillService.reScheduleMeeting(req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -158,4 +171,5 @@ export const ChatAndChillControllers = {
   getMyBookings,
   updateBookingStatus,
   scheduleMeeting,
+  reScheduleMeeting,
 };
