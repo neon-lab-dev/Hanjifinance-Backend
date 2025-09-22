@@ -1,7 +1,9 @@
 import { ObjectId } from "mongoose";
 
 export type THelpDesk = {
+  imageUrl?: string;
   userId:ObjectId;
+  userCustomId: string;
   name: string;
   email: string;
   phoneNumber: string;

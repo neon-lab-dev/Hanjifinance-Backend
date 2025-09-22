@@ -5,7 +5,8 @@ import { HelpDeskServices } from "./helpdesk.services";
 
 // Raise Query
 const raiseQuery = catchAsync(async (req, res) => {
-  const result = await HelpDeskServices.raiseQuery(req.user, req.body);
+  const file = req.file;
+  const result = await HelpDeskServices.raiseQuery(req.user, file, req.body);
 
   sendResponse(res, {
     statusCode: httpStatus.CREATED,

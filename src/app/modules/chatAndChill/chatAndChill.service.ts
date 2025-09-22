@@ -291,19 +291,27 @@ const scheduleMeeting = async (bookingId: string, meetingLink: string) => {
 // Re-Schedule a meeting
 const reScheduleMeeting = async (payload: any) => {
   const { bookingId, bookingDate } = payload;
+
+  const bookingBeforeUpdate = await ChatAndChill.findById(bookingId);
+  if (!bookingBeforeUpdate) {
+    throw new AppError(httpStatus.NOT_FOUND, "Booking not found");
+  }
+
+  if (!bookingBeforeUpdate?.meetingLink) {
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "Meeting is not scheduled yet, please schedule the meeting first"
+    );
+  }
   const booking = await ChatAndChill.findByIdAndUpdate(
     bookingId,
     { bookingDate },
     { new: true }
   ).populate<{ user: { name: string; email: string } }>("user", "name email");
 
-  if (!booking) {
-    throw new AppError(httpStatus.NOT_FOUND, "Booking not found");
-  }
-
   // Format meeting date
-  const meetingDate = booking.bookingDate
-    ? new Date(booking.bookingDate).toLocaleDateString("en-US", {
+  const meetingDate = booking!.bookingDate
+    ? new Date(booking!.bookingDate).toLocaleDateString("en-US", {
         weekday: "long",
         year: "numeric",
         month: "long",
@@ -319,12 +327,12 @@ const reScheduleMeeting = async (payload: any) => {
 <div style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:20px;">
   <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; padding:30px; box-shadow:0 2px 6px rgba(0,0,0,0.1);">
     <h2 style="color:#c0392b; text-align:center;">Hanjifinance</h2>
-    <p style="font-size:16px; color:#333;">Hello <strong>${booking.user.name}</strong>,</p>
+    <p style="font-size:16px; color:#333;">Hello <strong>${booking!.user.name}</strong>,</p>
     <p style="font-size:15px; color:#555;">
       Your meeting has been <strong>rescheduled</strong>. Please find the updated details below:
     </p>
     <p style="font-size:15px; color:#555;">
-      <strong>Topic:</strong> ${booking.title || "Chat & Chill"} <br/>
+      <strong>Topic:</strong> ${booking!.title || "Chat & Chill"} <br/>
       <strong>New Date:</strong> ${meetingDate} <br/>
       <strong>Slot:</strong> ${meetingSlot}
     </p>
@@ -346,7 +354,7 @@ const reScheduleMeeting = async (payload: any) => {
 `;
 
   // Send email
-  await sendEmail(booking.user.email, subject, htmlBody);
+  await sendEmail(booking!.user.email, subject, htmlBody);
 
   return booking;
 };

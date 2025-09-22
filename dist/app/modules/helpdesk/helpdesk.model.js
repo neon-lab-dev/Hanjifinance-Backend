@@ -2,7 +2,9 @@
 Object.defineProperty(exports, "__esModule", { value: true });
 const mongoose_1 = require("mongoose");
 const HelpDeskSchema = new mongoose_1.Schema({
+    imageUrl: { type: String, required: false },
     userId: { type: mongoose_1.Schema.Types.ObjectId, ref: "User", required: true },
+    userCustomId: { type: String, required: true, trim: true },
     name: { type: String, required: true, trim: true },
     email: { type: String, required: true, trim: true },
     phoneNumber: { type: String, required: true, trim: true },

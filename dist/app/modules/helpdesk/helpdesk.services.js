@@ -17,15 +17,25 @@ exports.HelpDeskServices = void 0;
 const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../../errors/AppError"));
 const helpdesk_model_1 = __importDefault(require("./helpdesk.model"));
+const sendImageToCloudinary_1 = require("../../utils/sendImageToCloudinary");
 // Raise a Query
-const raiseQuery = (user, payload) => __awaiter(void 0, void 0, void 0, function* () {
+const raiseQuery = (user, file, payload) => __awaiter(void 0, void 0, void 0, function* () {
+    let imageUrl = "";
+    if (file) {
+        const imageName = `${payload.name}-${Date.now()}`;
+        const path = file.path;
+        const { secure_url } = yield (0, sendImageToCloudinary_1.sendImageToCloudinary)(imageName, path);
+        imageUrl = secure_url;
+    }
     const payloadData = {
         message: payload === null || payload === void 0 ? void 0 : payload.message,
         userId: user === null || user === void 0 ? void 0 : user._id,
+        userCustomId: user === null || user === void 0 ? void 0 : user.userId,
         name: user === null || user === void 0 ? void 0 : user.name,
         email: user === null || user === void 0 ? void 0 : user.email,
         phoneNumber: user === null || user === void 0 ? void 0 : user.phoneNumber,
         status: "pending",
+        imageUrl,
     };
     return yield helpdesk_model_1.default.create(payloadData);
 });
@@ -37,6 +47,7 @@ const getAllQueries = (keyword_1, status_1, ...args_1) => __awaiter(void 0, [key
             { name: { $regex: keyword, $options: "i" } },
             { email: { $regex: keyword, $options: "i" } },
             { phoneNumber: { $regex: keyword, $options: "i" } },
+            { userCustomId: { $regex: keyword, $options: "i" } },
         ];
     }
     if (status && status !== "all") {

@@ -3,16 +3,33 @@ import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import HelpDesk from "./helpdesk.model";
 import { THelpDesk } from "./helpdesk.interface";
+import { sendImageToCloudinary } from "../../utils/sendImageToCloudinary";
 
 // Raise a Query
-const raiseQuery = async (user: any, payload: THelpDesk) => {
+const raiseQuery = async (
+  user: any,
+  file: Express.Multer.File | undefined,
+  payload: THelpDesk
+) => {
+  let imageUrl = "";
+
+  if (file) {
+    const imageName = `${payload.name}-${Date.now()}`;
+    const path = file.path;
+
+    const { secure_url } = await sendImageToCloudinary(imageName, path);
+    imageUrl = secure_url;
+  }
+
   const payloadData = {
     message: payload?.message,
     userId: user?._id,
+    userCustomId: user?.userId,
     name: user?.name,
     email: user?.email,
     phoneNumber: user?.phoneNumber,
     status: "pending",
+    imageUrl,
   };
   return await HelpDesk.create(payloadData);
 };
@@ -31,6 +48,7 @@ const getAllQueries = async (
       { name: { $regex: keyword, $options: "i" } },
       { email: { $regex: keyword, $options: "i" } },
       { phoneNumber: { $regex: keyword, $options: "i" } },
+      { userCustomId: { $regex: keyword, $options: "i" } },
     ];
   }
 

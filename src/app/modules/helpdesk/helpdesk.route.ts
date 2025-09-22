@@ -2,12 +2,14 @@ import express from "express";
 import { HelpDeskControllers } from "./helpdesk.controller";
 import auth from "../../middlewares/auth";
 import { UserRole } from "../auth/auth.constants";
+import { multerUpload } from "../../config/multer.config";
 
 const router = express.Router();
 
 router.post(
   "/raise-query",
   auth(UserRole.user, UserRole.admin, UserRole.moderator),
+  multerUpload.single("file"),
   HelpDeskControllers.raiseQuery
 );
 
