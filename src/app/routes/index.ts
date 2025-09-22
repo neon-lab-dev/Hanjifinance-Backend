@@ -16,6 +16,7 @@ import { ActivityRoutes } from "../modules/activities/activities.route";
 import { CourseBundleRoutes } from "../modules/courseBundle/courseBundle.route";
 import { HelpDeskRoutes } from "../modules/helpdesk/helpdesk.route";
 import { ExamRoutes } from "../modules/exam/exam.route";
+import { ExamAnswerRoutes } from "../modules/examAnswer/examAnswer.route";
 
 const router = Router();
 
@@ -87,6 +88,10 @@ const moduleRoutes = [
   {
     path: "/exam",
     route: ExamRoutes,
+  },
+  {
+    path: "/exam-answer",
+    route: ExamAnswerRoutes,
   },
 ];
 

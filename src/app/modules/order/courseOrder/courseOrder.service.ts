@@ -79,6 +79,25 @@ const createCourseOrder = async (
 
   const order = await CourseOrder.create(orderData);
 
+   // Update purchasedCourses in User
+  for (const course of coursesData) {
+    const alreadyPurchased = userData.purchasedCourses!.some(
+      (p) => p.courseId.toString() === course.courseId.toString()
+    );
+
+    if (!alreadyPurchased) {
+      userData.purchasedCourses!.push({
+        courseId: course.courseId,
+        isAttendedOnExam: false,
+        isPassed: false,
+        examLimitLeft: 3,
+        score: 0,
+      });
+    }
+  }
+
+  await userData.save();
+
   // Add activity for each course
   for (const course of coursesData) {
     await ActivityServices.addActivity({

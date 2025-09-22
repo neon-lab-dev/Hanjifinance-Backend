@@ -3,7 +3,7 @@ export type TLoginAuth = {
   password: string;
 };
 
-import { Model } from "mongoose";
+import { Model, Types } from "mongoose";
 import { UserRole } from "./auth.constants";
 
 export type TUser = {
@@ -27,6 +27,13 @@ export type TUser = {
   createdAt: Date;
   updatedAt: Date;
   passwordChangedAt?: Date;
+  purchasedCourses? : {
+    courseId: Types.ObjectId;
+    isAttendedOnExam: boolean;
+    isPassed: boolean;
+    examLimitLeft: number;
+    score : number
+  }[];
 };
 
 export interface UserModel extends Model<TUser> {

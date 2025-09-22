@@ -23,7 +23,7 @@ const QuestionSchema = new mongoose_1.Schema({
         type: Number,
         required: true,
     },
-}, { _id: false });
+});
 const ExamSchema = new mongoose_1.Schema({
     courseId: {
         type: mongoose_1.Schema.Types.ObjectId,
@@ -41,13 +41,17 @@ const ExamSchema = new mongoose_1.Schema({
     duration: {
         type: Number,
     },
+    passingMark: {
+        type: Number,
+    },
 }, {
     timestamps: true,
 });
-ExamSchema.pre("save", function (next) {
-    if (this.isModified("questions")) {
-        this.duration = this.questions.length;
-    }
+ExamSchema.pre('save', function (next) {
+    const totalQuestions = this.questions.length;
+    this.duration = totalQuestions;
+    // 70% passing
+    this.passingMark = Math.ceil(totalQuestions * 0.7);
     next();
 });
 const Exam = (0, mongoose_1.model)("Exam", ExamSchema);

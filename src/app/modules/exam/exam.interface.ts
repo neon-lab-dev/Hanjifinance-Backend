@@ -5,6 +5,7 @@ export type TOption = {
 };
 
 export type TQuestion = {
+  _id: Types.ObjectId;
   questionText: string;
   options: TOption[];
   correctAnswerIndex: number;
@@ -16,5 +17,7 @@ export type TExam = {
   title: string;
   questions: TQuestion[];
   duration?: number;
+  passingMark?: number;
   createdAt?: Date;
+  updatedAt?: Date;
 };

@@ -18,6 +18,7 @@ const activities_route_1 = require("../modules/activities/activities.route");
 const courseBundle_route_1 = require("../modules/courseBundle/courseBundle.route");
 const helpdesk_route_1 = require("../modules/helpdesk/helpdesk.route");
 const exam_route_1 = require("../modules/exam/exam.route");
+const examAnswer_route_1 = require("../modules/examAnswer/examAnswer.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -87,6 +88,10 @@ const moduleRoutes = [
     {
         path: "/exam",
         route: exam_route_1.ExamRoutes,
+    },
+    {
+        path: "/exam-answer",
+        route: examAnswer_route_1.ExamAnswerRoutes,
     },
 ];
 moduleRoutes.forEach((route) => router.use(route.path, route.route));

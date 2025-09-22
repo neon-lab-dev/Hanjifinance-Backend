@@ -90,6 +90,31 @@ const userSchema = new mongoose_1.Schema({
         type: Date,
         required: false,
     },
+    purchasedCourses: [
+        {
+            courseId: {
+                type: mongoose_1.Schema.Types.ObjectId,
+                ref: "Course",
+                required: true,
+            },
+            isAttendedOnExam: {
+                type: Boolean,
+                default: false,
+            },
+            isPassed: {
+                type: Boolean,
+                default: false,
+            },
+            examLimitLeft: {
+                type: Number,
+                default: 3,
+            },
+            score: {
+                type: Number,
+                default: 0,
+            },
+        },
+    ],
 }, {
     timestamps: true,
 });
