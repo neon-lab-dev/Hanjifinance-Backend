@@ -56,9 +56,9 @@ const getSingleQueryById = (0, catchAsync_1.default)((req, res) => __awaiter(voi
 // Get My Queries (only queries raised by logged-in user)
 const getMyQueries = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const { page = "1", limit = "10" } = req.query;
+    const { page = "1", limit = "10", keyword, status } = req.query;
     const userId = (_a = req.user) === null || _a === void 0 ? void 0 : _a._id;
-    const result = yield helpdesk_services_1.HelpDeskServices.getMyQueries(userId, Number(page), Number(limit));
+    const result = yield helpdesk_services_1.HelpDeskServices.getMyQueries(userId, Number(page), Number(limit), keyword, status);
     (0, sendResponse_1.default)(res, {
         statusCode: http_status_1.default.OK,
         success: true,

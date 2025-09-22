@@ -58,8 +58,13 @@ const getAllQueries = async (
 
   const skip = (page - 1) * limit;
 
+  // Populate only on find query, not on countDocuments
   const [data, total] = await Promise.all([
-    HelpDesk.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+    HelpDesk.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .populate("userId", "name email phoneNumber"),
     HelpDesk.countDocuments(query),
   ]);
 
@@ -84,13 +89,32 @@ const getSingleQueryById = async (id: string) => {
 };
 
 // Get Queries of logged-in user
-const getMyQueries = async (userId: string, page = 1, limit = 10) => {
+const getMyQueries = async (
+  userId: string,
+  page = 1,
+  limit = 10,
+  keyword?: string,
+  status?: string
+) => {
   const query: any = { userId };
+
+  if (keyword) {
+    query.$or = [
+      { name: { $regex: keyword, $options: "i" } },
+      { email: { $regex: keyword, $options: "i" } },
+      { phoneNumber: { $regex: keyword, $options: "i" } },
+      { userCustomId: { $regex: keyword, $options: "i" } },
+    ];
+  }
+
+  if (status && status !== "all") {
+    query.status = { $regex: status, $options: "i" };
+  }
 
   const skip = (page - 1) * limit;
 
   const [data, total] = await Promise.all([
-    HelpDesk.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+    HelpDesk.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }).populate("userId", "name email phoneNumber"),
     HelpDesk.countDocuments(query),
   ]);
 

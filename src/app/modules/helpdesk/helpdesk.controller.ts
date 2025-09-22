@@ -53,13 +53,15 @@ const getSingleQueryById = catchAsync(async (req, res) => {
 
 // Get My Queries (only queries raised by logged-in user)
 const getMyQueries = catchAsync(async (req, res) => {
-  const { page = "1", limit = "10" } = req.query;
+  const { page = "1", limit = "10", keyword, status } = req.query;
   const userId = req.user?._id;
 
   const result = await HelpDeskServices.getMyQueries(
     userId,
     Number(page),
-    Number(limit)
+    Number(limit),
+    keyword as string,
+    status as string
   );
 
   sendResponse(res, {

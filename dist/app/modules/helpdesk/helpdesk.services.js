@@ -54,8 +54,13 @@ const getAllQueries = (keyword_1, status_1, ...args_1) => __awaiter(void 0, [key
         query.status = { $regex: status, $options: "i" };
     }
     const skip = (page - 1) * limit;
+    // Populate only on find query, not on countDocuments
     const [data, total] = yield Promise.all([
-        helpdesk_model_1.default.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+        helpdesk_model_1.default.find(query)
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 })
+            .populate("userId", "name email phoneNumber"),
         helpdesk_model_1.default.countDocuments(query),
     ]);
     return {
@@ -77,11 +82,22 @@ const getSingleQueryById = (id) => __awaiter(void 0, void 0, void 0, function* (
     return result;
 });
 // Get Queries of logged-in user
-const getMyQueries = (userId_1, ...args_1) => __awaiter(void 0, [userId_1, ...args_1], void 0, function* (userId, page = 1, limit = 10) {
+const getMyQueries = (userId_1, ...args_1) => __awaiter(void 0, [userId_1, ...args_1], void 0, function* (userId, page = 1, limit = 10, keyword, status) {
     const query = { userId };
+    if (keyword) {
+        query.$or = [
+            { name: { $regex: keyword, $options: "i" } },
+            { email: { $regex: keyword, $options: "i" } },
+            { phoneNumber: { $regex: keyword, $options: "i" } },
+            { userCustomId: { $regex: keyword, $options: "i" } },
+        ];
+    }
+    if (status && status !== "all") {
+        query.status = { $regex: status, $options: "i" };
+    }
     const skip = (page - 1) * limit;
     const [data, total] = yield Promise.all([
-        helpdesk_model_1.default.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+        helpdesk_model_1.default.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }).populate("userId", "name email phoneNumber"),
         helpdesk_model_1.default.countDocuments(query),
     ]);
     return {
