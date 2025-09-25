@@ -54,6 +54,7 @@ const getAllProducts = async (
   // Search filter
   if (keyword) {
     query.$or = [
+      { productId: { $regex: keyword, $options: "i" } },
       { name: { $regex: keyword, $options: "i" } },
       { description: { $regex: keyword, $options: "i" } },
     ];

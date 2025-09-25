@@ -12,7 +12,7 @@ const getAllUser = async () => {
 
 
 const getMe = async (userId: string) => {
-  const result = await User.findById(userId);
+  const result = await User.findById(userId).populate("purchasedCourses.courseId", "imageUrl title tagline subtitle");
   return result;
 };
 
@@ -49,8 +49,6 @@ const updateProfile = async (id: string, payload: Partial<TUser>, profilePic: an
 
   return result;
 };
-
-
 
 const changeUserRoleToAdmin = async (userId: string) => {
   const user = await User.findById(userId);

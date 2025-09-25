@@ -7,11 +7,14 @@ export type TProduct = {
   productStory?: string;
   category: string;
   madeIn?: string;
-  sizes: {
-    size: string;
-    quantity: number;
-    basePrice: number;
-    discountedPrice: number;
+  colors: {
+    colorName: string;
+    sizes: {
+      size: string;
+      quantity: number;
+      basePrice: number;
+      discountedPrice: number;
+    }[];
   }[];
   createdAt?: Date;
   updatedAt?: Date;

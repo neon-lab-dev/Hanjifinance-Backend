@@ -23,7 +23,7 @@ const getAllUser = () => __awaiter(void 0, void 0, void 0, function* () {
     return result;
 });
 const getMe = (userId) => __awaiter(void 0, void 0, void 0, function* () {
-    const result = yield auth_model_1.User.findById(userId);
+    const result = yield auth_model_1.User.findById(userId).populate("purchasedCourses.courseId", "imageUrl title tagline subtitle");
     return result;
 });
 const getMyOrders = (userId) => __awaiter(void 0, void 0, void 0, function* () {

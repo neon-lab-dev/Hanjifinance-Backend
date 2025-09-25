@@ -76,10 +76,34 @@ const deleteCourse = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, v
         data: result,
     });
 }));
+const completeLecture = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { courseId, lectureId } = req.params;
+    const userId = req.user._id;
+    const result = yield course_services_1.CourseServices.completeLecture(userId, courseId, lectureId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Lecture marked as completed & progress updated",
+        data: result,
+    });
+}));
+const completeCourse = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { courseId } = req.params;
+    const userId = req.user._id;
+    const result = yield course_services_1.CourseServices.completeCourse(userId, courseId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Course completed successfully",
+        data: result,
+    });
+}));
 exports.CourseControllers = {
     addCourse,
     getAllCourses,
     getSingleCourseById,
     updateCourse,
     deleteCourse,
+    completeLecture,
+    completeCourse,
 };

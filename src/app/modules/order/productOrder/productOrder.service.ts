@@ -47,30 +47,40 @@ const createProductOrder = async (user: any, payload: TProductOrder) => {
       throw new Error(`Product ${item.productId} not found`);
     }
 
-    // Check size availability
-    const sizeObj = product.sizes.find((s: any) => s.size === item.size);
+    //Check color availability
+    const colorObj = product.colors.find(
+      (c: any) => c.colorName === item.color
+    );
+    if (!colorObj) {
+      throw new Error(
+        `Color ${item.color} is not available for product ${product.name}`
+      );
+    }
+
+    //Check size availability under the color
+    const sizeObj = colorObj.sizes.find((s: any) => s.size === item.size);
     if (!sizeObj) {
       throw new Error(
-        `Size ${item.size} is not available for product ${product.name}`
+        `Size ${item.size} is not available for color ${item.color} of product ${product.name}`
       );
     }
 
-    // Check quantity availability
+    //Check quantity availability
     if (sizeObj.quantity < item.quantity) {
       throw new Error(
-        `Not enough stock for size ${item.size} of product ${product.name}. Available: ${sizeObj.quantity}`
+        `Not enough stock for size ${item.size} of color ${item.color} in product ${product.name}. Available: ${sizeObj.quantity}`
       );
     }
 
-    // Reduce stock
+    //Reduce stock
     sizeObj.quantity -= item.quantity;
     if (sizeObj.quantity < 0) sizeObj.quantity = 0;
 
-    // Save updated product
+    //Save updated product
     await product.save();
   }
 
-  // Create Order ID
+  // Generate Order ID
   const orderId = generateOrderId();
 
   const payloadData = {
@@ -103,6 +113,7 @@ const createProductOrder = async (user: any, payload: TProductOrder) => {
 
   return order;
 };
+
 
 // Get all orders
 const getAllProductOrders = async (

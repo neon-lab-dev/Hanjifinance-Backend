@@ -15,18 +15,19 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.sendEmail = void 0;
 const nodemailer_1 = __importDefault(require("nodemailer"));
 const dotenv_1 = __importDefault(require("dotenv"));
+const config_1 = __importDefault(require("../config"));
 dotenv_1.default.config();
 const sendEmail = (to, subject, html) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const transporter = nodemailer_1.default.createTransport({
             service: "gmail",
             auth: {
-                user: "rahulsd380@gmail.com",
-                pass: "udzt yuom aqbg fdtm",
+                user: config_1.default.smtp_email,
+                pass: config_1.default.smtp_pass,
             },
         });
         yield transporter.sendMail({
-            from: "rahulsd380@gmail.com",
+            from: config_1.default.smtp_email,
             to,
             subject,
             text: "Reset your password within 10 minutes",

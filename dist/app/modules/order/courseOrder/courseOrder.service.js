@@ -78,6 +78,7 @@ const createCourseOrder = (user, payload) => __awaiter(void 0, void 0, void 0, f
         if (!alreadyPurchased) {
             userData.purchasedCourses.push({
                 courseId: course.courseId,
+                isCompletedCourse: false,
                 isAttendedOnExam: false,
                 isPassed: false,
                 examLimitLeft: 3,

@@ -80,31 +80,48 @@ const userSchema = new Schema<TUser, UserModel>(
       type: Date,
       required: false,
     },
-     purchasedCourses: [
-    {
-      courseId: {
-        type: Schema.Types.ObjectId,
-        ref: "Course",
-        required: true,
-      },
-      isAttendedOnExam: {
-        type: Boolean,
-        default: false,
-      },
-      isPassed: {
-        type: Boolean,
-        default: false,
-      },
-      examLimitLeft: {
-        type: Number,
-        default: 3,
-      },
-      score: {
+    purchasedCourses: [
+  {
+    courseId: {
+      type: Schema.Types.ObjectId,
+      ref: "Course",
+      required: true,
+    },
+    isCompletedCourse: {
+      type: Boolean,
+      default: false,
+    },
+    isAttendedOnExam: {
+      type: Boolean,
+      default: false,
+    },
+    isPassed: {
+      type: Boolean,
+      default: false,
+    },
+    examLimitLeft: {
+      type: Number,
+      default: 3,
+    },
+    score: {
+      type: Number,
+      default: 0,
+    },
+    progress: {
+      completedLectures: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: "CourseLecture",
+        },
+      ],
+      percentage: {
         type: Number,
         default: 0,
       },
     },
-  ],
+  },
+]
+
   },
   {
     timestamps: true,

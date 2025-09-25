@@ -27,12 +27,17 @@ export type TUser = {
   createdAt: Date;
   updatedAt: Date;
   passwordChangedAt?: Date;
-  purchasedCourses? : {
+  purchasedCourses: {
     courseId: Types.ObjectId;
+    isCompletedCourse?: boolean;
     isAttendedOnExam: boolean;
     isPassed: boolean;
     examLimitLeft: number;
-    score : number
+    score: number;
+    progress?: {
+      completedLectures: Types.ObjectId[];
+      percentage: number;
+    };
   }[];
 };
 

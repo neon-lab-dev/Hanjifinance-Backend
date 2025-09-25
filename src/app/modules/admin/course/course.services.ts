@@ -5,6 +5,9 @@ import { TCourse } from "./course.interface";
 import AppError from "../../../errors/AppError";
 import { sendImageToCloudinary } from "../../../utils/sendImageToCloudinary";
 import { v2 as cloudinary } from "cloudinary";
+import { User } from "../../auth/auth.model";
+import CourseLecture from "../courseLecture/courseLecture.model";
+import mongoose from "mongoose";
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
@@ -139,10 +142,78 @@ const deleteCourse = async (id: string) => {
   return result;
 };
 
+const completeLecture = async (
+  userId: string,
+  courseId: string,
+  lectureId: string
+) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(httpStatus.NOT_FOUND, "User not found");
+
+  const purchasedCourse = user.purchasedCourses!.find(
+    (pc: any) => pc.courseId.toString() === courseId
+  );
+  if (!purchasedCourse) {
+    throw new AppError(httpStatus.NOT_FOUND, "Course not found in purchased list");
+  }
+
+  // Prevent duplicate completion
+  const lectureObjectId = new mongoose.Types.ObjectId(lectureId);
+  if (!purchasedCourse.progress!.completedLectures.some((id: any) => id.equals(lectureObjectId))) {
+    purchasedCourse.progress!.completedLectures.push(lectureObjectId);
+  }
+
+  // Fetch total lectures from CourseLecture collection
+  const totalLectures = await CourseLecture.countDocuments({ courseId });
+  if (totalLectures === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, "No lectures found for this course");
+  }
+
+  // Recalculate percentage
+  purchasedCourse.progress!.percentage =
+    (purchasedCourse.progress!.completedLectures.length / totalLectures) * 100;
+
+  await user.save();
+  return purchasedCourse.progress;
+};
+
+const completeCourse = async (userId: string, courseId: string) => {
+  const user = await User.findById(userId);
+  if (!user) throw new AppError(httpStatus.NOT_FOUND, "User not found");
+
+  const purchasedCourse = user.purchasedCourses!.find(
+    (pc: any) => pc.courseId.toString() === courseId
+  );
+  if (!purchasedCourse) {
+    throw new AppError(httpStatus.NOT_FOUND, "Course not found in purchased list");
+  }
+
+  // Fetch total lectures from CourseLecture collection
+  const totalLectures = await CourseLecture.countDocuments({ courseId });
+  if (totalLectures === 0) {
+    throw new AppError(httpStatus.NOT_FOUND, "No lectures found for this course");
+  }
+
+  // Recalculate percentage
+  purchasedCourse.progress!.percentage =
+    (purchasedCourse.progress!.completedLectures.length / totalLectures) * 100;
+
+  // Mark course as completed if all lectures are completed
+  if (purchasedCourse.progress!.completedLectures.length === totalLectures) {
+    purchasedCourse.isCompletedCourse = true;
+  }
+
+  await user.save();
+  return purchasedCourse.progress;
+};
+
+
 export const CourseServices = {
   addCourse,
   getAllCourses,
   getSingleCourseById,
   updateCourse,
   deleteCourse,
+  completeLecture,
+  completeCourse,
 };

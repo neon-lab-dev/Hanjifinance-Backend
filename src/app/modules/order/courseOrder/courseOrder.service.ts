@@ -88,6 +88,7 @@ const createCourseOrder = async (
     if (!alreadyPurchased) {
       userData.purchasedCourses!.push({
         courseId: course.courseId,
+        isCompletedCourse: false,
         isAttendedOnExam: false,
         isPassed: false,
         examLimitLeft: 3,

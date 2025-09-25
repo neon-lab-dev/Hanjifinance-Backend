@@ -76,10 +76,47 @@ const deleteCourse = catchAsync(async (req, res) => {
   });
 });
 
+const completeLecture = catchAsync(async (req, res) => {
+  const { courseId, lectureId } = req.params;
+  const userId = req.user._id;
+
+  const result = await CourseServices.completeLecture(
+    userId,
+    courseId,
+    lectureId
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Lecture marked as completed & progress updated",
+    data: result,
+  });
+});
+
+const completeCourse = catchAsync(async (req, res) => {
+  const { courseId } = req.params;
+  const userId = req.user._id;
+
+  const result = await CourseServices.completeCourse(
+    userId,
+    courseId
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Course completed successfully",
+    data: result,
+  });
+});
+
 export const CourseControllers = {
   addCourse,
   getAllCourses,
   getSingleCourseById,
   updateCourse,
   deleteCourse,
+  completeLecture,
+  completeCourse,
 };

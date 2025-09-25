@@ -6,6 +6,7 @@ const OrderItemSchema = new mongoose_1.Schema({
     productId: { type: mongoose_1.Schema.Types.ObjectId, ref: "Product", required: true },
     quantity: { type: Number, required: true },
     size: { type: String, required: true },
+    color: { type: String, required: true },
     price: { type: Number, required: true },
 });
 const ProductOrderSchema = new mongoose_1.Schema({

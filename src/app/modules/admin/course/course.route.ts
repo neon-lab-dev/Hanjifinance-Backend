@@ -17,6 +17,19 @@ router.post(
 router.get("/", CourseControllers.getAllCourses);
 router.get("/:courseId", CourseControllers.getSingleCourseById);
 
+
+router.put(
+  "/:courseId/lectures/:lectureId/complete",
+  auth(UserRole.user),
+  CourseControllers.completeLecture
+);
+
+router.put(
+  "/:courseId/complete",
+  auth(UserRole.user),
+  CourseControllers.completeCourse
+);
+
 router.put(
   "/update/:courseId",
   auth(UserRole.admin, UserRole.moderator),

@@ -97,6 +97,10 @@ const userSchema = new mongoose_1.Schema({
                 ref: "Course",
                 required: true,
             },
+            isCompletedCourse: {
+                type: Boolean,
+                default: false,
+            },
             isAttendedOnExam: {
                 type: Boolean,
                 default: false,
@@ -113,8 +117,20 @@ const userSchema = new mongoose_1.Schema({
                 type: Number,
                 default: 0,
             },
+            progress: {
+                completedLectures: [
+                    {
+                        type: mongoose_1.Schema.Types.ObjectId,
+                        ref: "CourseLecture",
+                    },
+                ],
+                percentage: {
+                    type: Number,
+                    default: 0,
+                },
+            },
         },
-    ],
+    ]
 }, {
     timestamps: true,
 });
