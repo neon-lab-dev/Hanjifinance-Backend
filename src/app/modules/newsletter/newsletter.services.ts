@@ -11,7 +11,7 @@ const subscribeNewsletter = async (user: any, payload: TNewsletter) => {
     email: payload.email,
   });
   if (isAlreadySubscribed) {
-    throw new AppError(httpStatus.BAD_REQUEST, "You've already subscribed.");
+    throw new AppError(httpStatus.BAD_REQUEST, "You've already subscribed our newsletter.");
   }
   const result = await Newsletter.create(payload);
 

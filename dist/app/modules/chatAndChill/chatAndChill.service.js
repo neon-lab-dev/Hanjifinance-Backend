@@ -242,7 +242,7 @@ const reScheduleMeeting = (payload) => __awaiter(void 0, void 0, void 0, functio
     if (!(bookingBeforeUpdate === null || bookingBeforeUpdate === void 0 ? void 0 : bookingBeforeUpdate.meetingLink)) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Meeting is not scheduled yet, please schedule the meeting first");
     }
-    const booking = yield chatAndChill_model_1.default.findByIdAndUpdate(bookingId, { bookingDate }, { new: true }).populate("user", "name email");
+    const booking = yield chatAndChill_model_1.default.findByIdAndUpdate(bookingId, { status: "scheduled", bookingDate }, { new: true }).populate("user", "name email");
     // Format meeting date
     const meetingDate = booking.bookingDate
         ? new Date(booking.bookingDate).toLocaleDateString("en-US", {

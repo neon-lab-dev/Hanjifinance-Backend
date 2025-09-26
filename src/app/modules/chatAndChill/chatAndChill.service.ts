@@ -287,7 +287,6 @@ const scheduleMeeting = async (bookingId: string, meetingLink: string) => {
 
   return booking;
 };
-
 // Re-Schedule a meeting
 const reScheduleMeeting = async (payload: any) => {
   const { bookingId, bookingDate } = payload;
@@ -305,7 +304,7 @@ const reScheduleMeeting = async (payload: any) => {
   }
   const booking = await ChatAndChill.findByIdAndUpdate(
     bookingId,
-    { bookingDate },
+    { status: "scheduled", bookingDate },
     { new: true }
   ).populate<{ user: { name: string; email: string } }>("user", "name email");
 

@@ -24,7 +24,7 @@ const subscribeNewsletter = (user, payload) => __awaiter(void 0, void 0, void 0,
         email: payload.email,
     });
     if (isAlreadySubscribed) {
-        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "You've already subscribed.");
+        throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "You've already subscribed our newsletter.");
     }
     const result = yield newsletter_model_1.default.create(payload);
     const activityPayload = {
