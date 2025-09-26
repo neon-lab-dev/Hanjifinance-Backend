@@ -40,6 +40,19 @@ const getSingleExamById = catchAsync(async (req, res) => {
   });
 });
 
+// Get single exam by ID
+const getSingleExamByCourseId = catchAsync(async (req, res) => {
+  const { courseId } = req.params;
+  const result = await ExamServices.getSingleExamByCourseId(courseId);
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "Exam fetched successfully",
+    data: result,
+  });
+});
+
 // Update exam
 const updateExam = catchAsync(async (req, res) => {
   const { examId } = req.params;
@@ -70,6 +83,7 @@ export const ExamControllers = {
   createExam,
   getAllExams,
   getSingleExamById,
+  getSingleExamByCourseId,
   updateExam,
   deleteExam,
 };

@@ -48,6 +48,17 @@ const getSingleExamById = (0, catchAsync_1.default)((req, res) => __awaiter(void
         data: result,
     });
 }));
+// Get single exam by ID
+const getSingleExamByCourseId = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { courseId } = req.params;
+    const result = yield exam_services_1.ExamServices.getSingleExamByCourseId(courseId);
+    (0, sendResponse_1.default)(res, {
+        statusCode: http_status_1.default.OK,
+        success: true,
+        message: "Exam fetched successfully",
+        data: result,
+    });
+}));
 // Update exam
 const updateExam = (0, catchAsync_1.default)((req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { examId } = req.params;
@@ -74,6 +85,7 @@ exports.ExamControllers = {
     createExam,
     getAllExams,
     getSingleExamById,
+    getSingleExamByCourseId,
     updateExam,
     deleteExam,
 };

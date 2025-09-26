@@ -14,6 +14,7 @@ router.post("/create", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth
 // Get all exams
 router.get("/", exam_controller_1.ExamControllers.getAllExams);
 // Get single exam by ID
+router.get("/:courseId", exam_controller_1.ExamControllers.getSingleExamByCourseId);
 router.get("/:examId", exam_controller_1.ExamControllers.getSingleExamById);
 // Update an exam
 router.put("/update/:examId", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), exam_controller_1.ExamControllers.updateExam);

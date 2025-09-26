@@ -50,6 +50,18 @@ const getSingleExamById = async (id: string) => {
   return result;
 };
 
+// Get single exam by ID
+const getSingleExamByCourseId = async (courseId: string) => {
+  const result = await Exam.findOne({  courseId });
+
+  if (!result) {
+    throw new AppError(httpStatus.NOT_FOUND, "Exam not found");
+  }
+
+  return result;
+};
+
+
 // Update exam
 const updateExam = async (id: string, payload: Partial<TExam>) => {
   const existing = await Exam.findById(id);
@@ -99,6 +111,7 @@ export const ExamServices = {
   createExam,
   getAllExams,
   getSingleExamById,
+  getSingleExamByCourseId,
   updateExam,
   deleteExam,
 };

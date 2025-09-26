@@ -16,6 +16,7 @@ router.post(
 router.get("/", ExamControllers.getAllExams);
 
 // Get single exam by ID
+router.get("/:courseId", ExamControllers.getSingleExamByCourseId);
 router.get("/:examId", ExamControllers.getSingleExamById);
 
 // Update an exam

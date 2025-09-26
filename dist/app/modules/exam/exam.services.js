@@ -51,6 +51,14 @@ const getSingleExamById = (id) => __awaiter(void 0, void 0, void 0, function* ()
     }
     return result;
 });
+// Get single exam by ID
+const getSingleExamByCourseId = (courseId) => __awaiter(void 0, void 0, void 0, function* () {
+    const result = yield exam_model_1.default.findOne({ courseId });
+    if (!result) {
+        throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Exam not found");
+    }
+    return result;
+});
 // Update exam
 const updateExam = (id, payload) => __awaiter(void 0, void 0, void 0, function* () {
     const existing = yield exam_model_1.default.findById(id);
@@ -87,6 +95,7 @@ exports.ExamServices = {
     createExam,
     getAllExams,
     getSingleExamById,
+    getSingleExamByCourseId,
     updateExam,
     deleteExam,
 };
