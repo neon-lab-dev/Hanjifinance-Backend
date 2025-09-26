@@ -65,7 +65,11 @@ const updateExam = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
     if (!existing) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Exam not found");
     }
-    if (payload.questions && payload.questions.length > 0) {
+    // Validate questions if provided
+    if (payload.questions) {
+        if (!Array.isArray(payload.questions) || payload.questions.length === 0) {
+            throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Questions array cannot be empty");
+        }
         for (const question of payload.questions) {
             if (!question.questionText ||
                 !Array.isArray(question.options) ||
@@ -74,13 +78,19 @@ const updateExam = (id, payload) => __awaiter(void 0, void 0, void 0, function* 
                 throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Invalid question format");
             }
         }
-        return yield exam_model_1.default.findByIdAndUpdate(id, { $push: { questions: { $each: payload.questions } } }, { new: true, runValidators: true });
     }
-    const result = yield exam_model_1.default.findByIdAndUpdate(id, payload, {
+    // Build update object
+    const updateData = {};
+    if (payload.title)
+        updateData.title = payload.title;
+    if (payload.questions)
+        updateData.questions = payload.questions; // replace array
+    // Update exam
+    const updatedExam = yield exam_model_1.default.findByIdAndUpdate(id, updateData, {
         new: true,
         runValidators: true,
     });
-    return result;
+    return updatedExam;
 });
 // Delete exam
 const deleteExam = (id) => __awaiter(void 0, void 0, void 0, function* () {

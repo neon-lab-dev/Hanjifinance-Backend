@@ -69,7 +69,12 @@ const updateExam = async (id: string, payload: Partial<TExam>) => {
     throw new AppError(httpStatus.NOT_FOUND, "Exam not found");
   }
 
-  if (payload.questions && payload.questions.length > 0) {
+  // Validate questions if provided
+  if (payload.questions) {
+    if (!Array.isArray(payload.questions) || payload.questions.length === 0) {
+      throw new AppError(httpStatus.BAD_REQUEST, "Questions array cannot be empty");
+    }
+
     for (const question of payload.questions) {
       if (
         !question.questionText ||
@@ -80,20 +85,20 @@ const updateExam = async (id: string, payload: Partial<TExam>) => {
         throw new AppError(httpStatus.BAD_REQUEST, "Invalid question format");
       }
     }
-
-    return await Exam.findByIdAndUpdate(
-      id,
-      { $push: { questions: { $each: payload.questions } } },
-      { new: true, runValidators: true }
-    );
   }
 
-  const result = await Exam.findByIdAndUpdate(id, payload, {
+  // Build update object
+  const updateData: Partial<TExam> = {};
+  if (payload.title) updateData.title = payload.title;
+  if (payload.questions) updateData.questions = payload.questions; // replace array
+
+  // Update exam
+  const updatedExam = await Exam.findByIdAndUpdate(id, updateData, {
     new: true,
     runValidators: true,
   });
 
-  return result;
+  return updatedExam;
 };
 
 // Delete exam
