@@ -83,7 +83,6 @@ export const sendSubscriptionStatusEmails = async (
     // Send email to admin
     await sendEmail(adminEmail, adminSubject, adminHtmlBody);
 
-    console.log(`Subscription ${action} emails sent successfully`);
   } catch (error) {
     console.error(`Failed to send ${action} emails:`, error);
   }
@@ -147,8 +146,6 @@ export const sendSubscriptionEmails = async (
 
     // Send email to admin
     await sendEmail(adminEmail, adminSubject, adminHtmlBody);
-
-    console.log("Subscription confirmation emails sent successfully");
   } catch (error) {
     throw new AppError(httpStatus.BAD_REQUEST, "Email is not valid.");
   }
@@ -183,7 +180,6 @@ export const sendCouponCodeEmail = async (user: any, couponCode: string) => {
 
   try {
     await sendEmail(user.email, subject, htmlBody);
-    console.log(`Coupon code email sent to ${user.email}`);
   } catch (error) {
     console.error(`Failed to send coupon code email:`, error);
   }
@@ -266,7 +262,6 @@ export const sendOrderInvoiceEmail = async (user: any, orderedItems: any) => {
 
   try {
     await sendEmail(user.email, subject, htmlBody);
-    console.log(`Invoice email sent to ${user.email}`);
   } catch (error) {
     console.error(`Failed to send invoice email:`, error);
   }

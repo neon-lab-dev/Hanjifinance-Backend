@@ -106,9 +106,7 @@ const deleteCourse = (id) => __awaiter(void 0, void 0, void 0, function* () {
             const filename = parts[parts.length - 1];
             // Remove extension and decode URL
             const publicId = decodeURIComponent(filename.split(".")[0]);
-            console.log("Deleting Cloudinary image with publicId:", publicId);
             yield cloudinary_1.v2.uploader.destroy(publicId);
-            console.log("Cloudinary image deleted successfully");
         }
         catch (err) {
             console.error("Error deleting Cloudinary image:", err);

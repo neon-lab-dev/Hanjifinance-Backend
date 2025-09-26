@@ -30,7 +30,7 @@ function main() {
     });
 }
 main();
-process.on('unhandledRejection', () => {
+process.on("unhandledRejection", () => {
     if (server) {
         server.close(() => {
             process.exit(1);
@@ -38,6 +38,6 @@ process.on('unhandledRejection', () => {
     }
     process.exit(1);
 });
-process.on('uncaughtException', () => {
+process.on("uncaughtException", () => {
     process.exit(1);
 });

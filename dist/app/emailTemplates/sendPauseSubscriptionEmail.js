@@ -83,7 +83,6 @@ const sendSubscriptionStatusEmails = (user, subscriptionDetails, action) => __aw
         yield (0, sendEmail_1.sendEmail)(user.email, userSubject, userHtmlBody);
         // Send email to admin
         yield (0, sendEmail_1.sendEmail)(adminEmail, adminSubject, adminHtmlBody);
-        console.log(`Subscription ${action} emails sent successfully`);
     }
     catch (error) {
         console.error(`Failed to send ${action} emails:`, error);
@@ -142,7 +141,6 @@ const sendSubscriptionEmails = (user, subscriptionDetails) => __awaiter(void 0, 
         yield (0, sendEmail_1.sendEmail)(user.email, userSubject, userHtmlBody);
         // Send email to admin
         yield (0, sendEmail_1.sendEmail)(adminEmail, adminSubject, adminHtmlBody);
-        console.log("Subscription confirmation emails sent successfully");
     }
     catch (error) {
         throw new AppError_1.default(http_status_1.default.BAD_REQUEST, "Email is not valid.");
@@ -177,7 +175,6 @@ const sendCouponCodeEmail = (user, couponCode) => __awaiter(void 0, void 0, void
   `;
     try {
         yield (0, sendEmail_1.sendEmail)(user.email, subject, htmlBody);
-        console.log(`Coupon code email sent to ${user.email}`);
     }
     catch (error) {
         console.error(`Failed to send coupon code email:`, error);
@@ -253,7 +250,6 @@ const sendOrderInvoiceEmail = (user, orderedItems) => __awaiter(void 0, void 0, 
   `;
     try {
         yield (0, sendEmail_1.sendEmail)(user.email, subject, htmlBody);
-        console.log(`Invoice email sent to ${user.email}`);
     }
     catch (error) {
         console.error(`Failed to send invoice email:`, error);
