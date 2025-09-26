@@ -12,7 +12,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.sendCouponCodeEmail = exports.sendSubscriptionEmails = exports.sendSubscriptionStatusEmails = void 0;
+exports.sendOrderInvoiceEmail = exports.sendCouponCodeEmail = exports.sendSubscriptionEmails = exports.sendSubscriptionStatusEmails = void 0;
 /* eslint-disable @typescript-eslint/no-explicit-any */
 const http_status_1 = __importDefault(require("http-status"));
 const AppError_1 = __importDefault(require("../errors/AppError"));
@@ -184,3 +184,79 @@ const sendCouponCodeEmail = (user, couponCode) => __awaiter(void 0, void 0, void
     }
 });
 exports.sendCouponCodeEmail = sendCouponCodeEmail;
+const sendOrderInvoiceEmail = (user, orderedItems) => __awaiter(void 0, void 0, void 0, function* () {
+    const subject = `Your Invoice - Hanjifinance`;
+    const subTotal = orderedItems.reduce((acc, item) => acc + item.price * item.quantity, 0);
+    const tax = subTotal * 0.18;
+    const totalAmount = subTotal + tax;
+    const htmlBody = `
+  <div style="font-family: Arial, sans-serif; background-color:#f9f9f9; padding:20px;">
+    <div style="max-width:700px; margin:auto; background:#ffffff; border-radius:8px; padding:30px; box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+      
+      <h2 style="color:#c0392b; text-align:center;">Hanjifinance</h2>
+      <p style="font-size:16px; color:#333;">Hello <strong>${user.name}</strong>,</p>
+      <p style="font-size:15px; color:#555;">
+        Thank you for your order! Here is your invoice for your recent purchase.
+      </p>
+
+      <!-- Invoice Table -->
+      <table style="width:100%; border-collapse: collapse; margin-top:20px;">
+        <thead>
+          <tr style="background-color:#c0392b; color:#fff; text-align:left;">
+            <th style="padding:10px;">Item Name</th>
+            <th style="padding:10px; text-align:right;">Price</th>
+            <th style="padding:10px; text-align:center;">Quantity</th>
+            <th style="padding:10px; text-align:right;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${orderedItems
+        .map((item) => `
+            <tr style="border-bottom:1px solid #e5e5e5;">
+              <td style="padding:10px;">${item.name} (Size: ${item.size}, Color: ${item.color})</td>
+              <td style="padding:10px; text-align:right;">₹${item.price.toFixed(2)}</td>
+              <td style="padding:10px; text-align:center;">${item.quantity}</td>
+              <td style="padding:10px; text-align:right;">₹${(item.price * item.quantity).toFixed(2)}</td>
+            </tr>
+          `)
+        .join("")}
+        </tbody>
+      </table>
+
+      <!-- Totals -->
+<div style="margin-top:20px; width:100%;">
+  <table style="width:300px; border-collapse: collapse; margin-left:auto; text-align:right;">
+    <tr>
+      <td style="padding:8px; font-weight:bold;">Subtotal:</td>
+      <td style="padding:8px;">₹${subTotal.toFixed(2)}</td>
+    </tr>
+    <tr>
+      <td style="padding:8px; font-weight:bold;">Tax (18%):</td>
+      <td style="padding:8px;">₹${tax.toFixed(2)}</td>
+    </tr>
+    <tr>
+      <td style="padding:8px; font-weight:bold; font-size:16px; color:#c0392b;">Total Amount:</td>
+      <td style="padding:8px; font-size:16px; color:#c0392b;">₹${totalAmount.toFixed(2)}</td>
+    </tr>
+  </table>
+</div>
+
+
+      <p style="font-size:15px; color:#555; margin-top:30px;">
+        Please keep this invoice for your records. You can download digital invoice from your <strong>Dashboard > My Orders</strong>
+      </p>
+
+      <p style="font-size:15px; color:#333; margin-top:30px;">Best regards,</p>
+      <p style="font-size:16px; font-weight:bold; color:#c0392b;">Hanjifinance Team</p>
+    </div>
+  </div>
+  `;
+    try {
+        yield (0, sendEmail_1.sendEmail)(user.email, subject, htmlBody);
+        console.log(`Invoice email sent to ${user.email}`);
+    }
+    catch (error) {
+        console.error(`Failed to send invoice email:`, error);
+    }
+});
+exports.sendOrderInvoiceEmail = sendOrderInvoiceEmail;

@@ -4,6 +4,7 @@ exports.ProductOrder = void 0;
 const mongoose_1 = require("mongoose");
 const OrderItemSchema = new mongoose_1.Schema({
     productId: { type: mongoose_1.Schema.Types.ObjectId, ref: "Product", required: true },
+    name: { type: String, required: true },
     quantity: { type: Number, required: true },
     size: { type: String, required: true },
     color: { type: String, required: true },

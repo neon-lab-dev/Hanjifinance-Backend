@@ -6,6 +6,7 @@ import Product from "../../admin/product/product.model";
 import { ProductOrder } from "./productOrder.model";
 import { razorpay } from "../../../utils/razorpay";
 import { ActivityServices } from "../../activities/activities.services";
+import { sendOrderInvoiceEmail } from "../../../emailTemplates/sendPauseSubscriptionEmail";
 
 const generateOrderId = () => {
   return "HFPO-" + Math.floor(1000 + Math.random() * 9000);
@@ -83,11 +84,13 @@ const createProductOrder = async (user: any, payload: TProductOrder) => {
   // Generate Order ID
   const orderId = generateOrderId();
 
+  const orderedItems = payload?.orderedItems;
+
   const payloadData = {
     orderId,
     userId: user?._id,
     userCustomId: user?.userId,
-    orderedItems: payload.orderedItems,
+    orderedItems,
     totalAmount: payload.totalAmount,
     status: "pending",
   };
@@ -111,9 +114,10 @@ const createProductOrder = async (user: any, payload: TProductOrder) => {
     );
   }
 
+  await sendOrderInvoiceEmail(user, orderedItems);
+
   return order;
 };
-
 
 // Get all orders
 const getAllProductOrders = async (
@@ -215,7 +219,15 @@ const getMyProductOrders = async (
   const skip = (page - 1) * limit;
 
   const [orders, total] = await Promise.all([
-    ProductOrder.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+    ProductOrder.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .populate(
+        "userId",
+        "name phoneNumber city pinCode addressLine1 addressLine2"
+      )
+      .populate("orderedItems.productId", "name"),
     ProductOrder.countDocuments(query),
   ]);
 

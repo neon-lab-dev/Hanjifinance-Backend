@@ -3,6 +3,7 @@ import { TProductOrder, TProductOrderItem } from "./productOrder.interface";
 
 const OrderItemSchema = new Schema<TProductOrderItem>({
   productId: { type: Schema.Types.ObjectId, ref: "Product", required: true },
+  name: { type: String, required: true },
   quantity: { type: Number, required: true },
   size: { type: String, required: true },
   color: { type: String, required: true },

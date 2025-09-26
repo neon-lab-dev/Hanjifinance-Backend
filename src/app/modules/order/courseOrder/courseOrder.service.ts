@@ -190,7 +190,8 @@ const getMyCourseOrders = async (
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 })
-      .populate("courses.courseId", "imageUrl tagline subtitle"),
+      .populate("courses.courseId", "imageUrl tagline subtitle")
+      .populate("userId", "name phoneNumber city pinCode addressLine1 addressLine2"),
     CourseOrder.countDocuments(query),
   ]);
 

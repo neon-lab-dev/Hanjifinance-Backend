@@ -20,6 +20,7 @@ const product_model_1 = __importDefault(require("../../admin/product/product.mod
 const productOrder_model_1 = require("./productOrder.model");
 const razorpay_1 = require("../../../utils/razorpay");
 const activities_services_1 = require("../../activities/activities.services");
+const sendPauseSubscriptionEmail_1 = require("../../../emailTemplates/sendPauseSubscriptionEmail");
 const generateOrderId = () => {
     return "HFPO-" + Math.floor(1000 + Math.random() * 9000);
 };
@@ -73,11 +74,12 @@ const createProductOrder = (user, payload) => __awaiter(void 0, void 0, void 0, 
     }
     // Generate Order ID
     const orderId = generateOrderId();
+    const orderedItems = payload === null || payload === void 0 ? void 0 : payload.orderedItems;
     const payloadData = {
         orderId,
         userId: user === null || user === void 0 ? void 0 : user._id,
         userCustomId: user === null || user === void 0 ? void 0 : user.userId,
-        orderedItems: payload.orderedItems,
+        orderedItems,
         totalAmount: payload.totalAmount,
         status: "pending",
     };
@@ -92,6 +94,7 @@ const createProductOrder = (user, payload) => __awaiter(void 0, void 0, void 0, 
     if (!createActivity) {
         throw new AppError_1.default(http_status_1.default.INTERNAL_SERVER_ERROR, "Failed to add activity");
     }
+    yield (0, sendPauseSubscriptionEmail_1.sendOrderInvoiceEmail)(user, orderedItems);
     return order;
 });
 // Get all orders
@@ -162,7 +165,12 @@ const getMyProductOrders = (userId_1, keyword_1, status_1, ...args_1) => __await
     }
     const skip = (page - 1) * limit;
     const [orders, total] = yield Promise.all([
-        productOrder_model_1.ProductOrder.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+        productOrder_model_1.ProductOrder.find(query)
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 })
+            .populate("userId", "name phoneNumber city pinCode addressLine1 addressLine2")
+            .populate("orderedItems.productId", "name"),
         productOrder_model_1.ProductOrder.countDocuments(query),
     ]);
     return {

@@ -2,6 +2,7 @@ import { ObjectId } from "mongoose";
 
 export interface TProductOrderItem {
   productId: ObjectId;
+  name : string
   quantity: number;
   color: string;
   size: string;
