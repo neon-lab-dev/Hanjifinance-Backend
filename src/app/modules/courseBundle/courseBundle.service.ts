@@ -43,7 +43,14 @@ const getAllCourseBundles = async (keyword?: string, page = 1, limit = 10) => {
   const skip = (page - 1) * limit;
 
   const [data, total] = await Promise.all([
-    CourseBundle.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+    CourseBundle.find(query)
+      .skip(skip)
+      .limit(limit)
+      .sort({ createdAt: -1 })
+      .populate({
+        path: "courseId",
+        select: "title subtitle discountedPrice",
+      }),
     CourseBundle.countDocuments(query),
   ]);
 
@@ -58,14 +65,22 @@ const getAllCourseBundles = async (keyword?: string, page = 1, limit = 10) => {
   };
 };
 
+
 // Get Single Course Bundle
 const getSingleCourseBundle = async (bundleId: string) => {
-  const bundle = await CourseBundle.findById(bundleId);
+  const bundle = await CourseBundle.findById(bundleId)
+    .populate({
+      path: "courseId",
+      select: "title subtitle discountedPrice",
+    });
+
   if (!bundle) {
     throw new AppError(httpStatus.NOT_FOUND, "Course bundle not found");
   }
+
   return bundle;
 };
+
 
 // Update Course Bundle
 const updateCourseBundle = async (

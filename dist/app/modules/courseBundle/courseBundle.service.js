@@ -42,7 +42,14 @@ const getAllCourseBundles = (keyword_1, ...args_1) => __awaiter(void 0, [keyword
     }
     const skip = (page - 1) * limit;
     const [data, total] = yield Promise.all([
-        courseBundle_model_1.default.find(query).skip(skip).limit(limit).sort({ createdAt: -1 }),
+        courseBundle_model_1.default.find(query)
+            .skip(skip)
+            .limit(limit)
+            .sort({ createdAt: -1 })
+            .populate({
+            path: "courseId",
+            select: "title subtitle discountedPrice",
+        }),
         courseBundle_model_1.default.countDocuments(query),
     ]);
     return {
@@ -57,7 +64,11 @@ const getAllCourseBundles = (keyword_1, ...args_1) => __awaiter(void 0, [keyword
 });
 // Get Single Course Bundle
 const getSingleCourseBundle = (bundleId) => __awaiter(void 0, void 0, void 0, function* () {
-    const bundle = yield courseBundle_model_1.default.findById(bundleId);
+    const bundle = yield courseBundle_model_1.default.findById(bundleId)
+        .populate({
+        path: "courseId",
+        select: "title subtitle discountedPrice",
+    });
     if (!bundle) {
         throw new AppError_1.default(http_status_1.default.NOT_FOUND, "Course bundle not found");
     }
