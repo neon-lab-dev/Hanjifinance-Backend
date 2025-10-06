@@ -9,7 +9,7 @@ const newsletter_controller_1 = require("./newsletter.controller");
 const auth_1 = __importDefault(require("../../middlewares/auth"));
 const auth_constants_1 = require("../auth/auth.constants");
 const router = express_1.default.Router();
-router.post("/subscribe", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator, auth_constants_1.UserRole.user), newsletter_controller_1.NewsletterControllers.subscribeNewsletter);
+router.post("/subscribe", newsletter_controller_1.NewsletterControllers.subscribeNewsletter);
 router.get("/", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), newsletter_controller_1.NewsletterControllers.getAllNewsletters);
 router.get("/:id", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), newsletter_controller_1.NewsletterControllers.getSingleNewsletterById);
 router.put("/:id", (0, auth_1.default)(auth_constants_1.UserRole.admin, auth_constants_1.UserRole.moderator), newsletter_controller_1.NewsletterControllers.updateNewsletter);
