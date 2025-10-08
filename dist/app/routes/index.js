@@ -19,6 +19,7 @@ const courseBundle_route_1 = require("../modules/courseBundle/courseBundle.route
 const helpdesk_route_1 = require("../modules/helpdesk/helpdesk.route");
 const exam_route_1 = require("../modules/exam/exam.route");
 const examAnswer_route_1 = require("../modules/examAnswer/examAnswer.route");
+const offerNotice_route_1 = require("../modules/offerNotice/offerNotice.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
@@ -52,6 +53,10 @@ const moduleRoutes = [
     {
         path: "/product-order",
         route: productOrder_route_1.ProductOrderRoutes,
+    },
+    {
+        path: "/offer-notice",
+        route: offerNotice_route_1.OfferNoticeRoutes,
     },
     {
         path: "/course-order",

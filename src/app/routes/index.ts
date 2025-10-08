@@ -17,6 +17,7 @@ import { CourseBundleRoutes } from "../modules/courseBundle/courseBundle.route";
 import { HelpDeskRoutes } from "../modules/helpdesk/helpdesk.route";
 import { ExamRoutes } from "../modules/exam/exam.route";
 import { ExamAnswerRoutes } from "../modules/examAnswer/examAnswer.route";
+import { OfferNoticeRoutes } from "../modules/offerNotice/offerNotice.route";
 
 const router = Router();
 
@@ -52,6 +53,10 @@ const moduleRoutes = [
   {
     path: "/product-order",
     route: ProductOrderRoutes,
+  },
+  {
+    path: "/offer-notice",
+    route: OfferNoticeRoutes,
   },
   {
     path: "/course-order",
