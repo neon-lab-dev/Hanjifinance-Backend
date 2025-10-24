@@ -212,7 +212,7 @@ const refreshToken = async (token: string) => {
   // Have to check if the user is suspended or not
 
   const jwtPayload = {
-     _id: user._id.toString(),
+    _id: user._id.toString(),
     userId: user.userId,
     name: user.name,
     email: user.email,
