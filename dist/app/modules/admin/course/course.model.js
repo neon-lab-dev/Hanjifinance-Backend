@@ -26,6 +26,25 @@ const CourseSchema = new mongoose_1.Schema({
         type: [String],
         required: true,
     },
+    overview: {
+        type: String,
+        required: true,
+    },
+    courseCoverage: {
+        type: [
+            {
+                title: {
+                    type: String,
+                    required: true,
+                },
+                description: {
+                    type: String,
+                    required: true,
+                },
+            },
+        ],
+        required: true,
+    },
     accessType: {
         type: String,
         required: true,

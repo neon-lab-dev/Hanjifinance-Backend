@@ -6,6 +6,11 @@ export type TCourse = {
   tagline: string;
   duration: string;
   benefits : string[];
+  overview : string;
+  courseCoverage : {
+    title : string;
+    description : string;
+  }[];
   accessType : "Lifetime" | "Limited";
   accessValidity: Date;
   category: string;
