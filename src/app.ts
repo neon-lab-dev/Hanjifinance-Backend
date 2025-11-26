@@ -19,7 +19,7 @@ app.use(express.urlencoded({ extended: true }));
 
 // app.use(express.static("./uploads"));
 // Middleware for handling CORS with credentials
-app.use(cors({ origin: ['https://hanji-finance.vercel.app', 'http://localhost:5173',], credentials: true }));
+app.use(cors({ origin: ['https://hanji-finance.vercel.app', 'http://localhost:5173', 'https://www.hanjifinance.com'], credentials: true }));
 
 // Root route
 app.get('/', (req, res) => {
