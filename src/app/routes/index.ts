@@ -18,6 +18,7 @@ import { HelpDeskRoutes } from "../modules/helpdesk/helpdesk.route";
 import { ExamRoutes } from "../modules/exam/exam.route";
 import { ExamAnswerRoutes } from "../modules/examAnswer/examAnswer.route";
 import { OfferNoticeRoutes } from "../modules/offerNotice/offerNotice.route";
+import { AdminRoutes } from "../modules/admin/admin/admin.route";
 
 const router = Router();
 
@@ -25,6 +26,10 @@ const moduleRoutes = [
   {
     path: "/user",
     route: userRoutes,
+  },
+  {
+    path: "/admin",
+    route: AdminRoutes,
   },
   {
     path: "/auth",
