@@ -20,11 +20,16 @@ const helpdesk_route_1 = require("../modules/helpdesk/helpdesk.route");
 const exam_route_1 = require("../modules/exam/exam.route");
 const examAnswer_route_1 = require("../modules/examAnswer/examAnswer.route");
 const offerNotice_route_1 = require("../modules/offerNotice/offerNotice.route");
+const admin_route_1 = require("../modules/admin/admin/admin.route");
 const router = (0, express_1.Router)();
 const moduleRoutes = [
     {
         path: "/user",
         route: users_route_1.userRoutes,
+    },
+    {
+        path: "/admin",
+        route: admin_route_1.AdminRoutes,
     },
     {
         path: "/auth",
